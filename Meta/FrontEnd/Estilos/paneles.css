@@ -1,0 +1,102 @@
+h1 {
+    text-align: center;
+}
+
+/* Estilos para la tabla */
+.container-table {
+    padding: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Alinear elementos en columna */
+    margin: 20px 0; 
+}
+
+table {
+    width: 90%; /* Ancho de la tabla (90% para responsividad) */
+    max-width: 900px; 
+    border-collapse: collapse; /* bordes de tablas y celdas colapsen en un solo borde */
+    margin: 15px 0; 
+    border-radius: 10px; 
+    overflow: hidden; 
+}
+
+th, td {
+    border: 1px solid #d12e3b; 
+    padding: 15px; /* Espacio dentro de las celdas */
+    text-align: center; /* Texto centrado */
+}
+
+th {
+    background-color: #d12e3b; 
+    color: #fff; 
+}
+
+td {
+    background-color: #fff; 
+    color: #333; 
+}
+
+/* Estilo para los botones de acción */
+.accion-button {
+    background-color: #d12e3b;
+    color: white; 
+    border: none; 
+    padding: 15%; /* Espacio interno */
+    border-radius: 10px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    flex: 1; /* Cada botón ocupará el mismo espacio */
+    margin: 6%;
+}
+
+.nav-table .add-panel {
+    background-color: #d12e3b;
+    color: white; 
+    border: none; 
+    padding: 60%; /* Espacio interno */
+    border-radius: 10px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    margin-left: 10px; /* spacio a la izquierda del botón */
+}
+
+.nav-table .add-usuario:hover {
+    background-color: #a02027; /* Color al pasar el mouse */
+}
+
+.accion-button:hover {
+    background-color: #a02027; /* Color al pasar el mouse */
+}
+
+.nav-table .add-panel i, 
+.accion-button i {
+    font-size: 1.3em; /* Ajusta el tamaño según lo necesites */
+}
+
+/* Estilo para filas al pasar el mouse */
+tbody tr:hover {
+    background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+}
+
+td input[type="button"]:hover {
+    background-color: #a02027; /* Color al pasar el mouse */
+}
+
+/* Estilos para la barra de búsqueda */
+.nav-table [type="text"] {
+    margin-bottom: 0; /* Espacio debajo de la barra de búsqueda */
+    padding: 6%; 
+    width: 100%; 
+    max-width: 300px; /* Ancho máximo */
+    box-sizing: border-box; /* Incluir padding y borde en el ancho */
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+}
+
+.nav-table {
+    display: flex;
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: space-between; /* Espacio entre elementos */
+    margin-bottom: 1rem; /* Espacio inferior, opcional */
+}

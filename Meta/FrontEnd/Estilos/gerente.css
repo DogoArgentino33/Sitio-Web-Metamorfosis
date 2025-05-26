@@ -1,0 +1,34 @@
+.table-container {
+    text-align: center;
+    background-color: #f5d6d6;
+    padding: 6%;
+    margin: 5%;
+    border-radius: 3%;
+    display: flex; /* Usar flexbox para el contenedor */
+    justify-content: center; /* Centrar horizontalmente */
+}
+
+.nav-tablas-administrador {
+    display: flex; /* Mantener flex para centrar contenido */
+    flex-direction: column; /* Permite que el ícono esté centrado */
+    justify-content: center; /* Centra verticalmente el ícono */
+    align-items: center; /* Centra horizontalmente el ícono */
+    background-color: #d12e3b;
+    text-decoration: none;
+    color: white;
+    border-radius: 10%;
+    padding: 3%; /* Reduce el padding para que sean más pequeños */
+    margin: 1.5%; /* Ajusta el margen para que estén más juntos */
+    height: 10%; /* Ajusta la altura según la necesidad */
+    width: 10%; /* Ajusta la anchura según la necesidad */
+    max-width: 100px; /* Limita el ancho máximo si es necesario */
+    max-height: 100px; /* Limita la altura máxima si es necesario */
+}
+
+.nav-tablas-administrador:hover {
+    background-color: #a02027; /* Color al pasar el mouse */
+}
+
+.nav-tablas-administrador i {
+    font-size: 3em; /* Reduce el tamaño del ícono */
+}

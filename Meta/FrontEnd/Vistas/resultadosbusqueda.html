@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Disfraces - Metamorfosis</title>
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../Estilos/index.css">
+    <link rel="stylesheet" href="../Estilos/modales.css">
+</head>
+<body>
+    <header>
+        <section class="logo-container">
+            <h1>Metamorfosis</h1>
+            <form action="resultadosbusqueda.html" class="formcentrado">
+                <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
+            </form>
+            <section class="container-login-cart">
+                <a href="../Vistas/registrarse.html"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+            </section>
+        </section>
+        <br>
+        <nav class="container-nav">
+            <p>
+                <a href="../Vistas/index.html">Inicio</a>
+                <a href="../Vistas/disfraces.html">Disfraces</a>
+                <a href="../Vistas/accesorios.html">Accesorios</a>
+                <a href="../Vistas/contactos.html">Contactos</a>
+                <a href="../Vistas/acerca.html">Acerca de</a>
+            </p>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="nav-route">
+            <a href="index.html">Inicio / </a>
+            <a>Resultados de Busqueda</a>
+        </section>
+        <h2 style="color: black; padding-left: 3%; padding-top: 3%;">Resultados de busqueda sobre: Circo</h2>
+        <h3 style="color: black; padding-left: 3%;">Total de resultados: 4</h3>
+
+        <section class="cards-container-costume" id="costume-Container">
+            <section class="card-costume">
+                <img src="../img/Disfraces/niños/circo/niño/mago_3_niños.jpg" class="category-image">
+                <h4>Mago</h4>
+                <p>Tematica: circo</p>
+                <p>Categoria: niño</p>
+                <button type="button" class="btn" onclick="openModal('Pirata')">Alquilar</button>
+            </section>
+            <section class="card-costume">
+                <img src="../img/Disfraces/niños/circo/niña/payaso_6_niños.jpg" class="category-image">
+                <h4>Payasa</h4>
+                <p>Tematica: circo</p>
+                <p>Categoria: niña</p>
+                <button type="button" class="btn" onclick="openModal('Pirata')">Alquilar</button>
+            </section>
+            <section class="card-costume">
+                <img src="../img/Disfraces/adultos/circo/hombre/domador_1_adultos.jpg" class="category-image">
+                <h4>Domador</h4>
+                <p>Tematica: circo</p>
+                <p>Categoria: hombre</p>
+                <button type="button" class="btn" onclick="openModal('Pirata')">Alquilar</button>
+            </section>
+            <section class="card-costume">
+                <img src="../img/Disfraces/adultos/halloween/mujer/payasoasesino_2_adultos.jpg" class="category-image">
+                <h4>Payasa</h4>
+                <p>Tematica: circo</p>
+                <p>Categoria: mujer</p>
+                <button type="button" class="btn" onclick="openModal('Pirata')">Alquilar</button>
+            </section>
+
+
+            <section>
+                <ul class="pagination">
+                    <li><a href="#">&laquo; </a></li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">...</a></li>  
+                    <li><a href="#"> &raquo;</a></li>
+                </ul>
+            </section>
+        </section>
+
+        <footer>
+            <p><i class="bi bi-geo-alt-fill"></i> Tucumán 355, K4700 San Fernando del Valle de Catamarca, Catamarca</p>
+            <p><i class="bi bi-envelope-fill"></i> info@metamorfosis.com</p>
+            <p><i class="bi bi-telephone-fill"></i> +54 123 456 789</p>
+            <p>&copy; 2024 Metamorfosis. Todos los derechos reservados.</p>
+            <section class="social-icons">
+                <a href="https://www.instagram.com/disfracesmetamorfosis/"><i class="bi bi-instagram"></i></a>
+                <i class="bi bi-twitter-x"></i>
+                <i class="bi bi-facebook"></i>
+                <i class="bi bi-whatsapp"></i>
+            </section>
+        </footer>
+
+</body>
+</html>

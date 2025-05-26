@@ -1,0 +1,11 @@
+.container-graphic{
+    margin: 6%;
+    background-color:  #fefefe;
+    border-radius: 3%;
+    padding: 3%;
+}
+
+.container-graphic h3{
+    text-align: center;
+}
+

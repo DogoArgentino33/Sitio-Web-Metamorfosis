@@ -1,0 +1,176 @@
+/* MODAL ALQUILAR */
+
+/* Estilo general del modal */
+.modal {
+    display: none; /* oculto por defecto */
+    position: fixed; /* fijado en la pantalla */
+    z-index: 1000; /* Encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; /* desplazamiento si es necesario */
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+/* Contenido del modal */
+.modal-content {
+    background-color: #fefefe; 
+    margin: 5% auto; 
+    padding: 20px; 
+    border: 1px solid #888; 
+    width: 90%; 
+    max-width: 60%; /* Ancho maximo */
+    border-radius: 10px;
+    text-align: center; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+}
+
+/* Estilo para el botón de cerrar */
+.close {
+    color: #aaa; 
+    float: right; /* A la derecha */
+    font-size: 28px;
+    font-weight: bold; 
+}
+
+.close:hover,
+.close:focus {
+    color: black; 
+    text-decoration: none;
+    cursor: pointer; 
+}
+
+/* Estilos de los encabezados */
+h1 {
+    margin-bottom: 15px; 
+    font-size: 1.5rem; 
+}
+
+h2 {
+    margin: 10px 0; 
+    color: #007bff;
+    font-size: 1.2rem; 
+}
+
+/* Estilos para el formulario */
+form {
+    display: flex;
+    flex-direction: column; 
+    align-items: stretch; 
+}
+
+/* Estilos de las etiquetas y entradas */
+label {
+    align-self: flex-start; /* Alinea etiquetas a la izquierda */
+    margin-top: 10px; 
+    margin-bottom: 5px; 
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px; 
+    margin: 5px 0; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    box-sizing: border-box; /* Incluir padding y border en el ancho */
+    font-size: 1rem; 
+}
+
+
+
+/* Estilo para el botón de enviar y otros botones */
+button,
+input[type="button"] {
+    background-color: #007bff; 
+    color: white; 
+    border: none; 
+    padding: 12px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin-top: 15px; 
+    font-size: 1rem; 
+}
+
+button:hover,
+input[type="button"]:hover {
+    background-color: #0056b3; 
+}
+
+/* Enlaces */
+a {
+    color: #007bff; 
+    text-decoration: none; 
+}
+
+a:hover {
+    text-decoration: underline; /* Subrayado al pasar el ratón */
+}
+
+/* Estilo para los campos de detalles de la tarjeta */
+#cardDetails {
+    margin-top: 15px; 
+    text-align: left; 
+}
+
+#cardDetails label {
+    margin-top: 10px; 
+}
+
+#cardDetails input[type="text"],
+#cardDetails input[type="month"], 
+select{
+    width: 100%; 
+    padding: 10px; 
+    margin: 5px 0;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+}
+
+/* Estilos para enlaces de usuario */
+.user-links {
+    display: flex; 
+    justify-content: space-between; /* Espacio entre los enlaces */
+    width: 100%; 
+    margin-top: 10px;
+}
+
+/* Estilos para métodos de pago */
+.payment-methods {
+    display: flex; 
+    flex-direction: column; /* Apilar verticalmente */
+    align-items: flex-start; /* Alinear a la izquierda */
+    margin: 15px 0; 
+}
+
+.payment-methods section {
+    display: flex; /* Habilitar flexbox para cada opción */
+    align-items: center; /* Alinear elementos verticalmente */
+    padding: 0.2%;
+}
+
+/* Media queries para mejorar la responsividad */
+@media (min-width: 768px) {
+    .modal-content {
+        padding: 30px; /* Más padding en pantallas más grandes */
+    }
+
+    h1 {
+        font-size: 2rem; /* Aumentar tamaño del encabezado */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Aumentar tamaño del subtítulo */
+    }
+
+    button,
+    input[type="button"] {
+        font-size: 1.2rem; /* Aumentar tamaño del botón */
+    }
+}
+

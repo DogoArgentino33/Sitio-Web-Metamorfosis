@@ -1,0 +1,379 @@
+/* Estilos base para al body  */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; 
+    color: #333;
+    overflow-x: hidden; /* Evita el desplazamiento horizontal */
+}
+
+/* Estilo para el header */
+header {
+    background-color: #d12e3b; 
+    padding: 3%;
+    text-align: center;
+}
+
+/* Contenedor del logo y los iconos de login */
+.logo-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+/* Estilo para el titulo dentro del logo */
+.logo-container h1 {
+    margin: 0;
+    font-size: 2.5em; 
+    color: #fff; 
+    animation: bounce 2s infinite;
+}
+
+/* Contenedor para los iconos de login y carrito */
+.container-login-cart {
+    position: relative; 
+}
+
+/* Iconos en la parte superior */
+.container-login-cart a {
+    color: #fff; 
+    font-size: 2em; 
+    text-decoration: none; 
+    padding: 6px;
+}
+
+/* Estilo para la barra de navegacion */
+.container-nav {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco mas opaco */
+    border-radius: 25px; 
+    padding: 1%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Espacio entre los enlaces de la barra de navegacion */
+.container-nav p {
+    margin: 0;
+}
+
+/* Estilo para enlaces dentro de la barra de navegacion */
+.container-nav a {
+    color: #471e1a; 
+    text-decoration: none;
+    padding: 1% 2%;
+    border-radius: 15px; 
+    transition: background-color 0.3s, transform 0.3s; /* Efecto de transición */
+}
+
+/* Efecto hover en los enlaces de navegación */
+.container-nav a:hover {
+    background-color: rgba(244, 244, 244, 0.8); 
+    transform: scale(1.15); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos del slider */
+.slider {
+    position: relative;
+    max-width: 100%; 
+    margin: 3% auto; 
+    overflow: hidden; /* Evita que el contenido sobrepase */
+    border-radius: 15px; 
+    display: flex; 
+    justify-content: center; 
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease; 
+}
+
+/* Cada slide ocupará el 100% del contenedor */
+.slide {
+    flex: 0 0 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.slide img {
+    max-width: 100%; 
+    height: auto; 
+    object-fit: cover; /* Ajusta la imagen a su contenedor manteniendo la proporción */
+    border-radius: 15px; 
+}
+
+
+/* Controles del slider */
+.slider-controls {
+    position: absolute;
+    top: 50%; 
+    width: 55%; 
+    display: flex; 
+    justify-content: space-between; /* Espacio entre los botones */
+    transform: translateY(-50%); 
+}
+
+/* Estilo para los botones de control */
+.control-button {
+    background-color: rgba(255, 255, 255, 0.7); 
+    border: none; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    padding: 1%; /* Espacio interno */
+    transition: background-color 0.3s, transform 0.3s; 
+}
+
+/* Efecto hover en los botones de control */
+.control-button:hover {
+    background-color: rgba(255, 255, 255, 1); 
+    transform: scale(1.2); /* Aumentar tamaño al pasar el ratón */
+}
+
+/* Contenedor de tarjetas */
+.cards-container {
+    display: flex;
+    justify-content: space-around; 
+    flex-wrap: wrap; /* Permite que las tarjetas se ajusten a múltiples filas */
+    margin: 1%;
+}
+
+/* Estilo para las tarjetas */
+.card {
+    background-color: #d12e3b;
+    border-radius: 10px; 
+    padding: 2%;
+    width: 20%;
+    text-align: center; 
+    margin: 1%; 
+    transition: transform 0.3s; 
+}
+
+/* Efecto hover en las tarjetas */
+.card:hover {
+    transform: scale(1.05); 
+}
+
+/* Estilo para las imágenes dentro de las tarjetas */
+.category-image-index {
+    width: 100%; /* Todas las imágenes de categorías del mismo tamaño */
+    height: 200px; /* Altura fija */
+    object-fit: cover; /* Ajusta la imagen */
+    border-radius: 10px; 
+}
+
+/* Estilo para títulos y párrafos en tarjetas */
+.card h4,
+.card p {
+    color: #fff; /* Texto blanco en las tarjetas */
+}
+
+/* Botón en tarjetas */
+.btn {
+    background-color: rgba(255, 255, 255, 0.8); 
+    color: #d12e3b; 
+    border: none; 
+    padding: 5%; /* Espaciado interno */
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    text-align: center;
+}
+
+/* Efecto hover en el botón */
+.btn:hover {
+    background-color: #d12e3b; 
+    color: white; 
+}
+
+/* Estilo para el footer */
+footer {
+    background-color: #d12e3b; 
+    text-align: center;
+    padding: 3%;
+    color: #fff;
+}
+
+/* Estilo para iconos sociales */
+.social-icons i {
+    margin: 0 10px; /* Espacio entre iconos */
+    color: #fff; 
+    transition: transform 0.3s; 
+    padding-bottom: 6px;
+}
+
+/* Efecto hover en iconos sociales */
+.social-icons i:hover {
+    transform: scale(1.2); 
+}
+
+/* Animación para el logo */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+
+/* Media query para pantallas mas chicas */
+@media (max-width: 768px) 
+{
+    .logo-container {
+        flex-direction: column; /* Colocar el titulo encima de los iconos en dispositivos moviles */
+        align-items: center; /* Centrar elementos */
+    }
+
+    .container-nav p {
+        display: flex; /* Cambiar a flexbox para que los elementos en su interior se comporten segun el contenedor */
+        flex-direction: column; /* Colocar enlaces en columna */
+        align-items: center; /* Centrar elementos */
+    }
+
+    .card {
+        width: 90%; /* Hacer las tarjetas mas anchas en moviles */
+        max-width: 400px; /* Ancho maximo de las tarjetas */
+    }
+
+    .btn {
+        width: 100%; /* Botones ocupan el 100% del ancho */
+    }
+
+    .slider {
+        width: 100%; /* Ancho completo del slider en moviles */
+    }
+}
+
+/*Para la Barra Buscar*/
+
+#Idinputtextbuscar {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 1%;
+    margin-right: 1%;
+    box-sizing: border-box; /*el tamaño total del input permanece igual al valor definido para width*/
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: white;
+    background-image: url('../img/search.png');
+    background-position: 2% center; /* ajustamos la posicion de la imagen*/
+    background-repeat: no-repeat;
+    padding: 12px 200px 12px 8%;
+}
+/* vista detalles del disfraz */
+
+.formdetalles
+{
+    margin: 1%;
+}
+
+.asection
+{
+    text-decoration: none;
+}
+
+.asection:hover
+{
+    text-decoration: none;
+}
+
+/* Estilos para las cartas de disfraces */
+.cards-container-costume,
+.cards-container-accessory {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; 
+    margin: 1%;
+}
+
+/* Estilo para las cartas de disfraces */
+.card-costume,
+.card-accessory {
+    background-color: #d12e3b;
+    border-radius: 10px; 
+    padding: 20px;
+    width: 200px; 
+    text-align: center; 
+    margin: 10px; 
+    transition: transform 0.3s; 
+}
+
+/* Efecto hover en las cartas */
+.card-costume:hover,
+.card-accessory:hover {
+    transform: scale(1.05); 
+}
+
+/* Estilo para las imágenes dentro de las cartas de disfraces */
+.category-image {
+    width: 100%; 
+    height: 200px; 
+    object-fit: contain; 
+}
+
+/* Estilo para títulos y párrafos en cartas de disfraces */
+.card-costume h4,
+.card-costume p,
+.card-accessory h4,
+.card-accessory p {
+    color: #fff; 
+}
+
+.nav-route {
+    background-color: #e4c7c7;
+}
+
+.nav-route > a {
+    color: #471e1a;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-decoration: none;
+    font-size: 1em; 
+}
+
+/* Estilos para el paginado */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
+.pagination li {
+    margin: 0 5px;
+}
+.pagination a {
+    text-decoration: none;
+    color: #000000;
+    border: 1px solid #ddd;
+    padding: 5% 2%;
+    border-radius: 4px;
+}
+.pagination a:hover {
+    background-color: #f1f1f1;
+    border-color: #3d3d3d;
+}
+.pagination .active a {
+    background-color: #000000;
+    color: white;
+    pointer-events: none;
+    cursor: default;
+}
+
+.searchSection h2{
+    text-align: center;
+    color: #000000;
+}
+
+.searchSection h4{
+    text-align: left;
+    padding-left:5%;
+}
+
+.searchSection [type="text"]{
+    font-size: medium;
+    padding: 1%;
+    width: 80%;
+    max-width: 37%;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    margin-left: 33%;
+}

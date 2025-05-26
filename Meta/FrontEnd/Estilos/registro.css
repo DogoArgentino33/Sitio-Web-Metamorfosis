@@ -1,0 +1,62 @@
+/* Estilo general del wrapper */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Altura mínima para centrar verticalmente */
+    background-color: #f9f9f9; 
+}
+
+/* Estilo del formulario */
+#employee {
+    background-color: white; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
+    width: 90%; 
+    max-width: 400px; /* Ancho máximo */
+}
+
+/* Estilo del campo de entrada */
+.input-box {
+    margin-bottom: 15px; /* Espaciado entre campos */
+}
+
+.input-box input {
+    width: 100%; 
+    padding: 2% 0%; 
+    border: 1px solid #ccc; 
+    border-radius: 4px;
+    font-size: 16px; 
+}
+
+/* Estilo del botón */
+.btn-register {
+    background-color: #007bff; 
+    color: white;
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-size: 16px; 
+    transition: background-color 0.3s;
+}
+
+.btn-register:hover {
+    background-color: #0056b3; /* Color de fondo al pasar el mouse */
+}
+
+/* Estilo de los enlaces */
+a {
+    color: #007bff; /* Color de los enlaces */
+    text-decoration: none; /* Sin subrayado */
+}
+
+a:hover {
+    text-decoration: underline; /* Subrayar al pasar el mouse */
+}
+
+/* Estilo de la sección de recordar */
+.remember-forgot {
+    margin-bottom: 15px; /* Espaciado inferior */
+}
