@@ -13,25 +13,25 @@
     <header>
         <section class="logo-container">
             <h1>Metamorfosis</h1>
-            <form action="resultadosbusqueda.html">
+            <form action="resultadosbusqueda.php">
                 <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
             </form>
 
             <section class="container-login-cart">
-                <a href="../Vistas/login.html"><i class="bi bi-person-circle"></i></a>
-                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
-                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
-                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+                <a href="../Vistas/login.php"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.php"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.php"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.php"><i class="bi bi-pc-display"></i></a>
             </section>
         </section>
         <br>
         <section class="container-nav">
             <p id="nav-links">
-                <a href="../Vistas/index.html">Inicio</a>
-                <a href="../Vistas/disfraces.html">Disfraces</a>
-                <a href="../Vistas/accesorios.html">Accesorios</a>
-                <a href="../Vistas/contactos.html">Contactos</a>
-                <a href="../Vistas/acerca.html">Acerca de</a>
+                <a href="../Vistas/index.php">Inicio</a>
+                <a href="../Vistas/disfraces.php">Disfraces</a>
+                <a href="../Vistas/accesorios.php">Accesorios</a>
+                <a href="../Vistas/contactos.php">Contactos</a>
+                <a href="../Vistas/acerca.php">Acerca de</a>
             </p>
         </section>
     </header> 
@@ -39,7 +39,7 @@
     
     <main>
         <section class="nav-route">
-            <a href="index.html">Inicio / </a>
+            <a href="index.php">Inicio / </a>
             <a>Disfraces</a>
         </section>
 
@@ -50,7 +50,7 @@
         </section>
         
         <section class="cards-container-costume" id="costume-Container">
-            <a href="detallesdisfraz.html" class="asection">
+            <a href="detallesdisfraz.php" class="asection">
                 <section class="card-costume">
                     <img src="../img/Disfraces/niños/historico/niño/pirata_1_niños.jpeg" class="category-image">
                     <h4>Pirata</h4>
@@ -234,8 +234,8 @@
             <input type="password" id="password" name="password" required>
         
             <section class="user-links">
-                <a href="../Vistas/registrarse.html">¿No tienes cuenta?</a>
-                <a href="../Vistas/recuperar.html">¿Olvidaste tu contraseña?</a>
+                <a href="../Vistas/registrarse.php">¿No tienes cuenta?</a>
+                <a href="../Vistas/recuperar.php">¿Olvidaste tu contraseña?</a>
             </section>
 
             <h2>Datos del Alquiler</h2>

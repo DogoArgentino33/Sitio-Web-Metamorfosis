@@ -13,31 +13,31 @@
     <header>
         <section class="logo-container">
             <h1>Metamorfosis</h1>
-            <form action="resultadosbusqueda.html" class="formcentrado">
+            <form action="resultadosbusqueda.php" class="formcentrado">
                 <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
             </form>
             <section class="container-login-cart">
-                <a href="../Vistas/registrarse.html"><i class="bi bi-person-circle"></i></a>
-                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
-                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
-                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+                <a href="../Vistas/registrarse.php"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.php"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.php"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.php"><i class="bi bi-pc-display"></i></a>
             </section>
         </section>
         <br>
         <nav class="container-nav">
             <p>
-                <a href="../Vistas/index.html">Inicio</a>
-                <a href="../Vistas/disfraces.html">Disfraces</a>
-                <a href="../Vistas/accesorios.html">Accesorios</a>
-                <a href="../Vistas/contactos.html">Contactos</a>
-                <a href="../Vistas/acerca.html">Acerca de</a>
+                <a href="../Vistas/index.php">Inicio</a>
+                <a href="../Vistas/disfraces.php">Disfraces</a>
+                <a href="../Vistas/accesorios.php">Accesorios</a>
+                <a href="../Vistas/contactos.php">Contactos</a>
+                <a href="../Vistas/acerca.php">Acerca de</a>
             </p>
         </nav>
     </header>
     
     <main>
         <section class="nav-route">
-            <a href="index.html">Inicio / </a>
+            <a href="index.php">Inicio / </a>
             <a>Resultados de Busqueda</a>
         </section>
         <h2 style="color: black; padding-left: 3%; padding-top: 3%;">Resultados de busqueda sobre: Circo</h2>

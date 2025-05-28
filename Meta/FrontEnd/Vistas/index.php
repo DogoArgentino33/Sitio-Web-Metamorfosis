@@ -12,25 +12,25 @@
     <header>
         <section class="logo-container">
             <h1>Metamorfosis</h1>
-            <form action="resultadosbusqueda.html" class="formcentrado">
+            <form action="resultadosbusqueda.php" class="formcentrado">
                 <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
             </form>
 
             <section class="container-login-cart">
-                <a href="../Vistas/login.html"><i class="bi bi-person-circle"></i></a>
-                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
-                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
-                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+                <a href="../Vistas/login.php"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.php"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.php"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.php"><i class="bi bi-pc-display"></i></a>
             </section>
         </section>
         <br>
         <section class="container-nav">
             <p id="nav-links">
-                <a href="../Vistas/index.html">Inicio</a>
-                <a href="../Vistas/disfraces.html">Disfraces</a>
-                <a href="../Vistas/accesorios.html">Accesorios</a>
-                <a href="../Vistas/contactos.html">Contactos</a>
-                <a href="../Vistas/acerca.html">Acerca de</a>
+                <a href="../Vistas/index.php">Inicio</a>
+                <a href="../Vistas/disfraces.php">Disfraces</a>
+                <a href="../Vistas/accesorios.php">Accesorios</a>
+                <a href="../Vistas/contactos.php">Contactos</a>
+                <a href="../Vistas/acerca.php">Acerca de</a>
             </p>
         </section>
     </header> 
@@ -66,19 +66,19 @@
                 <img src="../img/pexels-mikhail-nilov-9147251.jpg" alt="Disfraz Niños" class="category-image-index">
                 <h4>Niños</h4>
                 <p>Encuentra disfraces creativos y cómodos para niños de todas las edades. Desde superhéroes hasta personajes de cuentos, nuestros disfraces garantizan diversión y comodidad durante todo el día.</p>
-                <a href="../Vistas/disfraces.html"><button type="button" class="btn">Ver más</button></a>
+                <a href="../Vistas/disfraces.php"><button type="button" class="btn">Ver más</button></a>
             </section>
             <section class="card">
                 <img src="../img/pexels-leish-5600428.jpg" alt="Disfraz Adultos" class="category-image-index">
                 <h4>Adultos</h4>
                 <p>Explora nuestra colección de disfraces para adultos, ideales para cualquier ocasión, ya sea una fiesta de disfraces, un evento temático o una celebración especial.</p>
-                <a href="../Vistas/disfraces.html"><button type="button" class="btn">Ver más</button></a>
+                <a href="../Vistas/disfraces.php"><button type="button" class="btn">Ver más</button></a>
             </section>
             <section class="card">
                 <img src="../img/pexels-aleksmagnusson-3071456.jpg" alt="Disfraz Temáticas" class="category-image-index">
                 <h4>Accesorios</h4>
                 <p>Sumérgete en temáticas emocionantes con nuestros accesorios temáticos. Desde épocas históricas hasta fantasías futuristas, encuentra el accesorio perfecto para destacar en cualquier evento.</p>
-                <a href="../Vistas/accesorios.html"><button type="button" class="btn">Ver más</button></a>
+                <a href="../Vistas/accesorios.php"><button type="button" class="btn">Ver más</button></a>
             </section>
         </section>
     </main>

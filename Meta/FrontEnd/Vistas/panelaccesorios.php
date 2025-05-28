@@ -14,25 +14,25 @@
     <header>
         <section class="logo-container">
             <h1>Metamorfosis</h1>
-            <form action="resultadosbusqueda.html" class="formcentrado">
+            <form action="resultadosbusqueda.php" class="formcentrado">
                 <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
             </form>
 
             <section class="container-login-cart">
-                <a href="../Vistas/login.html"><i class="bi bi-person-circle"></i></a>
-                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
-                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
-                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+                <a href="../Vistas/login.php"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.php"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.php"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.php"><i class="bi bi-pc-display"></i></a>
             </section>
         </section>
         <br>
         <section class="container-nav">
             <p id="nav-links">
-                <a href="../Vistas/index.html">Inicio</a>
-                <a href="../Vistas/disfraces.html">Disfraces</a>
-                <a href="../Vistas/accesorios.html">Accesorios</a>
-                <a href="../Vistas/contactos.html">Contactos</a>
-                <a href="../Vistas/acerca.html">Acerca de</a>
+                <a href="../Vistas/index.php">Inicio</a>
+                <a href="../Vistas/disfraces.php">Disfraces</a>
+                <a href="../Vistas/accesorios.php">Accesorios</a>
+                <a href="../Vistas/contactos.php">Contactos</a>
+                <a href="../Vistas/acerca.php">Acerca de</a>
             </p>
         </section>
     </header> 
@@ -40,14 +40,17 @@
     
     <main>
         <section class="nav-route">
-            <a href="index.html">Inicio / </a>
-            <a href="empleado.html">Empleado /</a>
+            <a href="index.php">Inicio / </a>
+            <a href="gerente.php">Gerente /</a>
             <a>Panel de Accesorios</a>
         </section>
-        <h1><a href="../Vistas/empleado.html" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel de Accesorios</h1>
+        <h1><a href="../Vistas/gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Accesorios</h1>
         <section class="container-table" id="accessory">
             <section class="nav-table">
-                <input type="text" id="search-panel" placeholder="Buscar accesorios..." onkeyup="filterTable('accessory')">
+                <input type="text" id="search-panel" placeholder="Buscar accesorios..." onkeyup="filtrarTabla('accessory')">
+                <div class="btn-add-container">
+                    <button class="add-panel" title="Agregar" onclick="openModalAdd()"><i class="bi bi-person-plus"></i></button>
+                </div>
             </section>
             <table>
                 <thead>
@@ -69,6 +72,8 @@
                         <td>$10</td>
                         <td>
                             <button class="accion-button" title="Ver" onclick="openModalShow()"><i class="bi bi-eye"></i></button>
+                            <button class="accion-button" title="Editar" onclick="openModalEdit()"><i class="bi bi-pencil"></i></button>
+                            <button class="accion-button" title="Eliminar" onclick="openModalDelete()"><i class="bi bi-trash"></i></button>
                         </td> 
                     </tr>
                     <tr>
@@ -79,6 +84,8 @@
                         <td>$5</td>
                         <td>
                             <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
+                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
+                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
                         </td> 
                     </tr>
                     <tr>
@@ -89,6 +96,8 @@
                         <td>$15</td>
                         <td>
                             <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
+                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
+                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
                         </td> 
                     </tr>
                     <tr>
@@ -99,12 +108,45 @@
                         <td>$12</td>
                         <td>
                             <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
+                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
+                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
                         </td> 
                     </tr>
                 </tbody>
             </table>
         </section>
     </main>
+
+    <section id="modal-add" class="modal">
+        <section class="modal-content">
+            <span class="close" onclick="closeModalAdd()">&times;</span>
+            <h1>Agregar Accesorio</h1>
+            <form id="form-add">
+                <label for="nombre-add">Nombre:</label>
+                <input type="text" id="nombre-add" name="nombre" required>
+
+                <label for="categoria-add">Categoría:</label>
+                <input type="text" id="categoria-add" name="categoria" required>
+
+                <label for="tematica-add">Temática:</label>
+                <input type="text" id="tematica-add" name="tematica" required>
+
+                <label for="disponibilidad-add">Disponibilidad:</label>
+                <select id="disponibilidad-add" name="disponibilidad">
+                    <option value="Disponible">Disponible</option>
+                    <option value="No Disponible">No Disponible</option>
+                </select>
+
+                <label for="precio-add">Precio:</label>
+                <input type="number" id="precio-add" name="precio" required>
+
+                <label for="unidad-add">Unidades:</label>
+                <input type="number" id="unidad-add" name="unidad" required>
+
+                <button type="submit">Agregar</button>
+            </form>
+        </section>
+    </section>
 
     <section id="modal-show" class="modal">
         <section class="modal-content">
@@ -126,8 +168,48 @@
                 <label for="precio">Precio:</label>
                 <input type="number" id="precio" name="precio" placeholder="10" required readonly>
 
+                <label for="unidad">Unidades:</label>
+                <input type="number" id="unidad" name="unidad" placeholder="5" required readonly>
+            </form>
+        </section>
+    </section>
+
+
+    <section id="modal-edit" class="modal">
+        <section class="modal-content">
+            <span class="close" onclick="closeModalEdit()">&times;</span>
+            <h1>Editar Accesorio</h1>
+            <form id="form-edit">
+                <label for="nombre-edit">Nombre:</label>
+                <input type="text" id="nombre-edit" name="nombre" placeholder="Sombrero de Vaquero" required>
+
+                <label for="categoria-edit">Categoría:</label>
+                <input type="text" id="categoria-edit" name="categoria" placeholder="Cabeza" required>
+
+                <label for="tematica-edit">Temática:</label>
+                <input type="text" id="tematica-edit" name="tematica" placeholder="Lejano oeste"  required>
+
+                <label for="disponibilidad-edit">Disponibilidad:</label>
+                <input type="text" id="disponibilidad-edit" name="disponibilidad" placeholder="Disponible"  required >
+
+                <label for="precio-edit">Precio:</label>
+                <input type="number" id="precio-edit" name="precio" placeholder="10"  required>
+
                 <label for="unidad-add">Unidades:</label>
-                <input type="number" id="unidad-add" name="unidad" placeholder="5"  required readonly>
+                <input type="number" id="unidad-add" name="unidad" placeholder="5" required>
+
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </section>
+    </section>
+
+    <section id="modal-delete" class="modal">
+        <section class="modal-content">
+            <span class="close" onclick="closeModalDelete()">&times;</span>
+            <h1>Eliminar Accesorio</h1>
+            <form id="rentalForm">
+                <h2>¿Estas seguro de querer Eliminar este accesorio?</h2>
+                <button type="submit">Eliminar</button>
             </form>
         </section>
     </section>
@@ -155,9 +237,9 @@
             <i class="bi bi-whatsapp"></i>
         </section>
     </footer>
-
+    
     <script>
-        function filterTable(tipo) {
+        function filtrarTabla(tipo) {
             let input;
             let table;
             let tr;
@@ -166,10 +248,12 @@
             let txtValue;
 
             // Selecciona el campo de búsqueda correspondiente
-             if (tipo === 'accessory') {
+           if(tipo === 'accessory') 
+            {
                 input = document.getElementById('search-panel');
                 table = document.querySelector('#accessory table');
             } 
+
             const filter = input.value.toUpperCase();
             tr = table.getElementsByTagName("tr");
 
@@ -190,6 +274,18 @@
     </script>
 
 <script>
+    ///AGREGAR///
+    function openModalAdd(costumeName) {
+        document.getElementById('modal-add').style.display = 'block';
+    }
+
+    function closeModalAdd() {
+        document.getElementById('modal-add').style.display = 'none';
+    }
+    
+</script>
+
+<script>
     ///VER///
     function openModalShow(costumeName) {
         document.getElementById('modal-show').style.display = 'block';
@@ -200,5 +296,26 @@
     }
 </script>
 
+<script>
+    ///EDITAR///
+    function openModalEdit(costumeName) {
+        document.getElementById('modal-edit').style.display = 'block';
+    }
+
+    function closeModalEdit() {
+        document.getElementById('modal-edit').style.display = 'none';
+    }
+</script>
+
+<script>
+    ///ELIMINAR///
+    function openModalDelete(costumeName) {
+        document.getElementById('modal-delete').style.display = 'block';
+    }
+
+    function closeModalDelete() {
+        document.getElementById('modal-delete').style.display = 'none';
+    }
+</script>
 </body>
 </html>

@@ -14,36 +14,36 @@
     <header>
         <section class="logo-container">
             <h1>Metamorfosis</h1>
-            <form action="resultadosbusqueda.html" class="formcentrado">
+            <form action="resultadosbusqueda.php" class="formcentrado">
                 <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
             </form>
 
             <section class="container-login-cart">
-                <a href="../Vistas/login.html"><i class="bi bi-person-circle"></i></a>
-                <a href="../Vistas/gerente.html"><i class="bi bi-gear-fill"></i></a>
-                <a href="../Vistas/empleado.html"><i class="bi bi-pencil-square"></i></a>
-                <a href="../Vistas/administrador.html"><i class="bi bi-pc-display"></i></a>
+                <a href="../Vistas/login.php"><i class="bi bi-person-circle"></i></a>
+                <a href="../Vistas/gerente.php"><i class="bi bi-gear-fill"></i></a>
+                <a href="../Vistas/empleado.php"><i class="bi bi-pencil-square"></i></a>
+                <a href="../Vistas/administrador.php"><i class="bi bi-pc-display"></i></a>
             </section>
         </section>
         <br>
         <section class="container-nav">
             <p id="nav-links">
-                <a href="../Vistas/index.html">Inicio</a>
-                <a href="../Vistas/disfraces.html">Disfraces</a>
-                <a href="../Vistas/accesorios.html">Accesorios</a>
-                <a href="../Vistas/contactos.html">Contactos</a>
-                <a href="../Vistas/acerca.html">Acerca de</a>
+                <a href="../Vistas/index.php">Inicio</a>
+                <a href="../Vistas/disfraces.php">Disfraces</a>
+                <a href="../Vistas/accesorios.php">Accesorios</a>
+                <a href="../Vistas/contactos.php">Contactos</a>
+                <a href="../Vistas/acerca.php">Acerca de</a>
             </p>
         </section>
     </header> 
     <section class="nav-route">
-        <a href="index.html">Inicio / </a>
-        <a href="login.html">Login / </a>
+        <a href="index.php">Inicio / </a>
+        <a href="login.php">Login / </a>
         <a>Recuperar</a>
     </section>
     <h1 style="text-align: center;">Recuperar Contraseña</h1>
     <section class="wrapper" style="display: flex; justify-content: center; align-items: center;">
-        <form name="form-ia" method="get" action="VistaContraseñaForgot.html" style="text-align: left; max-width: 600px; margin: 0 auto;" class="form-recover">
+        <form name="form-ia" method="get" action="VistaContraseñaForgot.php" style="text-align: left; max-width: 600px; margin: 0 auto;" class="form-recover">
             <fieldset style="border: 1px solid #ddd; padding: 10px;">
                 <legend>Recuperar Contraseña</legend>
                 <section class="input-box">
@@ -64,7 +64,7 @@
                 <br>
                 <button type="submit" class="button">Confirmar Código</button>
                 <section class="Login-link"></section>
-                <p><a href="../Vistas/login.html">Volver a Login</a></p>
+                <p><a href="../Vistas/login.php">Volver a Login</a></p>
             </fieldset>
         </form>
     </section>

@@ -70,7 +70,7 @@
             </tbody>
         </table>
 
-        <a href="../Vistas/index.html">Inicio</a>
+        <a href="../Vistas/index.php">Inicio</a>
     </section>
 </body>
 </html>
