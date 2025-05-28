@@ -1,3 +1,30 @@
+<?php
+include('conexion.php'); // Ajusta la ruta si es necesario
+
+$mensaje = "";
+
+if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $passusu = strtolower($_POST['passusu']);
+    $correo = $_POST['correo'];
+
+    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo'";
+    $result = mysqli_query($conexion, $sql);
+    echo "hola";
+    if(mysqli_num_rows($result) > 0){
+        $reg = mysqli_fetch_assoc($result);
+        if($reg['correo'] == $correo){
+            header("Location: index.php");
+            exit;
+        } else {
+            $c = 1;
+            echo "<p style='color:red'>Correo o contraseña incorrectos.</p>";
+        }
+    } else {
+        $c = 1;
+        echo "<p style='color:red'>Usuario no encontrado.</p>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,22 +40,22 @@
    <?php include('cabecera.php'); ?>
     <section class="nav-route">
         <a href="index.php">Inicio / </a>
-        <a>login</a>
+        <a>Login</a>
     </section>
     <h1 style="text-align: center;">Iniciar Sesión</h1>
     <section class="wrapper">
-        <form action="#" method="post" id="formlogin">
+        <form action="" method="post" id="formlogin">
             <fieldset>
                 <legend>Iniciar Sesión</legend>
                 <section class="input-box">
-                    <label for="nombre-correo">Usuario o correo:</label>
-                    <input id="nombre-correo" type="text" required>
+                    <label for="correo">Correo:</label>
+                    <input id="correo" name="correo" type="text" required>
                 </section>
                 <section class="input-box">
                     <label for="password">Contraseña:</label>
-                    <input id="password" type="password"  required>
+                    <input id="password" name="password" type="password" required>
                 </section>
-                <input type="button" value="Login" class="btn">
+                <input type="submit" value="Login" class="btn">
                 <section class="remember-forgot">
                     <label><input type="checkbox">Recordarme</label>
                     <a href="../Vistas/recuperar.php">¿Olvidaste la Contraseña?</a>
@@ -36,9 +63,12 @@
                 <section class="register-link">
                     <p>¿No tenés una cuenta? <a href="../Vistas/registrarse.php">Registrarse</a></p>
                 </section>
+                <?php if (!empty($mensaje)) : ?>
+                    <section id="mensaje-login" style="text-align:center; color:red; margin-top:10px;">
+                        <?= htmlspecialchars($mensaje) ?>
+                    </section>
+                <?php endif; ?>
             </fieldset>
-
-            <section id="mensaje-login" style="text-align:center; color:red; margin-top:10px;"></section>
         </form>
     </section>
 
@@ -54,28 +84,5 @@
             <i class="bi bi-whatsapp"></i>
         </section>
     </footer>
-
-
-
-    <script>
-        document.querySelector('.btn').addEventListener('click', function () {
-            const usuario = document.getElementById('nombre-correo').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const mensaje = document.getElementById('mensaje-login');
-
-            if (usuario === '' || password === '') {
-                mensaje.textContent = 'Por favor, completá todos los campos.';
-                mensaje.style.color = 'red';
-            } else {
-                // Simulación de éxito (esto debería conectarse a un backend real)
-                mensaje.textContent = 'Inicio de sesión exitoso.';
-                mensaje.style.color = 'green';
-
-                // Podés redirigir o limpiar campos después de unos segundos si querés
-                // setTimeout(() => location.href = 'alguna_página.php', 2000);
-            }
-        });
-    </script>
-
 </body>
 </html>
