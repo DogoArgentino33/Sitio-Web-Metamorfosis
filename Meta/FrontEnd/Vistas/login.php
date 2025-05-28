@@ -12,7 +12,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     echo "hola";
     if(mysqli_num_rows($result) > 0){
         $reg = mysqli_fetch_assoc($result);
-        if($reg['correo'] == $correo){
+        if($reg['correo'] == $correo && $reg['passusu'] == $passusu){
             header("Location: index.php");
             exit;
         } else {
@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     </section>
     <h1 style="text-align: center;">Iniciar Sesión</h1>
     <section class="wrapper">
-        <form action="" method="post" id="formlogin">
+        <form action="login.php" method="post" id="formlogin">
             <fieldset>
                 <legend>Iniciar Sesión</legend>
                 <section class="input-box">

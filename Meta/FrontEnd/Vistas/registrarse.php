@@ -1,10 +1,12 @@
 <?php
 include('conexion.php'); // Ajusta la ruta si es necesario
 
+#Funcion del conector de servidor
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
+#Los errores son almacenados en un vector
 $errores = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -28,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $password1 = $_POST['repetir-contraseña'];
 
-    // Validaciones básicas
+    // Validaciones
     if ($nombre === '' || $apellido === '') {
         $errores[] = 'Nombre y Apellido son obligatorios.';
     }
@@ -90,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <br>
     <h1 style="text-align: center;">Registrarse</h1>
     <section class="wrapper">
-        <form action="#" method="post" id="employee">
+        <form action="registrarse.php" method="post" id="employee">
             <fieldset>
                 <legend>Datos personales</legend>
                 <section class="input-box">
