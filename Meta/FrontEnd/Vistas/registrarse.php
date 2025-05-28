@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $telefono = trim($_POST['telefono']);
     $email = strtolower(trim($_POST['email']));
     $password = $_POST['password'];
-    $password1 = $_POST['repetir-password'];
+    $password1 = $_POST['repetir-contraseña'];
 
     // Validaciones básicas
     if ($nombre === '' || $apellido === '') {
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Verificar si el correo ya existe
-    $sql = "SELECT email FROM usuarios WHERE email = '$email'";
+    $sql = "SELECT correo FROM usuario WHERE correo = '$email'";
     $result = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
         $sql_insert = "INSERT INTO usuario(nombre, apellido, nom_usu, correo, telefono, direccion, dni, genero, cod_postal, fec_nac, passusu, calle, altura, depto, municipio, provincia, pais, mapa) 
-        VALUES ('$nombre','$apellido','$nombre_usuario','$email','$telefono','$direccion','$dni','$genero','$cod_pos','$fec_nac','$password','$calle','$altura','$depto','$municipio','$provincia','$pais','$mapa')";
+        VALUES ('$nombre','$apellido','$nombre_usuario','$email','$telefono','$direccion','$dni','$genero','$cod_pos','$fec_nac','$password_hash','$calle','$altura','$depto','$municipio','$provincia','$pais','$mapa')";
 
         if (mysqli_query($conexion, $sql_insert)) {
             header("Location: login.php");
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
                 <section class="input-box">
                     <label for="telefono">Teléfono:</label>
-                    <input id="telefono" name="telefono" type="text" class="solo-num" maxlength="8" required>
+                    <input id="telefono" name="telefono" type="text" class="solo-num" maxlength="10" required>
                 </section>
                 <section class="input-box">
                     <label for="email">Correo Electrónico:</label>
@@ -181,8 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input id="password" name="password" type="password" required>
                 </section>
                 <section class="input-box">
-                    <label for="repetir-password">Repetir contraseña:</label>
-                    <input id="repetir-password" name="repetir-contraseña" type="password" required>
+                    <label for="repetir-contraseña">Repetir contraseña:</label>
+                    <input id="repetir-contraseña" name="repetir-contraseña" type="password" required>
                 </section>
                 <section class="remember-forgot">
                     <label><input type="checkbox"> Recordarme</label>
