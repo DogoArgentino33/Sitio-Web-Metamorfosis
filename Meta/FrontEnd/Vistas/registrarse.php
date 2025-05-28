@@ -1,12 +1,12 @@
 <?php
-include('conexion.php'); // Ajusta la ruta si es necesario
+include('conexion.php'); 
 
-#Funcion del conector de servidor
+
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
-#Los errores son almacenados en un vector
+
 $errores = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errores[] = 'Las contraseñas no coinciden.';
     }
 
-    // Verificar si el correo ya existe
+    
     $sql = "SELECT correo FROM usuario WHERE correo = '$email'";
     $result = mysqli_query($conexion, $sql);
 
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
                 <section class="input-box">
                     <label for="altura">Altura:</label>
-                    <input id="altura" name="altura" type="text" class="solo-letras" required>
+                    <input id="altura" name="altura" type="number" required>
                 </section>
                 <section class="input-box">
                     <label for="depto">Departamento:</label>
@@ -168,11 +168,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
                 <section class="input-box">
                     <label for="img-perfil">Imagen de Perfil:</label>
-                    <input id="img-perfil" name="img-perfil" type="file" required>
+                    <input id="img-perfil" name="img-perfil" type="img" required>
                 </section>
                 <section class="input-box">
                     <label for="telefono">Teléfono:</label>
-                    <input id="telefono" name="telefono" type="text" class="solo-num" maxlength="10" required>
+                    <input id="telefono" name="telefono" type="" class="solo-num" maxlength="10" required>
                 </section>
                 <section class="input-box">
                     <label for="email">Correo Electrónico:</label>
@@ -185,9 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <section class="input-box">
                     <label for="repetir-contraseña">Repetir contraseña:</label>
                     <input id="repetir-contraseña" name="repetir-contraseña" type="password" required>
-                </section>
-                <section class="remember-forgot">
-                    <label><input type="checkbox"> Recordarme</label>
                 </section>
                 <button type="submit" class="btn-register">Registrarse</button>
                 <p>¿Ya tienes una cuenta? <a href="../Vistas/login.php">Volver a Login</a></p>

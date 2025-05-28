@@ -4,15 +4,15 @@ include('conexion.php'); // Ajusta la ruta si es necesario
 $mensaje = "";
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $passusu = strtolower($_POST['passusu']);
+    $passusu = strtolower($_POST['password']);
     $correo = $_POST['correo'];
 
-    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo'";
+    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo' and passusu='$passusu'";
     $result = mysqli_query($conexion, $sql);
     echo "hola";
     if(mysqli_num_rows($result) > 0){
         $reg = mysqli_fetch_assoc($result);
-        if($reg['correo'] == $correo && $reg['passusu'] == $passusu){
+        if($reg['correo'] == $correo){
             header("Location: index.php");
             exit;
         } else {
@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     </section>
     <h1 style="text-align: center;">Iniciar Sesión</h1>
     <section class="wrapper">
-        <form action="login.php" method="post" id="formlogin">
+        <form action="" method="post" id="formlogin">
             <fieldset>
                 <legend>Iniciar Sesión</legend>
                 <section class="input-box">
