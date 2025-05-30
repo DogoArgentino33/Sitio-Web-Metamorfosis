@@ -3,11 +3,13 @@
 #Cambiar el puerto a otro para que el error no salga
 $dbhost="localhost";
 $dbusuario="root";
-$dbpassword= ""; #1234
+$dbpassword= "rojas.u33"; #1234
 $db="pruebametamorfosis";
 $conexion = new mysqli ($dbhost,$dbusuario,$dbpassword,$db);
 
 #http://localhost/Sitio-Web-Metamorfosis/index.php
+
+#http://localhost/Sitio-Web-Metamorfosis/Meta/FrontEnd/Vistas/index.php
 
 if (!$conexion)
 {

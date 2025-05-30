@@ -35,7 +35,6 @@
     background-color: #007bff; 
     color: white;
     border: none; 
-    padding: 10px 20px; 
     border-radius: 4px; 
     cursor: pointer; 
     font-size: 16px; 
@@ -59,4 +58,28 @@ a:hover {
 /* Estilo de la sección de recordar */
 .remember-forgot {
     margin-bottom: 15px; /* Espaciado inferior */
+}
+
+/* Estilo para la sección de género */
+.input-box-genero label:first-child {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    display: block;
+}
+
+/* Alinear correctamente radio buttons con su texto */
+.input-box-genero label:not(:first-child) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+}
+
+.input-box-genero input[type="radio"] {
+    margin: 0;
+    accent-color: #007bff;
 }

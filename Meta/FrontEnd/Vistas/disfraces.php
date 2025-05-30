@@ -208,7 +208,7 @@
             <input type="password" id="password" name="password" required>
         
             <section class="user-links">
-                <a href="../Vistas/registrarse.php">¿No tienes cuenta?</a>
+                <a href="../Vistas/registrarsepersona.php">¿No tienes cuenta?</a>
                 <a href="../Vistas/recuperar.php">¿Olvidaste tu contraseña?</a>
             </section>
 

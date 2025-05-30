@@ -61,7 +61,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     <a href="../Vistas/recuperar.php">¿Olvidaste la Contraseña?</a>
                 </section>
                 <section class="register-link">
-                    <p>¿No tenés una cuenta? <a href="../Vistas/registrarse.php">Registrarse</a></p>
+                    <p>¿No tenés una cuenta? <a href="../Vistas/registrarsepersona.php">Registrarse</a></p>
                 </section>
                 <?php if (!empty($mensaje)) : ?>
                     <section id="mensaje-login" style="text-align:center; color:red; margin-top:10px;">
