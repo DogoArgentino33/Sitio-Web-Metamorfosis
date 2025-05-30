@@ -141,3 +141,4 @@ Comuníquense para no trabajar todos en el mismo archivo al mismo tiempo.
 Usen ramas (branches) si el proyecto crece mucho (puedo explicarte cómo hacerlo).
 
 Usen mensajes de commit claros.
+

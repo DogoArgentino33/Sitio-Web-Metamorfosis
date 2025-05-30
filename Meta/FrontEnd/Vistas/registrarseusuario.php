@@ -135,26 +135,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (count($errores) === 0) {
-        $nombre_imagen = uniqid() . '_' . basename($img_perfil['name']);
-        $ruta_imagen = 'uploads/' . $nombre_imagen;
 
-        if (move_uploaded_file($img_perfil['tmp_name'], $ruta_imagen)) {
+        if (count($errores) === 0) {
+            // Escapar campos
+            $nombre_usu = mysqli_real_escape_string($conexion, $nombre_usu);
+            $correo = mysqli_real_escape_string($conexion, $correo);
+            $telefono = mysqli_real_escape_string($conexion, $telefono);
+            $passusu = mysqli_real_escape_string($conexion, $passusu);
+            $passusu1 = mysqli_real_escape_string($conexion, $passusu1);
+            $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
+
             $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
             $id_persona = $_SESSION['id_persona'];
-            echo "INSERTANDO USUARIO";
+            
             $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona) 
-                           VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona')";
+                            VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona')";
 
             if (mysqli_query($conexion, $sql_insert)) {
-                unset($_SESSION['id_persona']);
+                $_SESSION['id_persona'] = mysqli_insert_id($conexion);
                 header("Location: login.php");
                 exit;
             } else {
                 $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);
             }
-        } else {
-            $errores[] = "Error al subir la imagen.";
         }
+
     }
 }
 ?>

@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                        VALUES ('$nombre', '$apellido', '$dni', '$fec_nac', '$domicilio', '$pais', '$provincia', '$genero', '$ruta_imagen')";
 
         if (mysqli_query($conexion, $sql_insert)) {
-            $_SESSION['id_persona'] = mysqli_insert_id($conexion); // 👈 Esto es lo importante
+            $_SESSION['id_persona'] = mysqli_insert_id($conexion); 
             header("Location: registrarseusuario.php");
             exit;
         } else {
