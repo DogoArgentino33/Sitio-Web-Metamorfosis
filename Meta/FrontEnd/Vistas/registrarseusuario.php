@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validaciones básicas
     if ($nombre_usu === '') {
+        echo "entrando en validaciones basicas";
         $errores[] = 'El nombre de usuario es obligatorio.';
     } elseif (!preg_match('/^[A-Za-z0-9]+$/', $nombre_usu)) {
         $errores[] = 'El nombre de usuario solo puede contener letras y números, sin espacios ni símbolos.';
@@ -46,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //validamos correo
     if ($correo === '') {
+        echo "entrando en validaciones de correo 1";
         $errores[] = 'El correo electrónico es obligatorio.';
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $errores[] = "El correo electrónico no es válido.";
@@ -59,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Verificar si ya existe el correo solo si el formato es válido
     if (filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        echo "entrando en validaciones de correo 2";
         $sql = "SELECT correo FROM usuario WHERE correo = '$correo'";
         $result = mysqli_query($conexion, $sql);
         if ($result && mysqli_num_rows($result) > 0) {
@@ -74,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //validamos telefono
     if ($telefono === '') {
+        echo "entrando en validaciones de telefono";
         $errores[] = "El número de teléfono es obligatorio.";
     } elseif (!preg_match('/^[0-9]{1,10}$/', $telefono)) {
         $errores[] = "El teléfono debe contener solo números y un máximo de 10 dígitos.";
@@ -87,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //validamos contraseñas
     if ($passusu === '' || $passusu1 === '') {
+        echo "entrando en validaciones de contraseñas";
         $errores[] = "Ambos campos de contraseña son obligatorios.";
     } elseif (!preg_match('/^[A-Za-z0-9]{6,}$/', $passusu)) {
         $errores[] = "La contraseña debe tener al menos 6 caracteres y solo puede contener letras y números, sin espacios ni símbolos.";
@@ -104,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validación y procesamiento de imagen
     if ($img_perfil && $img_perfil['error'] == 0) {
+        echo "entrando en validaciones de imagen";
     $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
     if (!in_array($img_perfil['type'], $permitidos)) {
         $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
@@ -135,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (move_uploaded_file($img_perfil['tmp_name'], $ruta_imagen)) {
             $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
             $id_persona = $_SESSION['id_persona'];
-
+            echo "INSERTANDO USUARIO";
             $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona) 
                            VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona')";
 
