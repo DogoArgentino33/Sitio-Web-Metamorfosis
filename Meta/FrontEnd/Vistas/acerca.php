@@ -45,17 +45,7 @@
         </section>
     </footer>
 
-    <section id="modal-show" class="modal">
-        <section class="modal-content">
-            <span class="close" onclick="closeModalShow()">&times;</span>
-            <h1>Editar Descripcion</h1>
-            <form id="rentalForm">
-                <input type="text" class="input-box" placeholder="Nueva Descripcion...">
-                <input type="file" placeholder="Foto de perfil" required>
-                <input type="button" value="Guardar Cambios">
-            </form>
-        </section>
-    </section>
+    <?php include('footer.php');?>
 
     <script>
         ///VER///

@@ -20,15 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $direccion = trim($_POST['direccion']);
     $provincia = trim($_POST['provincia']);
     $pais = trim($_POST['pais']);
-    $cod_pos = trim($_POST['cod-pos']);
     $mapa = trim($_POST['mapa']);
     $genero = $_POST['genero'];
-    $nombre_usuario = $_POST['nombre-usuario'];
     $fec_nac = trim($_POST['fec-nac']);
-    $telefono = trim($_POST['telefono']);
-    $email = strtolower(trim($_POST['email']));
-    $password = $_POST['password'];
-    $password1 = $_POST['repetir-contraseña'];
 
     // Validaciones
     if ($nombre === '' || $apellido === '') {
@@ -39,24 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errores[] = 'El DNI debe ser mayor o igual a 3 millones.';
     }
 
-    if (strlen($password) < 6) {
-        $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
-    }
-
-    if ($password !== $password1) {
-        $errores[] = 'Las contraseñas no coinciden.';
-    }
-
-    
-    $sql = "SELECT correo FROM usuario WHERE correo = '$email'";
+    $sql = "SELECT correo FROM nombre, apellido WHERE apellido = '$apellido'";
     $result = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($result) > 0) {
-        $errores[] = "El correo ya está registrado.";
+        $errores[] = "La persona esta asociada a un correo que ya está registrado.";
     }
 
     if (count($errores) === 0) {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
         $sql_insert = "INSERT INTO usuario(nombre, apellido, nom_usu, correo, telefono, direccion, dni, genero, cod_postal, fec_nac, passusu, calle, altura, depto, municipio, provincia, pais, mapa) 
         VALUES ('$nombre','$apellido','$nombre_usuario','$email','$telefono','$direccion','$dni','$genero','$cod_pos','$fec_nac','$password_hash','$calle','$altura','$depto','$municipio','$provincia','$pais','$mapa')";
@@ -74,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Registrarse</title>
+    <title>Registrar Persona</title>
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -156,12 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input id="pais" name="pais" type="text" class="solo-letras" required>
                 </section>
 
-                <!-- Codigo Postal -->
-                <section class="input-box">
-                    <label for="cod-pos">Codigo Postal:</label>
-                    <input id="cod-pos" name="cod-pos" type="text" required>
-                </section>
-
                 <!-- Mapa -->
                 <section class="input-box">
                     <label for="mapa">Mapa:</label>
@@ -191,39 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input id="fec-nac" name="fec-nac" type="date" required>
                 </section>
 
-                <!-- Nombre usuario -->
-                <section class="input-box">
-                    <label for="nombre-usuario">Nombre de usuario:</label>
-                    <input id="nombre-usuario" name="nombre-usuario" type="text" class="solo-letras" required>
-                </section>
-
-                <!-- Imagen de perfil -->
-                <section class="input-box">
-                    <label for="img-perfil">Imagen de Perfil:</label>
-                    <input id="img-perfil" name="img-perfil" type="img" required>
-                </section>
-
-                <!-- Telefono -->
-                <section class="input-box">
-                    <label for="telefono">Teléfono:</label>
-                    <input id="telefono" name="telefono" type="" class="solo-num" maxlength="10" required>
-                </section>
-
-                <!-- Email -->
-                <section class="input-box">
-                    <label for="email">Correo Electrónico:</label>
-                    <input id="email" name="email" type="email" required>
-                </section>
-
-                <!-- Password y verificacion -->
-                <section class="input-box">
-                    <label for="password">Contraseña:</label>
-                    <input id="password" name="password" type="password" required>
-                </section>
-                <section class="input-box">
-                    <label for="repetir-contraseña">Repetir contraseña:</label>
-                    <input id="repetir-contraseña" name="repetir-contraseña" type="password" required>
-                </section>
                 <button type="submit" class="btn-register">Registrarse</button>
                 <p>¿Ya tienes una cuenta? <a href="../Vistas/login.php">Volver a Login</a></p>
             </fieldset>
