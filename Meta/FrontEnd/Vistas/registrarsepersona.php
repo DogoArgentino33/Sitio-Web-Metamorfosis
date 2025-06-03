@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $img        = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
 
     // Validaciones
-   if ($nombre === '' || !validarSoloLetras($nombre)) {
+    if ($nombre === '' || !validarSoloLetras($nombre)) {
         $errores[] = 'El nombre solo puede contener letras y espacios, sin números ni símbolos.';
     }
 
@@ -41,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     foreach ($errores as $error) {
-    if (strpos($error, 'nombre') !== false) {
-        $error_nombre = $error;
+        if (strpos($error, 'nombre') !== false) {
+            $error_nombre = $error;
+        }
+        if (strpos($error, 'apellido') !== false) {
+            $error_apellido = $error;
+        }
     }
-    if (strpos($error, 'apellido') !== false) {
-        $error_apellido = $error;
-    }
-}
 
     // Validación de DNI duplicados
     $sql = "SELECT dni FROM persona WHERE dni = '$dni'";
@@ -65,24 +65,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //validacion de fecha
     if (!empty($fec_nac)) {
-    $fecha_nac_timestamp = strtotime($fec_nac);
-    $fecha_minima = strtotime('1900-01-01');
-    $fecha_hoy = time();
-    $edad_18 = strtotime('-18 years', $fecha_hoy);
+        $fecha_nac_timestamp = strtotime($fec_nac);
+        $fecha_minima = strtotime('1900-01-01');
+        $fecha_hoy = time();
+        $edad_18 = strtotime('-18 years', $fecha_hoy);
 
-    if ($fecha_nac_timestamp < $fecha_minima) {
-        $errores[] = "La fecha de nacimiento no puede ser anterior al año 1900.";
-    } elseif ($fecha_nac_timestamp > $edad_18) {
-        $errores[] = "Debes tener al menos 18 años para registrarte.";
-    }
+        if ($fecha_nac_timestamp < $fecha_minima) {
+            $errores[] = "La fecha de nacimiento no puede ser anterior al año 1900.";
+        } elseif ($fecha_nac_timestamp > $edad_18) {
+            $errores[] = "Debes tener al menos 18 años para registrarte.";
+        }
     } else {
         $errores[] = "La fecha de nacimiento es obligatoria.";
     }
 
     foreach ($errores as $error) {
-    if (strpos($error, 'fecha de nacimiento') !== false || strpos($error, 'años') !== false) {
-        $error_fecha_nac = $error;
-    }
+        if (strpos($error, 'fecha de nacimiento') !== false || strpos($error, 'años') !== false) {
+            $error_fecha_nac = $error;
+        }
     }
 
     // Validación y procesamiento de imagen

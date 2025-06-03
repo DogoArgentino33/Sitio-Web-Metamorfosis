@@ -7,20 +7,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $passusu = strtolower($_POST['password']);
     $correo = $_POST['correo'];
 
-    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo' and passusu='$passusu'";
+    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo'";
     $result = mysqli_query($conexion, $sql);
     echo "hola";
     if(mysqli_num_rows($result) > 0){
         $reg = mysqli_fetch_assoc($result);
-        if($reg['correo'] == $correo){
+       // Verificar contraseña usando password_verify
+        if(password_verify($passusu, $reg['passusu'])){
             header("Location: index.php");
             exit;
         } else {
-            $c = 1;
             echo "<p style='color:red'>Correo o contraseña incorrectos.</p>";
         }
     } else {
-        $c = 1;
         echo "<p style='color:red'>Usuario no encontrado.</p>";
     }
 }
