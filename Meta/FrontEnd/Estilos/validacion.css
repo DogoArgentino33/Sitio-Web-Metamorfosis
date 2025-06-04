@@ -1,0 +1,26 @@
+.barra-validacion {
+        height: 5px;
+        margin-top: 3px;
+        transition: background-color 0.3s ease;
+    }
+
+    .barra-validacion.valido {
+        background-color: #4caf50;
+    }
+
+    .barra-validacion.invalido {
+        background-color: #f44336;
+    }
+
+    .mensaje-validacion {
+        font-size: 0.85em;
+        margin-top: 2px;
+    }
+
+    .mensaje-validacion.valido {
+        color: #4caf50;
+    }
+
+    .mensaje-validacion.invalido {
+        color: #f44336;
+    }

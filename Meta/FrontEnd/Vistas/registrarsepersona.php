@@ -21,15 +21,20 @@ $error_img = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitizar entradas
-    $nombre     = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
-    $apellido   = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
-    $dni        = isset($_POST['dni']) ? intval($_POST['dni']) : 0;
-    $fec_nac    = isset($_POST['fec-nac']) ? trim($_POST['fec-nac']) : '';
-    $domicilio  = isset($_POST['domicilio']) ? trim($_POST['domicilio']) : '';
-    $provincia  = isset($_POST['provincia']) ? trim($_POST['provincia']) : '';
-    $pais       = isset($_POST['pais']) ? trim($_POST['pais']) : '';
-    $genero     = isset($_POST['genero']) ? $_POST['genero'] : '';
-    $img        = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
+    $nombre       = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+    $apellido     = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
+    $dni          = isset($_POST['dni']) ? intval($_POST['dni']) : 0;
+    $fec_nac      = isset($_POST['fec-nac']) ? trim($_POST['fec-nac']) : '';
+    $calle        = isset($_POST['calle']) ? trim($_POST['calle']) : '';
+    $altura       = isset($_POST['altura']) ? trim($_POST['altura']) : '';
+    $barrio       = isset($_POST['barrio']) ? trim($_POST['barrio']) : '';
+    $departamento = isset($_POST['departamento']) ? trim($_POST['departamento']) : '';
+    $municipio    = isset($_POST['municipio']) ? trim($_POST['municipio']) : '';
+    $localidad    = isset($_POST['localidad']) ? trim($_POST['localidad']) : '';
+    $provincia    = isset($_POST['provincia']) ? trim($_POST['provincia']) : '';
+    $pais         = isset($_POST['pais']) ? trim($_POST['pais']) : '';
+    $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
+    $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
 
     // Validaciones
     if ($nombre === '' || !validarSoloLetras($nombre)) {
@@ -114,18 +119,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (count($errores) === 0) {
         // Escapar campos
-        $nombre     = mysqli_real_escape_string($conexion, $nombre);
-        $apellido   = mysqli_real_escape_string($conexion, $apellido);
-        $dni        = mysqli_real_escape_string($conexion, $dni);
-        $fec_nac    = mysqli_real_escape_string($conexion, $fec_nac);
-        $domicilio  = mysqli_real_escape_string($conexion, $domicilio);
-        $provincia  = mysqli_real_escape_string($conexion, $provincia);
-        $pais       = mysqli_real_escape_string($conexion, $pais);
-        $genero     = mysqli_real_escape_string($conexion, $genero);
-        $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
+        $nombre       = mysqli_real_escape_string($conexion, $nombre);
+        $apellido     = mysqli_real_escape_string($conexion, $apellido);
+        $dni          = mysqli_real_escape_string($conexion, $dni);
+        $fec_nac      = mysqli_real_escape_string($conexion, $fec_nac);
+        $calle        = mysqli_real_escape_string($conexion, $calle);
+        $altura       = mysqli_real_escape_string($conexion, $altura);
+        $barrio       =  mysqli_real_escape_string($conexion, $barrio);
+        $departamento = mysqli_real_escape_string($conexion, $departamento);
+        $municipio    = mysqli_real_escape_string($conexion, $municipio);
+        $localidad    = mysqli_real_escape_string($conexion, $localidad);
+        $provincia    = mysqli_real_escape_string($conexion, $provincia);
+        $pais         = mysqli_real_escape_string($conexion, $pais);
+        $genero       = mysqli_real_escape_string($conexion, $genero);
+        $ruta_imagen  = mysqli_real_escape_string($conexion, $ruta_imagen);
 
-        $sql_insert = "INSERT INTO persona (nombre, apellido, dni, fec_nac, domicilio, pais, provincia, genero, img)
-                       VALUES ('$nombre', '$apellido', '$dni', '$fec_nac', '$domicilio', '$pais', '$provincia', '$genero', '$ruta_imagen')";
+        $sql_insert = "INSERT INTO `persona`(`nombre`, `apellido`, `dni`, `fec_nac`, `pais`, `provincia`, `genero`, `img`, `calle`, `altura`, `barrio`, `departamento`, `municipio`, `localidad`) 
+        VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad')";
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion); 
@@ -148,7 +158,153 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/registro.css">
     <link rel="stylesheet" href="../Estilos/index.css">
+    <link rel="stylesheet" href="../Estilos/validacion.css">
 </head>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        function capitalizar(texto) {
+            return texto
+                .replace(/\s+/g, ' ') // un solo espacio
+                .trim()
+                .toLowerCase()
+                .split(' ')
+                .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+                .join(' ');
+        }
+
+        const validaciones = {
+            nombre: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El nombre solo puede contener letras y espacios simples. No numeros ni sibolos"
+            },
+            apellido: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El apellido solo puede contener letras y espacios simples. No numeros ni sibolos"
+            },
+            dni: {
+                regex: /^[0-9]{7,8}$/,
+                mensaje: "El DNI debe tener entre 7 y 8 números, sin letras ni símbolos."
+            },
+            provincia: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "La provincia debe contener solo letras y espacios simples. No numeros ni sibolos"
+            },
+            pais: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El país debe contener solo letras y espacios simples. No numeros ni sibolos"
+            },
+            calle: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "La calle solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            },
+            altura: {
+                regex: /^[0-9]+$/,
+                mensaje: "La altura debe ser un número positivo sin letras ni símbolos."
+            },
+            barrio: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El barrio solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            },
+            departamento: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El departamento solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            },
+            municipio: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El municipio solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            },
+            localidad: {
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "La localidad solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            }
+        };
+
+        for (const id in validaciones) {
+            const input = document.getElementById(id);
+
+            if (input) {
+                const barra = document.createElement('div');
+                barra.classList.add('barra-validacion');
+
+                const mensaje = document.createElement('div');
+                mensaje.classList.add('mensaje-validacion');
+
+                input.insertAdjacentElement('afterend', barra);
+                barra.insertAdjacentElement('afterend', mensaje);
+
+                input.addEventListener('input', () => {
+                    const valor = input.value.trim();
+                    const { regex, mensaje: textoMensaje } = validaciones[id];
+
+                    if (regex.test(valor)) {
+                        barra.className = 'barra-validacion valido';
+                        mensaje.className = 'mensaje-validacion valido';
+                        mensaje.textContent = 'Dato válido.';
+                    } else {
+                        barra.className = 'barra-validacion invalido';
+                        mensaje.className = 'mensaje-validacion invalido';
+                        mensaje.textContent = textoMensaje;
+                    }
+                });
+
+                input.addEventListener('blur', () => {
+                    input.value = capitalizar(input.value);
+                });
+            }
+        }
+
+        // Asegurar capitalización a todos los campos tipo texto al salir
+        const todosLosTextos = document.querySelectorAll('input[type="text"]');
+        todosLosTextos.forEach(input => {
+            input.addEventListener('blur', () => {
+                input.value = capitalizar(input.value);
+            });
+        });
+
+        // Validación de fecha de nacimiento
+        const inputFecha = document.getElementById('fec-nac');
+        if (inputFecha) {
+            const barra = document.createElement('div');
+            barra.classList.add('barra-validacion');
+
+            const mensaje = document.createElement('div');
+            mensaje.classList.add('mensaje-validacion');
+
+            inputFecha.insertAdjacentElement('afterend', barra);
+            barra.insertAdjacentElement('afterend', mensaje);
+
+            inputFecha.addEventListener('input', () => {
+                const valor = inputFecha.value;
+                const fechaIngresada = new Date(valor);
+                const hoy = new Date();
+                const fechaMinima = new Date('1900-01-01');
+                const edadMinima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+
+                if (!valor) {
+                    barra.className = 'barra-validacion invalido';
+                    mensaje.className = 'mensaje-validacion invalido';
+                    mensaje.textContent = 'La fecha de nacimiento es obligatoria.';
+                } else if (fechaIngresada < fechaMinima) {
+                    barra.className = 'barra-validacion invalido';
+                    mensaje.className = 'mensaje-validacion invalido';
+                    mensaje.textContent = 'La fecha no puede ser anterior al año 1900.';
+                } else if (fechaIngresada > edadMinima) {
+                    barra.className = 'barra-validacion invalido';
+                    mensaje.className = 'mensaje-validacion invalido';
+                    mensaje.textContent = 'Debes tener al menos 18 años.';
+                } else {
+                    barra.className = 'barra-validacion valido';
+                    mensaje.className = 'mensaje-validacion valido';
+                    mensaje.textContent = 'Fecha válida.';
+                }
+            });
+        }
+    });
+</script>
+
+
 <body>
     <?php include('cabecera.php'); ?>
     <section class="nav-route">
@@ -191,46 +347,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <span class="error" style="color:red;"><?php echo $error_fecha_nac; ?></span>
                 </section>
 
-                <!-- Domicilio -->
-                <section class="input-box">
-                    <label for="domicilio">Domicilio:</label>
-                    <input id="domicilio" name="domicilio" type="text" required>
-                </section>
-
                 <!-- Calle -->
                 <section class="input-box">
-                    <label for="Calle">Calle:</label>
-                    <input id="Calle" name="Calle" type="text" required>
+                    <label for="calle">Calle:</label>
+                    <input id="calle" name="calle" type="text" required>
                 </section>
 
                 <!-- Altura -->
                 <section class="input-box">
-                    <label for="Altura">Altura:</label>
-                    <input id="Altura" name="Altura" type="text" required>
+                    <label for="altura">Altura:</label>
+                    <input id="altura" name="altura" type="text" required>
                 </section>
 
                 <!-- Barrio -->
                 <section class="input-box">
-                    <label for="Barrio">Barrio:</label>
-                    <input id="Barrio" name="Barrio" type="text" required>
+                    <label for="barrio">Barrio:</label>
+                    <input id="barrio" name="barrio" type="text" required>
                 </section>
 
                 <!-- Departamento -->
                 <section class="input-box">
-                    <label for="Departamento">Departamento:</label>
-                    <input id="Departamento" name="Departamento" type="text" required>
+                    <label for="departamento">Departamento:</label>
+                    <input id="departamento" name="departamento" type="text" required>
                 </section>
 
                 <!-- Municipio -->
                 <section class="input-box">
-                    <label for="Municipio">Municipio:</label>
-                    <input id="Municipio" name="Municipio" type="text" required>
+                    <label for="municipio">Municipio:</label>
+                    <input id="municipio" name="municipio" type="text" required>
                 </section>
 
                 <!-- Localidad -->
                 <section class="input-box">
-                    <label for="Localidad">Localidad:</label>
-                    <input id="Localidad" name="Localidad" type="text" required>
+                    <label for="localidad">Localidad:</label>
+                    <input id="localidad" name="localidad" type="text" required>
                 </section>
 
                 <!-- Provincia -->
