@@ -197,6 +197,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input id="domicilio" name="domicilio" type="text" required>
                 </section>
 
+                <!-- Calle -->
+                <section class="input-box">
+                    <label for="Calle">Calle:</label>
+                    <input id="Calle" name="Calle" type="text" required>
+                </section>
+
+                <!-- Altura -->
+                <section class="input-box">
+                    <label for="Altura">Altura:</label>
+                    <input id="Altura" name="Altura" type="text" required>
+                </section>
+
+                <!-- Barrio -->
+                <section class="input-box">
+                    <label for="Barrio">Barrio:</label>
+                    <input id="Barrio" name="Barrio" type="text" required>
+                </section>
+
+                <!-- Departamento -->
+                <section class="input-box">
+                    <label for="Departamento">Departamento:</label>
+                    <input id="Departamento" name="Departamento" type="text" required>
+                </section>
+
+                <!-- Municipio -->
+                <section class="input-box">
+                    <label for="Municipio">Municipio:</label>
+                    <input id="Municipio" name="Municipio" type="text" required>
+                </section>
+
+                <!-- Localidad -->
+                <section class="input-box">
+                    <label for="Localidad">Localidad:</label>
+                    <input id="Localidad" name="Localidad" type="text" required>
+                </section>
+
                 <!-- Provincia -->
                 <section class="input-box">
                     <label for="provincia">Provincia:</label>
