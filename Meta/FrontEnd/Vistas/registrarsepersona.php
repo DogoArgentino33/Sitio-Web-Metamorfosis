@@ -19,6 +19,8 @@ $error_nombre = '';
 $error_apellido = '';
 $error_img = '';
 
+$registro_exitoso = false;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitizar entradas
     $nombre       = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
@@ -92,20 +94,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validación y procesamiento de imagen
     if ($img && $img['error'] == 0) {
-    $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-    if (!in_array($img['type'], $permitidos)) {
-        $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
-    } else {
-        $nombre_img = uniqid() . "_" . basename($img['name']);
-        $directorio_destino = "uploads/";
-        $ruta_completa = $directorio_destino . $nombre_img;
 
-        if (move_uploaded_file($img['tmp_name'], $ruta_completa)) {
-            $ruta_imagen = $ruta_completa;
+        $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+
+        if (!in_array($img['type'], $permitidos)) {
+            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
         } else {
-            $errores[] = "No se pudo guardar la imagen.";
+            $origen_temp = $img['tmp_name'];
+            list($ancho_original, $alto_original) = getimagesize($origen_temp);
+            $ancho_nuevo = 1280;
+            $alto_nuevo = 1280;
+
+            // Crear imagen desde el archivo original según tipo MIME
+            switch ($img['type']) {
+                case 'image/jpeg':
+                case 'image/jpg':
+                    $origen = imagecreatefromjpeg($origen_temp);
+                    break;
+                case 'image/png':
+                    $origen = imagecreatefrompng($origen_temp);
+                    break;
+                case 'image/gif':
+                    $origen = imagecreatefromgif($origen_temp);
+                    break;
+                default:
+                    $errores[] = "Tipo de imagen no soportado.";
+                    $origen = false;
+            }
+
+            if ($origen) {
+                // Crear lienzo en blanco de 1280x1280
+                $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
+
+                // Rellenar fondo blanco si la imagen original es menor
+                $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
+                imagefill($imagen_redimensionada, 0, 0, $blanco);
+
+                // Reescalar la imagen original para que encaje en el nuevo tamaño
+                imagecopyresampled(
+                    $imagen_redimensionada,
+                    $origen,
+                    0, 0, 0, 0,
+                    $ancho_nuevo,
+                    $alto_nuevo,
+                    $ancho_original,
+                    $alto_original
+                );
+
+                // Guardar imagen
+                $nombre_img = uniqid() . ".jpg"; // Siempre guardamos como JPG
+                $directorio_destino = "uploads/persona/";
+                $ruta_completa = $directorio_destino . $nombre_img;
+
+                if (imagejpeg($imagen_redimensionada, $ruta_completa, 90)) {
+                    $ruta_imagen = $ruta_completa;
+                } else {
+                    $errores[] = "No se pudo guardar la imagen redimensionada.";
+                }
+
+                // Liberar memoria
+                imagedestroy($origen);
+                imagedestroy($imagen_redimensionada);
+            }
         }
-    }
+
     } else {
         $errores[] = "Debes subir una imagen válida.";
     }
@@ -138,9 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad')";
 
         if (mysqli_query($conexion, $sql_insert)) {
-            $_SESSION['id_persona'] = mysqli_insert_id($conexion); 
-            header("Location: registrarseusuario.php");
-            exit;
+            $_SESSION['id_persona'] = mysqli_insert_id($conexion);
+            $registro_exitoso = true; // <-- NUEVA VARIABLE DE CONTROL
         } else {
             $errores[] = "Error al registrar la persona: " . mysqli_error($conexion);
         }
@@ -304,6 +355,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const inputImg = document.getElementById("img-persona");
+        const maxPesoMB = 4;
+        const maxAncho = 1280;
+        const maxAlto = 1280;
+
+        inputImg.addEventListener("change", function () {
+            const archivo = this.files[0];
+            const mensajeError = this.nextElementSibling;
+
+            // Borrar vista previa anterior
+            const previewExistente = document.getElementById("preview-img");
+            if (previewExistente) {
+                previewExistente.remove();
+            }
+
+            if (!archivo) return;
+
+            // Validar tamaño
+            if (archivo.size > maxPesoMB * 1024 * 1024) {
+                mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    // Validar dimensiones exactas
+                    if (img.width !== maxAncho || img.height !== maxAlto) {
+                        mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
+                    } else {
+                        mensajeError.textContent = "";
+                    }
+
+                    // Mostrar vista previa
+                    img.id = "preview-img";
+                    img.style.maxWidth = "200px";
+                    img.style.marginTop = "10px";
+                    inputImg.parentNode.appendChild(img);
+                };
+            };
+
+            reader.readAsDataURL(archivo);
+        });
+    });
+</script>
 
 <body>
     <?php include('cabecera.php'); ?>
@@ -405,10 +507,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
 
                 <!-- Imagen de perfil -->
+                <!-- Imagen de perfil -->
                 <section class="input-box">
                     <br>
                     <label for="img-persona">Imagen personal:</label>
-                    <input id="img-persona" name="img-persona" type="file" required>
+                    <input id="img-persona" name="img-persona" type="file" accept="image/*" required>
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
 
@@ -417,10 +520,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </fieldset>
         </form>
     </section>
-
     <br>
 
     <?php include('footer.php');?>
+
+    <?php if ($registro_exitoso): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                alert("¡Registro completado con éxito!");
+
+                // Limpiar el formulario
+                const formulario = document.getElementById("employee");
+                formulario.reset();
+
+                // Desactivar el botón
+                const boton = formulario.querySelector('button[type="submit"]');
+                boton.disabled = true;
+                boton.textContent = "Formulario enviado";
+
+                // Opcional: volver a activar el botón después de 5 segundos
+                setTimeout(() => {
+                    boton.disabled = false;
+                    boton.textContent = "Registrar persona";
+                }, 5000); // <-- Cambiá este valor si querés más/menos tiempo
+            });
+        </script>
+    <?php endif; ?>
 
 </body>
 </html> 

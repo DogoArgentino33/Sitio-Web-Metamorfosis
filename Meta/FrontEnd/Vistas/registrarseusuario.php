@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
     } else {
         $nombre_img = uniqid() . "_" . basename($img_perfil['name']);
-        $directorio_destino = "uploads/";
+        $directorio_destino = "uploads/usuario/";
         $ruta_completa = $directorio_destino . $nombre_img;
 
         if (move_uploaded_file($img_perfil['tmp_name'], $ruta_completa)) {

@@ -4,7 +4,7 @@
 $dbhost="localhost";
 $dbusuario="root";
 $dbpassword= "rojas.u33"; #1234
-$db="pruebametamorfosis";
+$db="metamorfosis";
 $conexion = new mysqli ($dbhost,$dbusuario,$dbpassword,$db);
 
 #http://localhost/Sitio-Web-Metamorfosis/index.php
