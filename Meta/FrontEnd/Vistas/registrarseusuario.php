@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-            header("Location: login.php");
+            echo "<script>alert('Usuario Registrado Exitosamente'); window.location.href='login.php';</script>";
             exit;
         } else {
             $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);

@@ -189,8 +189,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad')";
 
         if (mysqli_query($conexion, $sql_insert)) {
-            $_SESSION['id_persona'] = mysqli_insert_id($conexion); 
-            header("Location: registrarseusuario.php");
+            $_SESSION['id_persona'] = mysqli_insert_id($conexion);
+            echo '<script>alert("Persona registrada exitosamente."); window.location.href="registrarseusuario.php";</script>';
             exit;
         } else {
             $errores[] = "Error al registrar la persona: " . mysqli_error($conexion);
