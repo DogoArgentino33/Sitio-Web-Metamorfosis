@@ -168,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-
     if (count($errores) === 0) {
         // Escapar campos
         $nombre       = mysqli_real_escape_string($conexion, $nombre);
@@ -190,8 +189,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad')";
 
         if (mysqli_query($conexion, $sql_insert)) {
-            $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-            $registro_exitoso = true; // <-- NUEVA VARIABLE DE CONTROL
+            $_SESSION['id_persona'] = mysqli_insert_id($conexion); 
+            header("Location: registrarseusuario.php");
+            exit;
         } else {
             $errores[] = "Error al registrar la persona: " . mysqli_error($conexion);
         }
@@ -523,29 +523,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <br>
 
     <?php include('footer.php');?>
-
-    <?php if ($registro_exitoso): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                alert("¡Registro completado con éxito!");
-
-                // Limpiar el formulario
-                const formulario = document.getElementById("employee");
-                formulario.reset();
-
-                // Desactivar el botón
-                const boton = formulario.querySelector('button[type="submit"]');
-                boton.disabled = true;
-                boton.textContent = "Formulario enviado";
-
-                // Opcional: volver a activar el botón después de 5 segundos
-                setTimeout(() => {
-                    boton.disabled = false;
-                    boton.textContent = "Registrar persona";
-                }, 5000); // <-- Cambiá este valor si querés más/menos tiempo
-            });
-        </script>
-    <?php endif; ?>
-
 </body>
 </html> 

@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 if (!isset($_SESSION['id_persona'])) {
     // Si alguien intenta entrar a registrarseusuario.php sin pasar por registrarsepersona.php
     header("Location: registrarsepersona.php");
@@ -21,14 +20,13 @@ $error_contraseña = '';
 $error_contraseña_repetida = '';
 $error_img = '';
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitizar entradas
     $nombre_usu = mysqli_real_escape_string($conexion, trim($_POST['nombre-usu']));
-    $correo = mysqli_real_escape_string($conexion, trim($_POST['correo']));
-    $telefono = preg_replace('/[^0-9]/', '', mysqli_real_escape_string($conexion, trim($_POST['Telefono'])));
-    $passusu = trim($_POST['passusu']);
-    $passusu1 = trim($_POST['passusu1']);
+    $correo     = mysqli_real_escape_string($conexion, trim($_POST['correo']));
+    $telefono   = preg_replace('/[^0-9]/', '', mysqli_real_escape_string($conexion, trim($_POST['telefono'])));
+    $passusu    = trim($_POST['passusu']);
+    $passusu1   = trim($_POST['passusu1']);
     $img_perfil = $_FILES['img-perfil'];
 
     // Validaciones básicas
@@ -45,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    //validamos correo
+     //validamos correo
     if ($correo === '') {
         echo "entrando en validaciones de correo 1";
         $errores[] = 'El correo electrónico es obligatorio.';
@@ -74,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error_correo = $error;
         }
     }
+
 
     //validamos telefono
     if ($telefono === '') {
@@ -107,23 +106,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    
     // Validación y procesamiento de imagen
     if ($img_perfil && $img_perfil['error'] == 0) {
-        echo "entrando en validaciones de imagen";
-    $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-    if (!in_array($img_perfil['type'], $permitidos)) {
-        $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
-    } else {
-        $nombre_img = uniqid() . "_" . basename($img_perfil['name']);
-        $directorio_destino = "uploads/usuario/";
-        $ruta_completa = $directorio_destino . $nombre_img;
 
-        if (move_uploaded_file($img_perfil['tmp_name'], $ruta_completa)) {
-            $ruta_imagen = $ruta_completa;
+        $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+
+        if (!in_array($img_perfil['type'], $permitidos)) {
+            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
         } else {
-            $errores[] = "No se pudo guardar la imagen.";
+            $origen_temp = $img_perfil['tmp_name'];
+            list($ancho_original, $alto_original) = getimagesize($origen_temp);
+            $ancho_nuevo = 1280;
+            $alto_nuevo = 1280;
+
+            // Crear imagen desde el archivo original según tipo MIME
+            switch ($img_perfil['type']) {
+                case 'image/jpeg':
+                case 'image/jpg':
+                    $origen = imagecreatefromjpeg($origen_temp);
+                    break;
+                case 'image/png':
+                    $origen = imagecreatefrompng($origen_temp);
+                    break;
+                case 'image/gif':
+                    $origen = imagecreatefromgif($origen_temp);
+                    break;
+                default:
+                    $errores[] = "Tipo de imagen no soportado.";
+                    $origen = false;
+            }
+
+            if ($origen) {
+                // Crear lienzo en blanco de 1280x1280
+                $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
+
+                // Rellenar fondo blanco si la imagen original es menor
+                $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
+                imagefill($imagen_redimensionada, 0, 0, $blanco);
+
+                // Reescalar la imagen original para que encaje en el nuevo tamaño
+                imagecopyresampled(
+                    $imagen_redimensionada,
+                    $origen,
+                    0, 0, 0, 0,
+                    $ancho_nuevo,
+                    $alto_nuevo,
+                    $ancho_original,
+                    $alto_original
+                );
+
+                // Guardar imagen
+                $nombre_img = uniqid() . ".jpg"; // Siempre guardamos como JPG
+                $directorio_destino = "uploads/usuario/";
+                $ruta_completa = $directorio_destino . $nombre_img;
+
+                if (imagejpeg($imagen_redimensionada, $ruta_completa, 90)) {
+                    $ruta_imagen = $ruta_completa;
+                } else {
+                    $errores[] = "No se pudo guardar la imagen redimensionada.";
+                }
+
+                // Liberar memoria
+                imagedestroy($origen);
+                imagedestroy($imagen_redimensionada);
+            }
         }
-    }
+
     } else {
         $errores[] = "Debes subir una imagen válida.";
     }
@@ -136,30 +185,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (count($errores) === 0) {
 
-        if (count($errores) === 0) {
-            // Escapar campos
-            $nombre_usu = mysqli_real_escape_string($conexion, $nombre_usu);
-            $correo = mysqli_real_escape_string($conexion, $correo);
-            $telefono = mysqli_real_escape_string($conexion, $telefono);
-            $passusu = mysqli_real_escape_string($conexion, $passusu);
-            $passusu1 = mysqli_real_escape_string($conexion, $passusu1);
-            $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
+        //Escapar campos
+        $nombre_usu  = mysqli_real_escape_string($conexion, $nombre_usu);
+        $correo      = mysqli_real_escape_string($conexion, $correo);
+        $telefono    = mysqli_real_escape_string($conexion, $telefono);
+        $passusu     = mysqli_real_escape_string($conexion, $passusu);
+        $passusu1    = mysqli_real_escape_string($conexion, $passusu1);
+        $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
 
-            $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
-            $id_persona = $_SESSION['id_persona'];
+        $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
+        $id_persona = $_SESSION['id_persona'];
             
-            $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona) 
+        $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona) 
                             VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona')";
 
-            if (mysqli_query($conexion, $sql_insert)) {
-                $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-                header("Location: login.php");
-                exit;
-            } else {
-                $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);
-            }
+        if (mysqli_query($conexion, $sql_insert)) {
+            $_SESSION['id_persona'] = mysqli_insert_id($conexion);
+            header("Location: login.php");
+            exit;
+        } else {
+            $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);
         }
-
     }
 }
 ?>
@@ -174,7 +220,165 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/registro.css">
     <link rel="stylesheet" href="../Estilos/index.css">
+    <link rel="stylesheet" href="../Estilos/validacion.css">
 </head>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // Función para capitalizar texto si fuera necesario
+        function capitalizar(texto) {
+            return texto
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase()
+                .split(' ')
+                .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+                .join(' ');
+        }
+
+        const validaciones = {
+            'nombre-usu': {
+                regex: /^[A-Za-z0-9]{3,20}$/,
+                mensaje: 'El nombre de usuario debe tener entre 3 y 20 caracteres. Solo letras y números, sin espacios ni símbolos.'
+            },
+            'correo': {
+                regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                mensaje: 'Debe ser un correo electrónico válido.'
+            },
+            'telefono': {
+                regex: /^[0-9]{6,10}$/,
+                mensaje: 'Debe contener solo números (entre 6 y 10 dígitos).'
+            },
+            'passusu': {
+                regex: /^[A-Za-z0-9]{6,}$/,
+                mensaje: 'La contraseña debe tener al menos 6 caracteres, solo letras y números. Sin espacios ni símbolos.'
+            },
+            'passusu1': {
+                regex: /^[A-Za-z0-9]{6,}$/,
+                mensaje: 'La contraseña repetida debe tener al menos 6 caracteres, solo letras y números. Sin espacios ni símbolos.'
+            }
+        };
+
+        // Recorre los campos definidos y aplica validación en tiempo real
+        for (const id in validaciones) {
+            const input = document.getElementById(id);
+
+            if (input) {
+                const barra = document.createElement('div');
+                barra.classList.add('barra-validacion');
+
+                const mensaje = document.createElement('div');
+                mensaje.classList.add('mensaje-validacion');
+
+                input.insertAdjacentElement('afterend', barra);
+                barra.insertAdjacentElement('afterend', mensaje);
+
+                input.addEventListener('input', () => {
+                    const valor = input.value.trim();
+                    const { regex, mensaje: textoMensaje } = validaciones[id];
+
+                    if (regex.test(valor)) {
+                        barra.className = 'barra-validacion valido';
+                        mensaje.className = 'mensaje-validacion valido';
+                        mensaje.textContent = 'Dato válido.';
+                    } else {
+                        barra.className = 'barra-validacion invalido';
+                        mensaje.className = 'mensaje-validacion invalido';
+                        mensaje.textContent = textoMensaje;
+                    }
+                });
+            }
+        }
+
+        // Validar coincidencia entre contraseñas
+        const pass1 = document.getElementById('passusu');
+        const pass2 = document.getElementById('passusu1');
+
+        if (pass1 && pass2) {
+            const barra = document.createElement('div');
+            barra.classList.add('barra-validacion');
+
+            const mensaje = document.createElement('div');
+            mensaje.classList.add('mensaje-validacion');
+
+            pass2.insertAdjacentElement('afterend', barra);
+            barra.insertAdjacentElement('afterend', mensaje);
+
+            function validarCoincidencia() {
+                if (pass1.value && pass2.value && pass1.value !== pass2.value) {
+                    barra.className = 'barra-validacion invalido';
+                    mensaje.className = 'mensaje-validacion invalido';
+                    mensaje.textContent = 'Las contraseñas no coinciden.';
+                } else if (pass1.value && pass1.value === pass2.value) {
+                    barra.className = 'barra-validacion valido';
+                    mensaje.className = 'mensaje-validacion valido';
+                    mensaje.textContent = 'Contraseñas coinciden.';
+                } else {
+                    barra.className = '';
+                    mensaje.textContent = '';
+                }
+            }
+
+            pass1.addEventListener('input', validarCoincidencia);
+            pass2.addEventListener('input', validarCoincidencia);
+        }
+
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const inputImg = document.getElementById("img-perfil");
+        const maxPesoMB = 4;
+        const maxAncho = 1280;
+        const maxAlto = 1280;
+
+        inputImg.addEventListener("change", function () {
+            const archivo = this.files[0];
+            const mensajeError = this.nextElementSibling;
+
+            // Borrar vista previa anterior
+            const previewExistente = document.getElementById("preview-img");
+            if (previewExistente) {
+                previewExistente.remove();
+            }
+
+            if (!archivo) return;
+
+            // Validar tamaño
+            if (archivo.size > maxPesoMB * 1024 * 1024) {
+                mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    // Validar dimensiones exactas
+                    if (img.width !== maxAncho || img.height !== maxAlto) {
+                        mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
+                    } else {
+                        mensajeError.textContent = "";
+                    }
+
+                    // Mostrar vista previa
+                    img.id = "preview-img";
+                    img.style.maxWidth = "200px";
+                    img.style.marginTop = "10px";
+                    inputImg.parentNode.appendChild(img);
+                };
+            };
+
+            reader.readAsDataURL(archivo);
+        });
+    });
+</script>
+
 <body>
     <?php include('cabecera.php'); ?>
     <section class="nav-route">
@@ -203,11 +407,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
 
                 <section class="input-box">
-                    <label for="Telefono">Teléfono:</label>
-                    <input id="Telefono" name="Telefono" type="text" class="solo-num" required value="<?php echo isset($_POST['Telefono']) ? escapar($_POST['Telefono']) : ''; ?>">
+                    <label for="telefono">Teléfono:</label>
+                    <input id="telefono" name="telefono" type="text" class="solo-num" required value="<?php echo isset($_POST['telefono']) ? escapar($_POST['telefono']) : ''; ?>">
                     <span class="error" style="color:red;"><?php echo $error_telefono; ?></span>
                 </section>
-
 
                 <section class="input-box">
                     <label for="passusu">Contraseña:</label>
@@ -232,10 +435,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </fieldset>
         </form>
     </section>
-
     <br>
 
     <?php include('footer.php');?>
-
 </body>
 </html>

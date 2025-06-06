@@ -59,17 +59,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     <label><input type="checkbox">Recordarme</label>
                     <a href="../Vistas/recuperar.php">¿Olvidaste la Contraseña?</a>
                 </section>
+
                 <section class="register-link">
                     <p>¿No tenés una cuenta? <a href="../Vistas/registrarsepersona.php">Registrar Persona</a></p>
-                </section>
-                                <section class="register-link">
-                    <p>¿No tenés una cuenta? <a href="../Vistas/registrarseusuario.php">Registrar Usuario</a></p>
-                </section>
+                </section>          
+
                 <?php if (!empty($mensaje)) : ?>
                     <section id="mensaje-login" style="text-align:center; color:red; margin-top:10px;">
                         <?= htmlspecialchars($mensaje) ?>
                     </section>
                 <?php endif; ?>
+                
             </fieldset>
         </form>
     </section>
