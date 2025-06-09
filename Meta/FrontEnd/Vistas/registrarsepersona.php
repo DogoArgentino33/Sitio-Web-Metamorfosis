@@ -416,8 +416,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </section>
     <br>
     <h1 style="text-align: center;">Registrar Persona</h1>
+            <div style="text-align:center; margin-bottom:20px;">
+            <video src="uploads/METAMORFOSIS VIDEO REGISTRAR PERSONA.mp4" controls width="480" poster="">
+            Tu navegador no soporta la reproducción de video.
+            </video>
+            <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar una persona</p>
+            </div>
     <section class="wrapper">
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="employee">
+            <h2>Formulario Registrar Persona</h2>
             <fieldset>
                 <legend>Datos personales</legend>
 
