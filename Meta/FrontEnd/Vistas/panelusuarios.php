@@ -1,3 +1,8 @@
+<?php
+include('auth.php');
+include('conexion.php'); // Ajusta la ruta si es necesario
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,58 +36,68 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>NOMBRE DE USUARIO</th>
+                        <th>IMAGEN DE PERFIL</th>
                         <th>CORREO</th>
+                        <th>TELÉFONO</th>
+                        <th>ID PERSONA</th>
                         <th>ROL</th>
-                        <th>FECHA DE REGISTRO</th>
-                        <th>ACCIONES</th>
+                        <th>ESTADO</th>
+                        <th>VER</th>
+                        <th>MODIFICAR</th>
+                        <th>ACTIVAR/DESACTIVAR</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>juan@example.com</td>
-                        <td>cliente</td>
-                        <td>01/01/2023</td>
+                <?php
+                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario ORDER BY id");
+                    $stmt->execute(); 
+                    $result = $stmt->get_result();
+    
+                if($result->num_rows > 0) {
+                    while($usuario = $result->fetch_assoc()) 
+                    {
+                        ?>
+
+                        <tr>
+
+                        <td><?= htmlspecialchars($usuario['id']) ?></td>
+                        <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
+                        <td><?= htmlspecialchars($usuario['img_perfil']) ?></td>
+                        <td><?= htmlspecialchars($usuario['correo']) ?></td>
+                        <td><?= htmlspecialchars($usuario['telefono']) ?></td>
+                        <td><?= htmlspecialchars($usuario['id_persona']) ?></td>
+                        <td><?= htmlspecialchars($usuario['rol']) ?></td>
+                        <td><?= htmlspecialchars($usuario['estadousu']) ?></td>
+                        <td><a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=1">Ver</a></td>
+                        <td><a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=2">Modificar</a></td>
+                
                         <td>
-                            <button class="accion-button" title="Ver" onclick="openModalVer()"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar" onclick="openModalEditar()"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar" onclick="openModalEliminar()"><i class="bi bi-trash"></i></button>
-                        </td> 
-                    </tr>
+                        
+                        <?php if($usuario['estadousu'] == true): ?>
+                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3">Eliminar</a>
+                        <?php else: ?>
+                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
+                        <?php endif; ?>
+                        
+                        </td>				
+                    
+                        </tr>
+                    <?php
+                    }
+                    
+                    } else {
+                    ?>
+                    
                     <tr>
-                        <td>2</td>
-                        <td>ana@example.com</td>
-                        <td>empleado</td>
-                        <td>15/02/2023</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
+                    
+                    <td colspan="7">No hay usuarios registrados</td>
                     </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>pedro@example.com</td>
-                        <td>gerente</td>
-                        <td>10/03/2023</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>lucia@example.com</td>
-                        <td>administrador</td>
-                        <td>22/04/2023</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
+                    <?php
+                    }
+                        ?>
+
+                </tbody>
             </table>
         </section>
     </main>

@@ -1,3 +1,7 @@
+<?php
+session_start();
+include('conexion.php'); // Ajusta la ruta si es necesario
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,6 +12,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/modales.css">
+    
+    <script>
+        const usuarioLogueado = <?= isset($_SESSION['id']) ? 'true' : 'false' ?>;
+    </script>
+
 </head>
 <body>
     <?php include('cabecera.php'); ?>
@@ -105,9 +114,18 @@
 
     <script>
         function openModal(costumeName) {
+            if (!usuarioLogueado) {
+                alert("Debés iniciar sesión para alquilar un disfraz.");
+                window.location.href = "login.php";
+                return;
+            }
+
             document.getElementById('rentalModal').style.display = 'block';
-            document.getElementById('costume').value = costumeName; // Asigna el nombre del disfraz al input
+            document.getElementById('costume').value = costumeName;
         }
+
+
+
     
         function closeModal() {
             document.getElementById('rentalModal').style.display = 'none';

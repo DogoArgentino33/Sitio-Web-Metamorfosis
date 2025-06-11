@@ -1,4 +1,5 @@
 <?php
+session_start(); // Iniciar sesión
 include('conexion.php'); // Ajusta la ruta si es necesario
 
 $mensaje = "";
@@ -7,20 +8,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $passusu = strtolower($_POST['password']);
     $correo = $_POST['correo'];
 
-    $sql = "SELECT correo, passusu FROM usuario WHERE correo='$correo'";
+    $sql = "SELECT id, correo, passusu FROM usuario WHERE correo='$correo'";
+
     $result = mysqli_query($conexion, $sql);
-    echo "hola";
+
     if(mysqli_num_rows($result) > 0){
         $reg = mysqli_fetch_assoc($result);
-       // Verificar contraseña usando password_verify
-        if(password_verify($passusu, $reg['passusu'])){
-            header("Location: index.php");
-            exit;
-        } else {
-            echo "<p style='color:red'>Correo o contraseña incorrectos.</p>";
+        // Verificar contraseña usando password_verify
+    if (password_verify($passusu, $reg['passusu'])) {
+        // Actualizar estado a logueado (2)
+        $id = $reg['id'];
+        $update_sql = "UPDATE usuario SET estadousu = 2 WHERE id = $id";
+        mysqli_query($conexion, $update_sql);
+
+        // Crear variables de sesión
+        session_start();
+        $_SESSION['id'] = $id;
+
+        header("Location: index.php");
+        exit;
+    }
+    else {
+            $mensaje = "Correo o contraseña incorrectos.";
         }
     } else {
-        echo "<p style='color:red'>Usuario no encontrado.</p>";
+        $mensaje = "Usuario no encontrado.";
     }
 }
 ?>
@@ -78,3 +90,4 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     
 </body>
 </html>
+
