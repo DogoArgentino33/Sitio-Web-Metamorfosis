@@ -1,4 +1,5 @@
 <?php
+// auth.php se encarga de verificar si el usuario está logueado y tiene el estado correcto.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

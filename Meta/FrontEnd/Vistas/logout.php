@@ -1,4 +1,6 @@
 <?php
+// LOGOUT SE ENCARGA DE CERRAR LA SESIÓN DEL USUARIO
+// Si la sesión no ha sido iniciada, iniciarla
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
