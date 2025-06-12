@@ -63,13 +63,16 @@ include('conexion.php'); // Ajusta la ruta si es necesario
 
                         <td><?= htmlspecialchars($usuario['id']) ?></td>
                         <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
-                        <td><?= htmlspecialchars($usuario['img_perfil']) ?></td>
+                        <td>
+                        <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
+                        </td>
+
                         <td><?= htmlspecialchars($usuario['correo']) ?></td>
                         <td><?= htmlspecialchars($usuario['telefono']) ?></td>
                         <td><?= htmlspecialchars($usuario['id_persona']) ?></td>
                         <td><?= htmlspecialchars($usuario['rol']) ?></td>
                         <td><?= htmlspecialchars($usuario['estadousu']) ?></td>
-                        <td><a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=1">Ver</a></td>
+                        <td><a href="verusuario.php?id=<?= $usuario['id'] ?>">Ver</a></td>
                         <td><a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=2">Modificar</a></td>
                 
                         <td>

@@ -328,56 +328,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const inputImg = document.getElementById("img-perfil");
-        const maxPesoMB = 4;
-        const maxAncho = 1280;
-        const maxAlto = 1280;
+document.addEventListener("DOMContentLoaded", () => {
+    const inputImg = document.getElementById("img-perfil");
+    const maxPesoMB = 4;
+    const maxAncho = 1280;
+    const maxAlto = 1280;
 
-        inputImg.addEventListener("change", function () {
-            const archivo = this.files[0];
-            const mensajeError = this.nextElementSibling;
+    inputImg.addEventListener("change", function () {
+        const archivo = this.files[0];
+        const mensajeError = this.nextElementSibling;
 
-            // Borrar vista previa anterior
-            const previewExistente = document.getElementById("preview-img");
-            if (previewExistente) {
-                previewExistente.remove();
-            }
+        // Eliminar vista previa anterior y botón cancelar
+        const previewExistente = document.getElementById("preview-img");
+        if (previewExistente) previewExistente.remove();
 
-            if (!archivo) return;
+        const botonCancelar = document.getElementById("cancelar-img");
+        if (botonCancelar) botonCancelar.remove();
 
-            // Validar tamaño
-            if (archivo.size > maxPesoMB * 1024 * 1024) {
-                mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
-                this.value = "";
-                return;
-            }
+        if (!archivo) return;
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = new Image();
-                img.src = e.target.result;
+        // Validar tamaño
+        if (archivo.size > maxPesoMB * 1024 * 1024) {
+            mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
+            this.value = "";
+            return;
+        }
 
-                img.onload = function () {
-                    // Validar dimensiones exactas
-                    if (img.width !== maxAncho || img.height !== maxAlto) {
-                        mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
-                    } else {
-                        mensajeError.textContent = "";
-                    }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.src = e.target.result;
 
-                    // Mostrar vista previa
-                    img.id = "preview-img";
-                    img.style.maxWidth = "200px";
-                    img.style.marginTop = "10px";
-                    inputImg.parentNode.appendChild(img);
+            img.onload = function () {
+                // Validar dimensiones
+                if (img.width !== maxAncho || img.height !== maxAlto) {
+                    mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
+                } else {
+                    mensajeError.textContent = "";
+                }
+
+                // Mostrar vista previa
+                img.id = "preview-img";
+                img.style.maxWidth = "200px";
+                img.style.marginTop = "10px";
+                inputImg.parentNode.appendChild(img);
+
+                // Agregar botón cancelar
+                const btnCancelar = document.createElement("button");
+                btnCancelar.id = "cancelar-img";
+                btnCancelar.textContent = "Cancelar imagen";
+                btnCancelar.type = "button";
+                btnCancelar.style.display = "block";
+                btnCancelar.style.marginTop = "10px";
+                btnCancelar.onclick = function () {
+                    inputImg.value = "";
+                    img.remove();
+                    btnCancelar.remove();
+                    mensajeError.textContent = "";
                 };
+                inputImg.parentNode.appendChild(btnCancelar);
             };
+        };
 
-            reader.readAsDataURL(archivo);
-        });
+        reader.readAsDataURL(archivo);
     });
+});
 </script>
+
 
 <body>
     <?php include('cabecera.php'); ?>
