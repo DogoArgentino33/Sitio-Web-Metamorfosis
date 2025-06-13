@@ -1,3 +1,15 @@
+.dni-info a {
+    text-decoration: none;
+    color: inherit; /* Para que el link tome el color del botón */
+}
+
+.dni-info a:hover,
+.dni-info a:focus,
+.dni-info a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
 .dni-card {
     display: flex;
     align-items: center;
@@ -28,7 +40,7 @@
 }
 
 .dni-info {
-        flex: 1;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -39,18 +51,20 @@
     font-size: 1.8vw; /* Antes 1.1vw */
 }
 
-@media (max-width: 600px) {
-    .dni-card {
-        width: 90%;
-    }
-    .dni-img {
-        width: 50%;
-    }
-    .dni-info p {
-        font-size: 3.5vw;
-    }
+/* Estilos para que los botones dentro de dni-info tengan el mismo ancho */
+.dni-info a > .boton {
+    display: block;        /* Para que el botón dentro del <a> tome todo el ancho */
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1vw;    /* Espacio entre botones */
 }
 
+.dni-info > .boton {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Botones generales */
 .boton {
     background-color: white;
     color: #d12e3b;
@@ -74,6 +88,15 @@
 }
 
 @media (max-width: 600px) {
+    .dni-card {
+        width: 90%;
+    }
+    .dni-img {
+        width: 50%;
+    }
+    .dni-info p {
+        font-size: 3.5vw;
+    }
     .boton {
         width: 100%;
         font-size: 4vw;
