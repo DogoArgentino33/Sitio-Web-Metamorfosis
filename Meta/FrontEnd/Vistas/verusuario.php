@@ -37,22 +37,22 @@ $usuario = $resultado->fetch_assoc();
     <h1>Información del Usuario</h1>
 
     <section class="dni-card">
-    <div class="dni-img">
-        <img class="img-perfil" src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Imagen de perfil" onclick="mostrarModal(this)">
+        <div class="dni-img">
+            <img class="img-perfil" src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Imagen de perfil" onclick="mostrarModal(this)">
 
-    </div>
-    <div class="dni-info">
-        <p><strong>ID:</strong> <?= htmlspecialchars($usuario['id']) ?></p>
-        <p><strong>Nombre de Usuario:</strong> <?= htmlspecialchars($usuario['nom_usu']) ?></p>
-        <p><strong>Correo:</strong> <?= htmlspecialchars($usuario['correo']) ?></p>
-        <p><strong>Teléfono:</strong> <?= htmlspecialchars($usuario['telefono']) ?></p>
-        <p><strong>ID Persona:</strong> <?= htmlspecialchars($usuario['id_persona']) ?></p>
-        <p><strong>Rol:</strong> <?= htmlspecialchars($usuario['rol']) ?></p>
-        <p><strong>Estado Usuario:</strong> <?= htmlspecialchars($usuario['estadousu']) ?></p>
-        <br>
-        <a href="panelusuarios.php"><button type="button" class="boton">Volver al panel</button></a>
-    </div>
-</section>
+        </div>
+        <div class="dni-info">
+            <p><strong>ID:</strong> <?= htmlspecialchars($usuario['id']) ?></p>
+            <p><strong>Nombre de Usuario:</strong> <?= htmlspecialchars($usuario['nom_usu']) ?></p>
+            <p><strong>Correo:</strong> <?= htmlspecialchars($usuario['correo']) ?></p>
+            <p><strong>Teléfono:</strong> <?= htmlspecialchars($usuario['telefono']) ?></p>
+            <p><strong>ID Persona:</strong> <?= htmlspecialchars($usuario['id_persona']) ?></p>
+            <p><strong>Rol:</strong> <?= htmlspecialchars($usuario['rol']) ?></p>
+            <p><strong>Estado Usuario:</strong> <?= htmlspecialchars($usuario['estadousu']) ?></p>
+            <br>
+            <a href="panelusuarios.php"><button type="button" class="boton">Volver al panel</button></a>
+        </div>
+    </section>
 <div id="modalImagen" class="modal-imagen" onclick="cerrarModal()">
     <span class="cerrar">&times;</span>
     <img class="modal-contenido" id="imagenAmpliada">

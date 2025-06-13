@@ -2,6 +2,23 @@
 include('auth.php');
 include('conexion.php'); // Ajusta la ruta si es necesario
 
+if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
+    $idEliminar = intval($_GET['id']);
+    
+    // Preparar y ejecutar la eliminación
+    $stmt = $conexion->prepare("DELETE FROM usuario WHERE id = ?");
+    $stmt->bind_param("i", $idEliminar);
+
+    if ($stmt->execute()) {
+        // Redirigir nuevamente a panelusuarios para evitar reenvíos y actualizar la tabla
+        header("Location: panelusuarios.php");
+        exit;
+    } else {
+        echo "<script>alert('Error al eliminar el usuario');</script>";
+    }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -45,7 +62,7 @@ include('conexion.php'); // Ajusta la ruta si es necesario
                         <th>ESTADO</th>
                         <th>VER</th>
                         <th>MODIFICAR</th>
-                        <th>ACTIVAR/DESACTIVAR</th>
+                        <th>ELIMINAR</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,12 +90,13 @@ include('conexion.php'); // Ajusta la ruta si es necesario
                         <td><?= htmlspecialchars($usuario['rol']) ?></td>
                         <td><?= htmlspecialchars($usuario['estadousu']) ?></td>
                         <td><a href="verusuario.php?id=<?= $usuario['id'] ?>">Ver</a></td>
-                        <td><a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=2">Modificar</a></td>
+                        <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>">Modificar</a></td>
                 
                         <td>
                         
                         <?php if($usuario['estadousu'] == true): ?>
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3">Eliminar</a>
+                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" onclick="return confirmarEliminacion()">Eliminar</a>
+
                         <?php else: ?>
                         <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
                         <?php endif; ?>
@@ -424,6 +442,13 @@ include('conexion.php'); // Ajusta la ruta si es necesario
         document.getElementById('modal-eliminar').style.display = 'none';
     }
 </script>
+
+<script>
+function confirmarEliminacion() {
+    return confirm("¿Estás seguro de que deseas eliminar este usuario?");
+}
+</script>
+
 
 </body>
 </html>
