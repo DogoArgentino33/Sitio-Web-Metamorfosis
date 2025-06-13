@@ -57,7 +57,7 @@ $usuario = $resultado->fetch_assoc();
 <div id="modalImagen" class="modal-imagen" onclick="cerrarModal()">
     <span class="cerrar">&times;</span>
     <img class="modal-contenido" id="imagenAmpliada">
-</dction>iv>
+</div>
 
 <script>
 function mostrarModal(imagen) {
