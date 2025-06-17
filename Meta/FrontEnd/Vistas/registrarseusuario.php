@@ -58,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Verificar si ya existe el correo solo si el formato es válido
-    if (filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+    if (filter_var($correo, FILTER_VALIDATE_EMAIL)) 
+    {
         echo "entrando en validaciones de correo 2";
         $sql = "SELECT correo FROM usuario WHERE correo = '$correo'";
         $result = mysqli_query($conexion, $sql);

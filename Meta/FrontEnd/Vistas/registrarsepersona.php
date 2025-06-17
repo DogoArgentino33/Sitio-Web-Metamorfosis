@@ -37,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pais         = isset($_POST['pais']) ? trim($_POST['pais']) : '';
     $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
     $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
+    $lat          = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
+    $lng          = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
 
     // Validaciones
     if ($nombre === '' || !validarSoloLetras($nombre)) {
@@ -184,9 +186,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pais         = mysqli_real_escape_string($conexion, $pais);
         $genero       = mysqli_real_escape_string($conexion, $genero);
         $ruta_imagen  = mysqli_real_escape_string($conexion, $ruta_imagen);
+        $lat          = mysqli_real_escape_string($conexion, $lat);
+        $lng          = mysqli_real_escape_string($conexion, $lng);
 
-        $sql_insert = "INSERT INTO `persona`(`nombre`, `apellido`, `dni`, `fec_nac`, `pais`, `provincia`, `genero`, `img`, `calle`, `altura`, `barrio`, `departamento`, `municipio`, `localidad`) 
-        VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad')";
+        $sql_insert = "INSERT INTO `persona`(`nombre`, `apellido`, `dni`, `fec_nac`, `pais`, `provincia`, `genero`, `img`, `calle`, `altura`, `barrio`, `departamento`, `municipio`, `localidad`, `lat`, `lng`) 
+        VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad','$lat','$lng')";
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion);
@@ -210,6 +214,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../Estilos/registro.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
+
+    <!-- Link y script de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""> </script>
+
 </head>
 
 <script>
@@ -423,7 +437,53 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    /* mapa */
+    var map = L.map('map').setView([-28.468902, -65.77901],14);
 
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+    /* marcador */
+    let marker;
+
+    map.on('click', function(e) 
+    {
+    const { lat, lng } = e.latlng;
+    document.getElementById('lat').value = lat.toFixed(6);
+    document.getElementById('lng').value = lng.toFixed(6);
+
+        if (marker) 
+            {
+                marker.setLatLng(e.latlng);
+                /* popup */
+                marker.bindPopup("").openPopup();
+            } 
+        else 
+            {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+    });
+
+    /* popup ubicacion */
+    var popup = L.popup();
+
+    function onMapClick(e) 
+    {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("Coordenada: " + e.latlng.toString())
+        .openOn(map);
+    }
+    map.on('click', onMapClick);
+    });
+
+</script>
+
+<!-- Cuerpo del formulario -->
 <body>
     <?php include('cabecera.php'); ?>
     <section class="nav-route">
@@ -520,6 +580,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     <label for="pais">País:</label>
                     <input id="pais" name="pais" type="text" class="solo-letras" required>
                 </section>
+
+                <!-- Estilo de Leaflet -->
+                <style>
+                #map {
+                        height: 350px; 
+                        width: 350px;
+                        margin: auto; }
+                </style>
+
+                <!-- Div del mapa -->
+                <div id="map"></div>
+
+                <!-- lat -->
+                <label for="lat"></label>
+                <input type="number" id="lat" name="lat" readonly hidden><br>
+                <!-- lng -->
+                <label for="lng"></label>
+                <input type="number" id="lng" name="lng" readonly hidden><br>
 
                 <!-- Género -->
                 <section class="input-box-genero">
