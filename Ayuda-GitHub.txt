@@ -142,3 +142,63 @@ Usen ramas (branches) si el proyecto crece mucho (puedo explicarte cómo hacerlo
 
 Usen mensajes de commit claros.
 
+✅ Tu situación:
+Hiciste cambios locales pero no hiciste commit.
+
+Tu compañero hizo commit y push al repositorio remoto.
+
+Quieres hacer commit + push de tus cambios y traer los de tu compañero sin conflictos.
+
+🛠 Solución Paso a Paso
+1. Guarda tus cambios sin hacer commit (por si acaso)
+Puedes usar stash si quieres guardar tus cambios de forma segura temporalmente:
+
+bash
+Copiar
+Editar
+git stash
+Esto guardará tus cambios actuales y te dejará el área de trabajo limpia para poder hacer pull sin conflictos.
+
+2. Trae los cambios del repositorio remoto
+Primero actualizás tu rama con lo que tu compañero subió:
+
+bash
+Copiar
+Editar
+git pull origin nombre-de-la-rama
+Cambia nombre-de-la-rama por la rama en la que estás trabajando (por ejemplo, main o develop).
+
+3. Recupera tus cambios
+Si hiciste stash, ahora volvés a aplicar tus cambios locales:
+
+bash
+Copiar
+Editar
+git stash pop
+Esto vuelve a aplicar lo que tenías antes del pull. Si hay conflictos, Git te avisará para que los resuelvas.
+
+4. Hacé commit de tus cambios
+Una vez que tu código está actualizado y tus cambios están de vuelta:
+
+bash
+Copiar
+Editar
+git add .
+git commit -m "Mi mensaje de commit"
+5. Hacé push al repositorio remoto
+bash
+Copiar
+Editar
+git push origin nombre-de-la-rama
+✅ Alternativa (si no querés usar stash)
+Si no querés usar stash, podés hacer directamente esto:
+
+bash
+Copiar
+Editar
+git add .
+git commit -m "Mi mensaje de commit"
+git pull origin nombre-de-la-rama --rebase
+git push origin nombre-de-la-rama
+El --rebase reordena tus cambios locales encima de los de tu compañero. Esto evita un "merge commit" innecesario.
+

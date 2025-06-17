@@ -1,0 +1,115 @@
+#modalExportar {
+    display: none; /* oculto por defecto */
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    /* display: flex;  <-- QUITAR O COMENTAR ESTA LÍNEA */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tarjeta compacta centrada */
+.modal-exportar-card {
+    background-color: #d12e3b;
+    border-radius: 1.5vw;
+    padding: 3%;
+    width: 35%;
+    max-width: 500px;
+    color: white;
+    box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Contenido interno */
+.modal-exportar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+}
+
+.modal-exportar-content h2 {
+    font-size: 2vw;
+    margin-bottom: 1vw;
+    text-align: center;
+    color: white;          /* color blanco */
+    line-height: 1;      /* más espacio entre líneas */
+}
+
+/* Etiquetas y entradas */
+.modal-exportar-content label {
+    display: block;
+    margin: 0.4vw 0;
+    font-size: 1.2vw;
+    cursor: pointer;
+}
+
+.modal-exportar-content input[type="checkbox"],
+.modal-exportar-content input[type="radio"] {
+    margin-right: 0.5vw;
+    transform: scale(1.1);
+}
+
+/* Botones */
+.modal-exportar-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1vw;
+    margin-top: 1.5vw;
+}
+
+/* Botón reutilizable */
+.boton {
+    background-color: white;
+    color: #d12e3b;
+    border: none;
+    border-radius: 1vw;
+    padding: 0.5vw 1.5vw;
+    font-size: 1vw;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.boton:hover {
+    background-color: #f3f3f3;
+    color: #a51e2a;
+}
+
+.boton:active {
+    background-color: #e0e0e0;
+    transform: scale(0.98);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .modal-exportar-card {
+        width: 90%;
+        padding: 5vw;
+        border-radius: 4vw;
+    }
+
+    .modal-exportar-content h2 {
+        font-size: 5vw;
+    }
+
+    .modal-exportar-content label {
+        font-size: 4vw;
+    }
+
+    .modal-exportar-buttons {
+        flex-direction: column;
+        gap: 3vw;
+    }
+
+    .boton {
+        width: 100%;
+        font-size: 4vw;
+        padding: 3vw;
+        border-radius: 3vw;
+    }
+}
