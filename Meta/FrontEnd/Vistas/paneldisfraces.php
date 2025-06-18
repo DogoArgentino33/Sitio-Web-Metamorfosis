@@ -31,79 +31,57 @@
                     <tr>
                         <th>ID</th>
                         <th>NOMBRE</th>
-                        <th>CATEGORÍA</th>
-                        <th>TALLE</th>
+                        <th>TIPO</th>
+                        <th>DISPONIBILIDAD</th>
+                        <th>UNIDADES DISPONIBLES</th>
+                        <th>PRECIO</th>
+                        <TH>TALLA</TH>
+                        <TH>CATEGORIA</TH>
+                        <TH>IMAGEN PRODUCTO</TH>
+                        <TH>AUDITORIA</TH>
                         <th>ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Flash</td>
-                        <td>Niño</td>
-                        <td>S</td>
-                        <td>
-                            <button class="accion-button" title="Ver" onclick="openModalShow()"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar" onclick="openModalEdit()"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar" onclick="openModalDelete()"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Blancanieves</td>
-                        <td>Niña</td>
-                        <td>S</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Gaucho</td>
-                        <td>hombre</td>
-                        <td>XXL</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Cavernicola</td>
-                        <td>mujer</td>
-                        <td>XL</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Ardilla</td>
-                        <td>niña</td>
-                        <td>S</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Fantasta de la B</td>
-                        <td>niño</td>
-                        <td>S</td>
-                        <td>
-                            <button class="accion-button" title="Ver"><i class="bi bi-eye"></i></button>
-                            <button class="accion-button" title="Editar"><i class="bi bi-pencil"></i></button>
-                            <button class="accion-button" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
+                <?php
+                include('conexion.php');
+
+                $sql = "SELECT p.*, i.img AS imagen 
+                        FROM producto p
+                        LEFT JOIN img_producto i ON p.id_img_producto = i.id";
+
+                $result = $conexion->query($sql);
+
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . $row['id'] . "</td>";
+                    echo "<td>" . htmlspecialchars($row['nombre']) . "</td>";
+                    echo "<td>" . $row['tipo'] . "</td>";
+                    echo "<td>" . ($row['disponibilidad'] ? 'S' : 'N') . "</td>";
+                    echo "<td>" . $row['unidades_disponibles'] . "</td>";
+                    echo "<td>$" . number_format($row['precio'], 2) . "</td>";
+                    echo "<td>" . $row['id_talla'] . "</td>";
+                    echo "<td>" . $row['id_categoria'] . "</td>";
+
+                    // Mostrar imagen con ruta completa desde base de datos
+                    if (!empty($row['imagen'])) {
+                        echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Producto' title='" . htmlspecialchars($row['imagen']) . "' style='width: 100%; border-radius: 5px;'></td>";
+                    } else {
+                        echo "<td><em>Sin imagen</em></td>";
+                    }
+
+                    echo "<td><button class='accion-button' title='Auditoría'><i class='bi bi-shield-check'></i></button></td>";
+                    echo "<td>
+                            <button class='accion-button' title='Ver'><i class='bi bi-eye'></i></button>
+                            <button class='accion-button' title='Editar'><i class='bi bi-pencil'></i></button>
+                            <button class='accion-button' title='Eliminar'><i class='bi bi-trash'></i></button>
+                        </td>";
+                    echo "</tr>";
+                }
+                ?>
                 </tbody>
+
+
             </table>
         </section>
     </main>
