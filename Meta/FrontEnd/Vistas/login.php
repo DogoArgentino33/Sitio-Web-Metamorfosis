@@ -4,11 +4,12 @@ include('conexion.php'); // Ajusta la ruta si es necesario
 
 $mensaje = "";
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
     $passusu = strtolower($_POST['password']);
     $correo = $_POST['correo'];
 
-    $sql = "SELECT id, correo, passusu FROM usuario WHERE correo='$correo'";
+    $sql = "SELECT id, correo, passusu, nom_usu, rol FROM usuario WHERE correo='$correo'";
 
     $result = mysqli_query($conexion, $sql);
 
@@ -18,12 +19,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     if (password_verify($passusu, $reg['passusu'])) {
         // Actualizar estado a logueado (2)
         $id = $reg['id'];
+        $rol = $reg['rol'];
+        $nom_usu = $reg['nom_usu'];
         $update_sql = "UPDATE usuario SET estadousu = 2 WHERE id = $id";
         mysqli_query($conexion, $update_sql);
 
         // Crear variables de sesión
         session_start();
         $_SESSION['id'] = $id;
+        $_SESSION['rol'] = $rol;
+        $_SESSION['nom_usu'] = $nom_usu;
 
         header("Location: index.php");
         exit;
