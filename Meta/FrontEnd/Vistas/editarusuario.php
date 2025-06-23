@@ -66,9 +66,7 @@ $ruta_imagen = $usuario['img_perfil']; // Mantener actual por defecto
     <meta charset="UTF-8">
     <title>Editar Usuario</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/paneles.css">
     <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/modales.css">
     <link rel="stylesheet" href="../Estilos/editarusuario.css">
 </head>
 <body>

@@ -1,0 +1,202 @@
+/* ===== Estilos Generales ===== */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 17px;
+}
+
+h1 {
+    text-align: center;
+    color: #007bff;
+    font-size: 30px;
+    margin-top: 30px;
+}
+
+/* ===== Contenedor del formulario ===== */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 20px;
+}
+
+form#employee {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ===== Títulos y fieldsets ===== */
+form#employee h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 26px;
+    color: #007bff;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+}
+
+legend {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+/* ===== Inputs y Labels ===== */
+.input-box {
+    margin-bottom: 20px;
+}
+
+.input-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.input-box input[type="text"],
+.input-box input[type="date"],
+.input-box input[type="number"],
+.input-box input[type="file"],
+.input-box input[type="email"],
+.input-box input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 17px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-box input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* ===== Género (radio buttons) ===== */
+.input-box-genero {
+    margin: 20px 0;
+}
+
+.input-box-genero label {
+    font-weight: normal;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+/* ===== Mapa de Leaflet ===== */
+#map {
+    height: 350px;
+    width: 100%;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ===== Botón Registrar ===== */
+.btn-register {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 18px;
+    padding: 14px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-register:hover {
+    background-color: #0056b3;
+}
+
+/* ===== Link debajo del botón ===== */
+form#employee p a {
+    display: inline-block;
+    margin-top: 12px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+form#employee p a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Validaciones dinámicas ===== */
+.barra-validacion {
+    height: 5px;
+    border-radius: 3px;
+    margin-top: 6px;
+}
+
+.barra-validacion.valido {
+    background-color: #28a745;
+}
+
+.barra-validacion.invalido {
+    background-color: #dc3545;
+}
+
+.mensaje-validacion {
+    font-size: 14px;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.mensaje-validacion.valido {
+    color: #28a745;
+}
+
+.mensaje-validacion.invalido {
+    color: #dc3545;
+}
+
+/* ===== Imagen: vista previa y botón cancelar ===== */
+#preview-img {
+    display: block;
+    max-width: 220px;
+    margin-top: 12px;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+}
+
+#cancelar-img {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 14px;
+    cursor: pointer;
+    margin-top: 12px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    font-size: 15px;
+}
+
+#cancelar-img:hover {
+    background-color: #a71d2a;
+}
+
+/* ===== Errores PHP (lado servidor) ===== */
+span.error {
+    display: block;
+    font-size: 15px;
+    color: #dc3545;
+    margin-top: 6px;
+}

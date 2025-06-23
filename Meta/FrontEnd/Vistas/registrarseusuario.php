@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/registro.css">
+    <link rel="stylesheet" href="../Estilos/registrarusuario.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
 </head>
@@ -406,12 +406,12 @@ document.addEventListener("DOMContentLoaded", () => {
     </section>
     <br>
     <h1 style="text-align: center;">Registrar Usuario</h1>
-            <div style="text-align:center; margin-bottom:20px;">
+        <div style="text-align:center; margin-bottom:20px;">
             <video src="uploads/METAMORFOSIS VIDEO REGISTRAR USUARIO.mp4" controls width="480" poster="">
             Tu navegador no soporta la reproducción de video.
             </video>
             <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar un usuario</p>
-            </div>
+        </div>
     <section class="wrapper">
 
         <form action="registrarseusuario.php" method="post" enctype="multipart/form-data" id="employee">

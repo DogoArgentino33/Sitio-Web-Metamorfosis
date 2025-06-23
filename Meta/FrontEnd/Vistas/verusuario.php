@@ -28,11 +28,7 @@ $usuario = $resultado->fetch_assoc();
     <meta charset="UTF-8">
     <title>Información del Usuario</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/paneles.css">
-    <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/modales.css">
-    <link rel="stylesheet" href="../Estilos/estilousuario.css">
-    <link rel="stylesheet" href="../Estilos/exportarusuario.css">
+    <link rel="stylesheet" href="../Estilos/verusuario.css">
 </head>
 <body>
     <h1>Información del Usuario</h1>
@@ -60,16 +56,16 @@ $usuario = $resultado->fetch_assoc();
 </div>
 
 <script>
-function mostrarModal(imagen) {
-    const modal = document.getElementById("modalImagen");
-    const imgAmpliada = document.getElementById("imagenAmpliada");
-    modal.style.display = "block";
-    imgAmpliada.src = imagen.src;
-}
+    function mostrarModal(imagen) {
+        const modal = document.getElementById("modalImagen");
+        const imgAmpliada = document.getElementById("imagenAmpliada");
+        imgAmpliada.src = imagen.src;
+        modal.style.display = "flex";
+    }
 
-function cerrarModal() {
-    document.getElementById("modalImagen").style.display = "none";
-}
+    function cerrarModal() {
+        document.getElementById("modalImagen").style.display = "none";
+    }
 </script>
 
 <!-- Modal de exportación -->

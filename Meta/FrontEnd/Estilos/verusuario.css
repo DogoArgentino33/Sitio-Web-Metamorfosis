@@ -1,0 +1,188 @@
+/* Estilo general */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    font-size: 17px;
+}
+
+/* Encabezado principal */
+h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #d12e3b;
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Tarjeta de usuario */
+.dni-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Imagen de perfil */
+.dni-img {
+    flex: 1 1 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-perfil {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #d12e3b;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.img-perfil:hover {
+    transform: scale(1.05);
+}
+
+/* Información del usuario */
+.dni-info {
+    flex: 2 1 300px;
+}
+
+.dni-info p {
+    margin: 10px 0;
+}
+
+/* Botones */
+.boton {
+    background-color: #d12e3b;
+    color: white;
+    padding: 10px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.boton:hover {
+    background-color: #a1222d;
+}
+
+.modal-imagen {
+    display: none; /* Se muestra solo al hacer clic */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    justify-content: center;   /* Centrar horizontalmente */
+    align-items: center;       /* Centrar verticalmente */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-contenido {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.cerrar {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #ffffff;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+/* Modal de exportar */
+#modalExportar {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-exportar-card {
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.modal-exportar-content h2 {
+    margin-top: 0;
+    color: #d12e3b;
+    font-size: 24px;
+    text-align: center;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    color: #471e1a;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.modal-exportar-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .dni-card {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .dni-img, .dni-info {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .modal-exportar-buttons {
+        flex-direction: column;
+    }
+
+    .boton {
+        width: 100%;
+    }
+}
