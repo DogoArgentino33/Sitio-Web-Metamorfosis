@@ -32,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 </a>
                 <?php endif; ?>
 
-                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 3): ?>
+                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                 <!-- Para Gerente -->
                 <a href="gerente.php" title="Panel gerente">
                     <i class="bi bi-gear-fill"></i>

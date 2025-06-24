@@ -197,8 +197,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
         $id_persona = $_SESSION['id_persona'];
             
-        $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona) 
-                            VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona')";
+        $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona, rol) 
+                            VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona',0)";
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion);
