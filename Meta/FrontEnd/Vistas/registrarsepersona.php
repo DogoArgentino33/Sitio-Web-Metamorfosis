@@ -376,7 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const maxAncho = 1280;
     const maxAlto = 1280;
 
-    inputImg.addEventListener("change", function () {
+    inputImg.addEventListener("change", function () 
+    {
         const archivo = this.files[0];
         const mensajeError = this.nextElementSibling;
 
@@ -482,6 +483,96 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 </script>
+
+<!-- Función de la cámara -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+         /* Inicializacion de variables */
+  const width  = 350; // Ancho
+  let   height = 0; // Alto
+  let   streaming = false; 
+  let   stream    = null;   // Para Detener video al salir del modal
+  const modal   = document.getElementById("modalMAIN");
+  const btn     = document.getElementById("btnmostrarmodalverbo");
+  const span    = document.getElementsByClassName("close")[0];
+  const video   = document.getElementById("video");
+  const canvas  = document.getElementById("canvas");
+  const photo   = document.getElementById("photo");
+  const startBt = document.getElementById("sacar-foto"); // para tomar foto
+  const hidden  = document.getElementById("foto-base64");
+
+  /* ---------- control del modal ---------- */
+  btn.onclick = () => {
+    modal.style.display = "block";
+    initCamera();                // inicia la camara, al abrir el modal saldra el pedido de permiso
+  };
+
+  span.onclick = closeModal;
+  window.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+  function closeModal() {
+    modal.style.display = "none";
+    stopCamera();                // ← apagar cámara al salir
+    clearPhoto();
+  }
+
+  /* ---------- cámara ---------- */
+  function initCamera() {
+    if (stream) return;          // ya está encendida
+
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "user" }, audio: false })
+      .then( s => {
+        stream = s;
+        video.srcObject = s;
+        video.play();
+      })
+      .catch(err => console.error("Error cámara:", err));
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream    = null;
+      streaming = false;
+    }
+  }
+
+  video.addEventListener("canplay", () => {
+    if (!streaming) {
+      height = video.videoHeight / (video.videoWidth / width);
+      if (isNaN(height)) height = width / (4/3);
+
+      video.width  = width;
+      video.height = height;
+      canvas.width  = width;
+      canvas.height = height;
+      streaming = true;
+    }
+  });
+
+  startBt.addEventListener("click", e => { takePicture(); e.preventDefault(); });
+
+  function clearPhoto() {
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#AAA";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    photo.src = canvas.toDataURL("image/png");
+    hidden.value = "";
+  }
+
+  function takePicture() {
+    if (!streaming) return;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, width, height);
+    const data = canvas.toDataURL("image/png");
+    photo.src   = data;
+    hidden.value = data;                // se enviará en el <form>
+  } 
+    });
+</script>
+
 
 <!-- Cuerpo del formulario -->
 <body>
@@ -614,6 +705,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     <br>
                     <label for="img-persona">Imagen personal:</label>
                     <input id="img-persona" name="img-persona" type="file" accept="image/*" required>
+
+                <!-- Camara -->
+                 <input type="button" value="Activar Camara" id="btnmostrarmodalverbo">
+
+                <!-- Modal de la Cámara -->
+                <section id="modalMAIN" class="modal">
+                <section class="modal-content">
+
+                <!-- Aqui inicia el contenido de la cámara -->
+                <section class="camera">
+                <video id="video">Video stream not available.</video>    
+                </section>
+
+                <!-- Muestra la imagen -->
+                <canvas id="canvas" style="display:none;"></canvas>
+                <img id="photo" alt="La foto capturada aparecerá aquí" />
+                
+                <br>
+                <br>
+                
+                <!-- Botones de sacar foto y guardar en base de datos -->
+                <input id="sacar-foto" type="button" value="Tomar foto"></input>
+                <input type="submit" value="Confirmar y Guardar"></input>
+
+                <!-- este  imput guarda y envia la foto -->
+                <input type="hidden" name="foto" id="foto-base64" />
+
+                <span class="close">X</span>
+                </section>
+                </section>
+                <!-- Fin Cámara -->
+
+
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
 
