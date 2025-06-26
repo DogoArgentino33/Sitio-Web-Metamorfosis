@@ -73,8 +73,7 @@ Aquí debes poner un mensaje claro. Por ejemplo:
 bash
 Copiar
 Editar
-git commit -m "Corrijo errores en el formulario de login"
-bash
+git commit -m "Corrijo errores en el formulario de login"add .
 Copiar
 Editar
 git push

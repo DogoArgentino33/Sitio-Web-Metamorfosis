@@ -270,3 +270,132 @@ footer i {
 .social-icons i:hover {
     color: #a1222d;
 }
+
+/* ================= LOGIN ================= */
+
+/* Contenedor general del login */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    box-sizing: border-box;
+}
+
+/* Formulario de login */
+form#formlogin {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 50px 40px; /* Más espacio interior */
+    width: 100%;
+    max-width: 600px; /* Más ancho */
+    box-sizing: border-box;
+}
+
+/* Título del formulario */
+form#formlogin legend {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: #d12e3b;
+    font-size: 28px;
+}
+
+/* Grupo de entrada */
+.input-box {
+    margin-bottom: 20px;
+}
+
+/* Etiquetas */
+.input-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #471e1a;
+}
+
+/* Inputs */
+.input-box input[type="text"],
+.input-box input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 17px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-box input:focus {
+    border-color: #d12e3b;
+    outline: none;
+}
+
+/* Botón login */
+form#formlogin input[type="submit"].btn {
+    width: 100%;
+    background-color: #d12e3b;
+    color: white;
+    border: none;
+    font-size: 18px;
+    padding: 12px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+form#formlogin input[type="submit"].btn:hover {
+    background-color: #a1222d;
+}
+
+/* Sección recordarme y recuperar */
+.remember-forgot {
+    margin-top: 15px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #555;
+}
+
+.remember-forgot a {
+    color: #d12e3b;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.remember-forgot a:hover {
+    color: #a1222d;
+    text-decoration: underline;
+}
+
+/* Enlace a registrarse */
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #333;
+}
+
+.register-link a {
+    color: #d12e3b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-link a:hover {
+    color: #a1222d;
+}
+
+/* Mensaje de error login */
+#mensaje-login {
+    font-size: 15px;
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+}
