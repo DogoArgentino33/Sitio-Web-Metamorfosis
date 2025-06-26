@@ -1,288 +1,108 @@
-/* Estilo general del body */
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    font-size: 17px;
+/* Contenedor general del formulario */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    max-width: 500px;
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
 }
 
-/* Encabezados */
-h1 {
-    font-size: 30px;
-    font-weight: 700;
+/* Estilo del formulario */
+form fieldset {
+    border: none;
+    width: 100%;
+}
+
+/* Título del fieldset */
+form legend {
+    font-size: 24px;
     color: #d12e3b;
-    margin: 20px 0;
+    margin-bottom: 20px;
+    font-weight: bold;
     text-align: center;
 }
 
-h2 {
-    color: #471e1a;
-    margin: 30px 0 15px;
+/* Cajas de entrada */
+.input-box {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Ruta de navegación */
-.nav-route {
-    padding: 15px 20px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #ddd;
-}
-
-.nav-route a {
-    text-decoration: none;
-    color: #d12e3b;
-    font-weight: 500;
-    margin-right: 5px;
-    cursor: default;
-}
-
-.nav-route a:last-child {
+.input-box label {
+    margin-bottom: 8px;
     color: #471e1a;
     font-weight: 600;
 }
 
-/* Cabecera */
-header {
-    background-color: #fff;
-    padding: 10px 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.logo-container h1 {
-    margin: 0;
-    color: #d12e3b;
-}
-
-.formcentrado input[type="text"] {
-    padding: 7px 12px;
+.input-box input {
+    padding: 10px 14px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 16px;
-    width: 250px;
+    transition: border-color 0.3s ease;
 }
 
-.container-login-cart {
+.input-box input:focus {
+    border-color: #d12e3b;
+    outline: none;
+}
+
+/* Botón de login (usa clase .btn existente) */
+form input[type="submit"].btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Recordarme y olvidar contraseña */
+.remember-forgot {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.remember-forgot label {
     display: flex;
     align-items: center;
-    gap: 15px;
-    font-size: 20px;
-    color: #d12e3b;
+    gap: 6px;
 }
 
-.container-login-cart a, .container-login-cart i {
+.remember-forgot a {
+    text-decoration: none;
     color: #d12e3b;
-    cursor: pointer;
     transition: color 0.3s ease;
 }
 
-.container-login-cart a:hover, .container-login-cart i:hover {
+.remember-forgot a:hover {
     color: #a1222d;
 }
 
-/* Navegación principal */
-.container-nav {
-    background-color: #d12e3b;
-    padding: 10px 0;
+/* Link para registrarse */
+.register-link {
+    margin-top: 20px;
     text-align: center;
-}
-
-#nav-links a {
-    color: #fff;
-    text-decoration: none;
-    margin: 0 15px;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-#nav-links a:hover {
-    color: #ff6b6b;
-}
-
-/* Mensaje de bienvenida */
-header h2 {
-    text-align: center;
-    color: #d12e3b;
-    font-weight: 600;
-    margin: 10px 0 0;
-}
-
-/* Slider */
-.slider {
-    max-width: 900px;
-    margin: 20px auto 40px;
-    overflow: hidden;
-    position: relative;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    background-color: #fff;
-}
-
-.slides {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-}
-
-.slide {
-    min-width: 100%;
-    user-select: none;
-}
-
-.slide img {
-    width: 100%;
-    display: block;
-    border-radius: 8px;
-}
-
-/* Controles slider */
-.slider-controls {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    transform: translateY(-50%);
-    padding: 0 15px;
-    box-sizing: border-box;
-}
-
-.control-button {
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    font-size: 30px;
-    color: #d12e3b;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-}
-
-.control-button:hover {
-    background-color: #d12e3b;
-    color: white;
-}
-
-/* Contenedor de tarjetas */
-.cards-container {
-    max-width: 1100px;
-    margin: 0 auto 50px;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.card {
-    background-color: #fff;
-    width: 320px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: box-shadow 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-}
-
-.category-image-index {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-.card h4 {
-    color: #d12e3b;
-    margin: 10px 0;
-}
-
-.card p {
     font-size: 15px;
-    color: #555;
-    margin-bottom: 20px;
 }
 
-.btn {
-    background-color: #d12e3b;
-    border: none;
-    color: white;
-    padding: 10px 25px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-    background-color: #a1222d;
-}
-
-/* Footer */
-footer {
-    background-color: #471e1a;
-    color: #fff;
-    padding: 25px 20px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-footer p {
-    margin: 6px 0;
-}
-
-.social-icons {
-    margin-top: 15px;
-}
-
-.social-icons a, .social-icons i {
-    font-size: 24px;
+.register-link a {
     color: #d12e3b;
-    margin: 0 8px;
-    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
     transition: color 0.3s ease;
-    vertical-align: middle;
 }
 
-.social-icons a:hover, .social-icons i:hover {
-    color: #ff6b6b;
+.register-link a:hover {
+    color: #a1222d;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .cards-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .card {
-        width: 90%;
-    }
-
-    .logo-container {
-        justify-content: center;
-        gap: 15px;
-    }
-
-    .formcentrado input[type="text"] {
-        width: 100%;
-        max-width: 300px;
-    }
+/* Mensaje de error */
+#mensaje-login {
+    font-size: 16px;
+    font-weight: bold;
 }
