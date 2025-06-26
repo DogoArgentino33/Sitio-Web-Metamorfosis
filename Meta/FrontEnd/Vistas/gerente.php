@@ -19,8 +19,7 @@
         <h1 style="text-align: center;">Panel Administrador de Metamorfosis - Gerente</h1>
         <section class="table-container">
             <a href="../Vistas/panelusuarios.php" class="nav-tablas-administrador" title="Usuarios"><i class="bi bi-person"></i>Usuarios</a>
-            <a href="../Vistas/paneldisfraces.php" class="nav-tablas-administrador" title="Disfraces"><i class="bi bi-balloon"></i>Disfraces</a>
-            <a href="../Vistas/panelaccesorios.php" class="nav-tablas-administrador" title="Accesorios"><i class="bi bi-eyeglasses"></i>Accesorios</a>
+            <a href="../Vistas/panelproductos.php" class="nav-tablas-administrador" title="Productos"><i class="bi bi-balloon"></i>Productos</a>
             <a href="../Vistas/panelalquileres.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-calendar"></i>Alquileres</a>
             <a href="../Vistas/estadisticas.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-bar-chart"></i>Estadisticas</a>
         </section>
