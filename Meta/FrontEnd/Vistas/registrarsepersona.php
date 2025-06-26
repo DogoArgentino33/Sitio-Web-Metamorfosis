@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pais         = isset($_POST['pais']) ? trim($_POST['pais']) : '';
     $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
     $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
+    $img_base64 = isset($_POST['foto']) ? $_POST['foto'] : null;
     $lat          = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
     $lng          = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
 
@@ -95,8 +96,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Validación y procesamiento de imagen
-    if ($img && $img['error'] == 0) {
+    if ($img_base64) {
+        // Procesar imagen desde base64 (cámara)
+        $data = explode(',', $img_base64);
+        if (count($data) === 2) {
+            $imagen_decodificada = base64_decode($data[1]);
 
+            $nombre_img = uniqid() . ".jpg";
+            $directorio_destino = "uploads/persona/";
+            $ruta_completa = $directorio_destino . $nombre_img;
+
+            if (file_put_contents($ruta_completa, $imagen_decodificada)) {
+                $ruta_imagen = $ruta_completa;
+            } else {
+                $errores[] = "No se pudo guardar la imagen capturada.";
+            }
+        } else {
+            $errores[] = "Formato de imagen de cámara no válido.";
+        }
+
+    } elseif ($img && $img['error'] == 0) {
+        // Procesar imagen subida por archivo
         $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
 
         if (!in_array($img['type'], $permitidos)) {
@@ -107,7 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $ancho_nuevo = 1280;
             $alto_nuevo = 1280;
 
-            // Crear imagen desde el archivo original según tipo MIME
             switch ($img['type']) {
                 case 'image/jpeg':
                 case 'image/jpg':
@@ -125,14 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             if ($origen) {
-                // Crear lienzo en blanco de 1280x1280
                 $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
-
-                // Rellenar fondo blanco si la imagen original es menor
                 $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
                 imagefill($imagen_redimensionada, 0, 0, $blanco);
 
-                // Reescalar la imagen original para que encaje en el nuevo tamaño
                 imagecopyresampled(
                     $imagen_redimensionada,
                     $origen,
@@ -143,8 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $alto_original
                 );
 
-                // Guardar imagen
-                $nombre_img = uniqid() . ".jpg"; // Siempre guardamos como JPG
+                $nombre_img = uniqid() . ".jpg";
                 $directorio_destino = "uploads/persona/";
                 $ruta_completa = $directorio_destino . $nombre_img;
 
@@ -154,15 +168,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $errores[] = "No se pudo guardar la imagen redimensionada.";
                 }
 
-                // Liberar memoria
                 imagedestroy($origen);
                 imagedestroy($imagen_redimensionada);
             }
         }
-
     } else {
-        $errores[] = "Debes subir una imagen válida.";
+        $errores[] = "Debes subir una imagen válida o tomar una con la cámara.";
     }
+
 
     foreach ($errores as $error) {
         if (strpos($error, 'imagen') !== false || strpos($error, 'formato') !== false) {
@@ -512,6 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.onclick = (e) => { if (e.target === modal) closeModal(); };
 
   function closeModal() {
+    document.getElementById("img-persona").disabled = false;
     modal.style.display = "none";
     stopCamera();                // ← apagar cámara al salir
     clearPhoto();
@@ -563,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function takePicture() {
+    document.getElementById("img-persona").disabled = true;
     if (!streaming) return;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, width, height);
