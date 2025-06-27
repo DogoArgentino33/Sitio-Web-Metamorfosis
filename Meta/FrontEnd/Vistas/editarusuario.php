@@ -99,9 +99,10 @@ $ruta_imagen = $usuario['img_perfil']; // Mantener actual por defecto
 
         <label>Rol:</label>
         <select name="rol" required>
-            <option value="2" <?= $usuario['rol'] === 'admin' ? 'selected' : '' ?>>Admin</option>
-            <option value="1" <?= $usuario['rol'] === 'usuario' ? 'selected' : '' ?>>Usuario</option>
-            <option value="3" <?= $usuario['rol'] === 'empleado' ? 'selected' : '' ?>>Empleado</option>
+            <option value="4" <?= $usuario['rol'] === 'admin' ? 'selected' : '' ?>>Administrador</option>
+            <option value="1" <?= $usuario['rol'] === 'gerente' ? 'selected' : '' ?>>Gerente</option>
+            <option value="2" <?= $usuario['rol'] === 'empleado' ? 'selected' : '' ?>>Empleado</option>
+            <option value="0" <?= $usuario['rol'] === 'usuario' ? 'selected' : '' ?>>Usuario</option>
             <!-- Agregá más roles si tenés -->
         </select><br><br>
 

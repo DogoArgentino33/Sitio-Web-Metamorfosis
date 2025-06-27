@@ -45,6 +45,10 @@ if (session_status() === PHP_SESSION_NONE) {
                     <i class="bi bi-gear-fill"></i>
                 </a>
 
+                <a href="empleado.php" title="Panel empleado">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+
                 <a href="administrador.php" title="Panel administrador">
                     <i class="bi bi-pc-display"></i>
                 </a>

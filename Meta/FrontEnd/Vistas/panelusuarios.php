@@ -51,12 +51,10 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>NOMBRE DE USUARIO</th>
                         <th>IMAGEN DE PERFIL</th>
                         <th>CORREO</th>
                         <th>TELÉFONO</th>
-                        <th>ID PERSONA</th>
                         <th>ROL</th>
                         <th>ESTADO</th>
                         <th>VER</th>
@@ -76,8 +74,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         ?>
 
                         <tr>
-
-                        <td><?= htmlspecialchars($usuario['id']) ?></td>
                         <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
                         <td>
                         <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
@@ -85,9 +81,41 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
                         <td><?= htmlspecialchars($usuario['correo']) ?></td>
                         <td><?= htmlspecialchars($usuario['telefono']) ?></td>
-                        <td><?= htmlspecialchars($usuario['id_persona']) ?></td>
-                        <td><?= htmlspecialchars($usuario['rol']) ?></td>
-                        <td><?= htmlspecialchars($usuario['estadousu']) ?></td>
+                        <?php 
+                            if($usuario['rol'] == 0){
+                                ?><td><?= htmlspecialchars('Usuario') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['rol'] == 1){
+                                    ?><td><?= htmlspecialchars('Gerente') ?></td>
+                                <?php
+                                }
+                            }
+
+                            if($usuario['rol'] == 2){
+                                ?><td><?= htmlspecialchars('Empleado') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['rol'] == 4){
+                                    ?><td><?= htmlspecialchars('Administrador') ?></td>
+                                <?php
+                                }
+                            }
+                        ?>
+                        <?php 
+                            if($usuario['estadousu'] == 2){
+                                ?><td><?= htmlspecialchars('Activo') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['estadousu'] == 1){
+                                    ?><td><?= htmlspecialchars('Inactivo') ?></td>
+                                <?php
+                                }
+                            }
+                        ?>
                         <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="add-panel" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
                         <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="add-panel" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
                 
