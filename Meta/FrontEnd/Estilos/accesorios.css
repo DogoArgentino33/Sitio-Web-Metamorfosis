@@ -1,0 +1,172 @@
+/* ======= ESTILOS GENERALES ======= */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    font-size: 17px;
+}
+
+/* ======= ENCABEZADOS ======= */
+h2 {
+    color: #d12e3b;
+    margin: 40px 0 20px;
+    font-size: 28px;
+}
+
+/* ======= RUTA DE NAVEGACIÓN ======= */
+.nav-route {
+    padding: 15px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-route a {
+    text-decoration: none;
+    color: #d12e3b;
+    font-weight: 500;
+}
+
+/* ======= SECCIÓN DE BÚSQUEDA ======= */
+.searchSection {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.searchSection input[type="text"] {
+    width: 60%;
+    max-width: 500px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.searchSection input[type="text"]:focus {
+    outline: none;
+    border-color: #d12e3b;
+}
+
+/* ======= CONTENEDOR DE ACCESORIOS ======= */
+.cards-container-accessory {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    padding: 30px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ======= TARJETAS DE ACCESORIOS ======= */
+.card-accessory {
+    background-color: #fff;
+    width: 260px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.card-accessory:hover {
+    transform: translateY(-5px);
+}
+
+.card-accessory h4 {
+    color: #471e1a;
+    margin: 10px 0 5px;
+    font-size: 18px;
+}
+
+.card-accessory p {
+    font-size: 15px;
+    color: #555;
+    margin: 2px 0;
+}
+
+/* ======= IMÁGENES DE ACCESORIOS ======= */
+.card-accessory img.category-image {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    background-color: #fafafa;
+    padding: 8px;
+    border: 2px solid #d12e3b;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.card-accessory img.category-image:hover {
+    transform: scale(1.03);
+}
+
+/* ======= BOTONES DE DISPONIBILIDAD ======= */
+.card-accessory label.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 20px;
+    border: none;
+    background-color: #d12e3b;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: default;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+    align-self: center;
+}
+
+.card-accessory label.btn:hover {
+    background-color: #a1222d;
+}
+
+/* Botón para accesorios no disponibles aún */
+.card-accessory label.btn[disponible="futuro"] {
+    background-color: #888;
+    cursor: not-allowed;
+}
+
+.card-accessory label.btn[disponible="futuro"]:hover {
+    background-color: #777;
+}
+
+/* ======= PAGINACIÓN ======= */
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    list-style: none;
+    gap: 8px;
+}
+
+.pagination li a {
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: #333;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.pagination li a:hover {
+    background-color: #d12e3b;
+    color: #fff;
+}
+
+.pagination .active a {
+    background-color: #d12e3b;
+    color: white;
+    font-weight: bold;
+    border: none;
+}

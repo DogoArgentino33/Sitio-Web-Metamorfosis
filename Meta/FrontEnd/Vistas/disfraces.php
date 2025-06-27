@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
+    <link rel="stylesheet" href="../Estilos/disfraces.css">
     <link rel="stylesheet" href="../Estilos/modales.css">
 </head>
 <body>
@@ -30,7 +31,7 @@
                     <h4>Pirata</h4>
                     <p>Tematica: historia</p>
                     <p>Categoria: niño</p>
-                    <label class="btn">Disponible hoy</label>
+                    <label class="btn" disponible="hoy">Disponible hoy</label>
                     
                 </section>
             </a>
@@ -40,7 +41,7 @@
                 <h4>Flash</h4>
                 <p>Tematica: superheroes</p>
                 <p>Categoria: niño</p>
-                <label class="btn">Disponible desde 10/11</label>
+                <label class="btn" disponible="futuro">Disponible desde 10/11</label>
 
             </section>
             <section class="card-costume">
@@ -48,7 +49,7 @@
                 <h4>Mago</h4>
                 <p>Tematica: circo</p>
                 <p>Categoria: niño</p>
-                <label class="btn">Disponible desde 25/12</label>
+                <label class="btn" disponible="futuro">Disponible desde 25/12</label>
 
             </section>
             <section class="card-costume">
@@ -56,7 +57,7 @@
                 <h4>Fantasta de la B</h4>
                 <p>Tematica: halloween</p>
                 <p>Categoria: niño</p>
-                <label class="btn">Disponible desde 26/06</label>
+                <label class="btn" disponible="futuro">Disponible desde 26/06</label>
 
             </section>
             <section class="card-costume">
@@ -65,7 +66,7 @@
                 <p>Tematica: folcklore argentino</p>
                 <p>Categoria: niño</p>
                 
-                <label class="btn">Disponible hoy</label>
+                <label class="btn" disponible="hoy">Disponible hoy</label>
 
             </section>
 
@@ -75,7 +76,7 @@
                 <h4>Ardilla</h4>
                 <p>Tematica: animales</p>
                 <p>Categoria: niña</p>
-                <label class="btn">Disponible hoy</label>
+                <label class="btn" disponible="hoy">Disponible hoy</label>
 
             </section>
             <section class="card-costume">
@@ -83,28 +84,28 @@
                 <h4>Payasa</h4>
                 <p>Tematica: circo</p>
                 <p>Categoria: niña</p>
-                <label class="btn">Disponible hoy</label>
+                <label class="btn" disponible="hoy">Disponible hoy</label>
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/niños/cuentos/niña/blancanieves_1_niños.jpg" class="category-image">
                 <h4>Blancanieves</h4>
                 <p>Tematica: cuentos de hadas</p>
                 <p>Categoria: niña</p>
-                <label class="btn">Disponible hoy</label>
+                <label class="btn" disponible="hoy">Disponible hoy</label>
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/niños/argentina/niña/paisana_1_niños.jpg" class="category-image">
                 <h4>Paisana</h4>
                 <p>Tematica: folcklore argentino</p>
                 <p>Categoria: niña</p>
-                <label class="btn">Disponible hoy</label>         
+                <label class="btn" disponible="hoy">Disponible hoy</label>         
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/niños/halloween/niña/bruja_6_niños.jpg" class="category-image">
                 <h4>Bruja</h4>
                 <p>Tematica: halloween</p>
                 <p>Categoria: niña</p>
-                <label class="btn">Disponible desde 01/02</label>       
+                <label class="btn" disponible="futuro">Disponible desde 01/02</label>       
             </section>
 
             
@@ -113,35 +114,35 @@
                 <h4>Domador</h4>
                 <p>Tematica: circo</p>
                 <p>Categoria: hombre</p>
-                <label class="btn">Disponible hoy</label>       
+                <label class="btn" disponible="hoy">Disponible hoy</label>       
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/histórico/hombre/rey_3_adultos.jpg" class="category-image">
                 <h4>Rey</h4>
                 <p>Tematica: historia</p>
                 <p>Categoria: hombre</p>
-                <label class="btn">Disponible hoy</label>   
+                <label class="btn" disponible="hoy">Disponible hoy</label>   
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/halloween/hombre/frankenstein_1_adultos.jpg" class="category-image">
                 <h4>Frankenstein</h4>
                 <p>Tematica: halloween</p>
                 <p>Categoria: hombre</p>
-                <label class="btn">Disponible hoy</label>      
+                <label class="btn" disponible="hoy">Disponible hoy</label>      
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/argentina/hombre/gaucho_2_adultos.jpg" class="category-image">
                 <h4>Gaucho</h4>
                 <p>Tematica: folcklore argentino</p>
                 <p>Categoria: hombre</p>
-                <label class="btn">Disponible hoy</label>     
+                <label class="btn" disponible="hoy">Disponible hoy</label>     
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/oficios/hombre/soldado_2_adultos.jpg" class="category-image">
                 <h4>Soldado</h4>
                 <p>Tematica: accion</p>
                 <p>Categoria: hombre</p>
-                <label class="btn">Disponible hoy</label>       
+                <label class="btn" disponible="hoy">Disponible hoy</label>       
             </section>
 
 
@@ -150,35 +151,35 @@
                 <h4>Nativa</h4>
                 <p>Tematica: culturas del mundo</p>
                 <p>Categoria: mujer</p>
-                <label class="btn">Disponible hoy</label>    
+                <label class="btn" disponible="hoy">Disponible hoy</label>    
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/argentina/mujer/paisana_2_adultos.jpg" class="category-image">
                 <h4>Paisana</h4>
                 <p>Tematica: folcklore argentino</p>
                 <p>Categoria: mujer</p>
-                <label class="btn">Disponible hoy</label>      
+                <label class="btn" disponible="hoy">Disponible hoy</label>      
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/animales/mujer/gato_adultos.jpg" class="category-image">
                 <h4>Gata</h4>
                 <p>Tematica: animales</p>
                 <p>Categoria: mujer</p>
-                <label class="btn">Disponible hoy</label>        
+                <label class="btn" disponible="hoy">Disponible hoy</label>        
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/halloween/mujer/payasoasesino_2_adultos.jpg" class="category-image">
                 <h4>Payasa</h4>
                 <p>Tematica: circo</p>
                 <p>Categoria: mujer</p>
-                <label class="btn">Disponible hoy</label>      
+                <label class="btn" disponible="hoy">Disponible hoy</label>      
             </section>
             <section class="card-costume">
                 <img src="../img/Disfraces/adultos/prehistoria/mujer/cavernicola_adultos.jpg" class="category-image">
                 <h4>Cavernicola</h4>
                 <p>Tematica: prehistoria</p>
                 <p>Categoria: mujer</p>
-                <label class="btn">Disponible hoy</label>  
+                <label class="btn" disponible="hoy">Disponible hoy</label>  
             </section>
 
         </section>
