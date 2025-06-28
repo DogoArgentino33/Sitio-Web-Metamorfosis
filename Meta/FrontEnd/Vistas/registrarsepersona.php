@@ -723,6 +723,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <!-- Camara -->
                  <input type="button" value="Activar Camara" id="btnmostrarmodalverbo">
+                 <input type="file" accept="/image*" capture="enviroment" value="Activar camara cel" >
 
                 <!-- Modal de la Cámara -->
                 <section id="modalMAIN" class="modal">
