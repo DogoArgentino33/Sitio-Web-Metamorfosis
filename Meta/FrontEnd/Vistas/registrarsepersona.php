@@ -1,17 +1,17 @@
-<?php
-session_start();
-include('conexion.php'); 
+<?php session_start(); include('conexion.php'); 
 
+//Función escapar
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
-// función que validará sólo letras y espacios
+// función de validación: sólo letras y espacios
 function validarSoloLetras($cadena) {
-    // Permite letras (mayúsculas y minúsculas), espacios y caracteres acentuados
+    // Permite letras (mayúsculas y minúsculas), espacios y caracteres con acentos
     return preg_match("/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/", $cadena);
 }
 
+//Inicializando variables de errores y de registro existoso
 $errores = [];
 $mensaje_dni_duplicado = '';
 $error_fecha_nac = '';
@@ -38,8 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
     $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
     $img_base64 = isset($_POST['foto']) ? $_POST['foto'] : null;
-    $lat          = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
-    $lng          = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
+    $lat          = isset($_GET['lat']) ? floatval($_GET['lat']) : 0;
+    $lng          = isset($_GET['lng']) ? floatval($_GET['lng']) : 0;
+    if (!$lat || !$lng) { echo json_encode(['error'=>'coords']); exit; }
 
     // Validaciones
     if ($nombre === '' || !validarSoloLetras($nombre)) {
@@ -284,18 +285,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             barrio: {
                 regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
                 mensaje: "El barrio solo puede contener letras, números y espacios simples. No se permiten símbolos."
-            },
-            departamento: {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "El departamento solo puede contener letras, números y espacios simples. No se permiten símbolos."
-            },
-            municipio: {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "El municipio solo puede contener letras, números y espacios simples. No se permiten símbolos."
-            },
-            localidad: {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "La localidad solo puede contener letras, números y espacios simples. No se permiten símbolos."
             }
         };
 
@@ -451,50 +440,77 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- Función del mapa actualizado -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    /* mapa */
-    var map = L.map('map').setView([-28.468902, -65.77901],14);
+document.addEventListener('DOMContentLoaded', () => {
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+  /* ---- mapa ---- */
+  const map = L.map('map').setView([-28.4689,-65.7790], 14);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              {maxZoom:19, attribution:'&copy; OSM'}).addTo(map);
 
-    /* marcador */
-    let marker;
+  let marker;
 
-    map.on('click', function(e) 
-    {
-    const { lat, lng } = e.latlng;
-    document.getElementById('lat').value = lat.toFixed(6);
-    document.getElementById('lng').value = lng.toFixed(6);
+  /* selects */
+  const select_departamento = document.getElementById('departamento');
+  const select_municipio    = document.getElementById('municipio');
+  const select_localidad    = document.getElementById('localidad');
 
-        if (marker) 
-            {
-                marker.setLatLng(e.latlng);
-                /* popup */
-                marker.bindPopup("").openPopup();
-            } 
-        else 
-            {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-    });
+  map.on('click', e => {
+    const {lat,lng} = e.latlng;
 
-    /* popup ubicacion */
-    var popup = L.popup();
+    fetch(`reverseLocalidad.php?latitud=${lat}&longitud=${lng}`)
+      .then(r => r.json())
+      .then(async data => {
+        if (data.error) { console.warn(data.error); return; }
 
-    function onMapClick(e) 
-    {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("Coordenada: " + e.latlng.toString())
-        .openOn(map);
-    }
-    map.on('click', onMapClick);
-    });
+        //Guardando datos en cada select
+        select_departamento.value = data.coddpto;
+        await fillMunicipios(data.coddpto, data.codmun); 
+        await fillLocalidades(data.codmun, data.codloc);
 
+        //Funcion de movimiento
+        moveMarker(lat,lng);
+      })
+      .catch(console.error);
+  });
+
+  //Esta es la funcion de movimiento
+  function moveMarker(lat,lng) 
+  {
+    const punto = L.latLng(lat,lng);
+    if (marker) marker.setLatLng(punto);
+    else        marker = L.marker(punto).addTo(map);
+    map.setView(punto, 14);
+  }
+
+  //funciones de relleno
+  function fillMunicipios(coddpto, codmunSel) 
+  {
+    const fd = new FormData();  fd.append('coddpto', coddpto);
+    return fetch('getMunicipio.php', {method:'POST', body:fd})
+      .then(r => r.text())
+      //Esta parte cambia el valor de select, no tocar
+      .then(html => 
+      {
+        select_municipio.innerHTML = '<option value="">Seleccionar…</option>'+html;
+        select_municipio.value = codmunSel;
+      });
+  }
+
+  function fillLocalidades(codmun, codlocSel) {
+    const fd = new FormData();  fd.append('codmun', codmun);
+    return fetch('getLocalidad.php', {method:'POST', body:fd})
+      .then(r => r.text())
+      //Esta parte cambia el valor de select, no tocar
+      .then(html => 
+      {
+        select_localidad.innerHTML = '<option value="">Seleccionar…</option>'+html;
+        select_localidad.value = codlocSel;
+      });
+  }
+
+});
 </script>
 
 <!-- Función de la cámara -->
@@ -588,6 +604,96 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 </script>
 
+<!-- Funcion de obtener Municipio -->
+ <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const cbxDepartamento = document.getElementById('departamento');
+    const cbxMunicipio    = document.getElementById('municipio');
+
+    cbxDepartamento.addEventListener('change', getMunicipios);
+
+    function fetchAndSetData(url, formData, targetElement) {
+    return fetch(url, 
+    {
+      method: 'POST',
+      body: formData            // mismo dominio → no necesitas 'mode:cors'
+    })
+    .then(r => r.text())          // ⬅ HTML, no JSON
+    .then(html => {
+      targetElement.innerHTML  =
+        '<option value="">Seleccionar…</option>' + html;
+      targetElement.disabled = false;   // por si estaba deshabilitado
+    })
+    .catch(err => 
+    {
+      console.error(err);
+      targetElement.innerHTML =
+        '<option value="">(error)</option>';
+      targetElement.disabled = true;
+    });
+}
+
+function getMunicipios() {
+  const departamento = cbxDepartamento.value;
+  if (!departamento) {          // nada elegido → vaciar segundo select
+    cbxMunicipio.innerHTML = '<option value="">Seleccionar…</option>';
+    cbxMunicipio.disabled  = true;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('coddpto', departamento);
+
+  fetchAndSetData('getMunicipio.php', formData, cbxMunicipio);
+}
+    });
+ </script>
+
+<!-- Funcion de obtener Localidad -->
+ <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const cbxMunicipio = document.getElementById('municipio');
+    const cbxLocalidad    = document.getElementById('localidad');
+
+    cbxMunicipio.addEventListener('change', getLocalidades);
+
+    function fetchAndSetData(url, formData, targetElement) {
+    return fetch(url, 
+    {
+      method: 'POST',
+      body: formData            // mismo dominio → no necesitas 'mode:cors'
+    })
+    .then(r => r.text())          // ⬅ HTML, no JSON
+    .then(html => {
+      targetElement.innerHTML  =
+        '<option value="">Seleccionar…</option>' + html;
+      targetElement.disabled = false;   // por si estaba deshabilitado
+    })
+    .catch(err => 
+    {
+      console.error(err);
+      targetElement.innerHTML =
+        '<option value="">(error)</option>';
+      targetElement.disabled = true;
+    });
+}
+
+function getLocalidades() {
+  const municipio = cbxMunicipio.value;
+  if (!municipio) {          // nada elegido → vaciar segundo select
+    cbxMunicipio.innerHTML = '<option value="">Seleccionar…</option>';
+    cbxMunicipio.disabled  = true;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('codmun', municipio);
+
+  fetchAndSetData('getLocalidad.php', formData, cbxLocalidad);
+}
+    });
+ </script>
+
 
 <!-- Cuerpo del formulario -->
 <body>
@@ -660,19 +766,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 <!-- Departamento -->
                 <section class="input-box">
                     <label for="departamento">Departamento:</label>
-                    <input id="departamento" name="departamento" type="text" required>
+                    <select name="departamento" id="departamento" required>
+                        <?php 
+                        $sql = "SELECT coddpto, nomdpto FROM dpto";
+                        $result = mysqli_query($conexion, $sql);
+
+                        while($row = $result->fetch_assoc()) 
+                        { ?>
+                            <option value="<?php echo $row['coddpto'];?>"><?php echo $row['nomdpto'];?></option>
+                        <?php }
+                        
+                        
+                        ?>
+                    </select>
                 </section>
 
                 <!-- Municipio -->
                 <section class="input-box">
                     <label for="municipio">Municipio:</label>
-                    <input id="municipio" name="municipio" type="text" required>
+                    <select name="municipio" id="municipio" required>
+                        <option value="">Seleccionar</option>
+                    </select>
                 </section>
 
                 <!-- Localidad -->
                 <section class="input-box">
                     <label for="localidad">Localidad:</label>
-                    <input id="localidad" name="localidad" type="text" required>
+                    <select name="localidad" id="localidad" required>
+                        <option value="">Seleccionar</option>
+                    </select>
                 </section>
 
                 <!-- Provincia -->

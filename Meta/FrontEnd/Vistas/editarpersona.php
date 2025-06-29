@@ -1,13 +1,11 @@
 <?php include('auth.php'); include('conexion.php');
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    echo "ID de usuario no válido.";
-    exit;
-}
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) { echo "ID de persona no válido."; exit;}
 
 $id = intval($_GET['id']);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
     $nom_usu = $_POST['nom_usu'];
     $correo = $_POST['correo'];
     $telefono = $_POST['telefono'];
@@ -58,6 +56,8 @@ $usuario = $resultado->fetch_assoc();
 $ruta_imagen = $usuario['img_perfil']; // Mantener actual por defecto
 ?>
 
+
+<!-- Cuerpo de la página -->
 <!DOCTYPE html>
 <html lang="es">
 <head>

@@ -17,7 +17,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <?php if (isset($_SESSION['id'])): ?>
                 <!-- Si el usuario está logueado -->
                 <a href="logout.php" title="Cerrar sesión">
-                    <i class="bi bi-box-arrow-right"></i> <!-- Cambiá el ícono si querés -->
+                    <i class="bi bi-box-arrow-right"></i> <!-- Icono -->
                 </a>
             <?php else: ?> <!-- caso contrario -->
                 <a href="login.php" title="Iniciar sesión">
