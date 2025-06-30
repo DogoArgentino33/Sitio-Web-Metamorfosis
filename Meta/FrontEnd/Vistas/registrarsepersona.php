@@ -886,4 +886,4 @@ function getLocalidades() {
 
     <?php include('footer.php');?>
 </body>
-</html> 
+</html>
