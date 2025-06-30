@@ -452,49 +452,78 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    /* mapa */
-    var map = L.map('map').setView([-28.468902, -65.77901],14);
+document.addEventListener('DOMContentLoaded', () => {
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+  const map = L.map('map').setView([-28.4689, -65.7790], 14);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              { maxZoom: 19, attribution: '&copy; OSM' }).addTo(map);
 
     /* marcador */
     let marker;
 
-    map.on('click', function(e) 
-    {
+  const select_departamento = document.getElementById('departamento');
+  const select_municipio = document.getElementById('municipio');
+  const select_localidad = document.getElementById('localidad');
+
+  map.on('click', e => {
     const { lat, lng } = e.latlng;
-    document.getElementById('lat').value = lat.toFixed(6);
-    document.getElementById('lng').value = lng.toFixed(6);
 
-        if (marker) 
-            {
-                marker.setLatLng(e.latlng);
-                /* popup */
-                marker.bindPopup("").openPopup();
-            } 
-        else 
-            {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-    });
+    const fd = new FormData();
+    fd.append('latitud', lat);
+    fd.append('longitud', lng);
 
-    /* popup ubicacion */
-    var popup = L.popup();
+    fetch('reverseLocalidad.php', {
+      method: 'POST',
+      body: fd
+    })
+    .then(r => r.json())
+    .then(async data => {
+      if (data.error) {
+        console.warn(data.error);
+        return;
+      }
 
-    function onMapClick(e) 
-    {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("Coordenada: " + e.latlng.toString())
-        .openOn(map);
-    }
-    map.on('click', onMapClick);
-    });
+      // Guardando datos en cada select
+      select_departamento.value = data.coddpto;
+      await fillMunicipios(data.coddpto, data.codmun);
+      await fillLocalidades(data.codmun, data.codloc);
 
+      // Mover marcador
+      moveMarker(lat, lng);
+    })
+    .catch(console.error);
+  });
+
+  function moveMarker(lat, lng) {
+    const punto = L.latLng(lat, lng);
+    if (marker) marker.setLatLng(punto);
+    else marker = L.marker(punto).addTo(map);
+    map.setView(punto, 14);
+  }
+
+  function fillMunicipios(coddpto, codmunSel) {
+    const fd = new FormData();
+    fd.append('coddpto', coddpto);
+    return fetch('getMunicipio.php', { method: 'POST', body: fd })
+      .then(r => r.text())
+      .then(html => {
+        select_municipio.innerHTML = '<option value="">Seleccionar…</option>' + html;
+        select_municipio.value = codmunSel;
+      });
+  }
+
+  function fillLocalidades(codmun, codlocSel) {
+    const fd = new FormData();
+    fd.append('codmun', codmun);
+    return fetch('getLocalidad.php', { method: 'POST', body: fd })
+      .then(r => r.text())
+      .then(html => {
+        select_localidad.innerHTML = '<option value="">Seleccionar…</option>' + html;
+        select_localidad.value = codlocSel;
+      });
+  }
+
+});
 </script>
 
 <!-- Función de la cámara -->

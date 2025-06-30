@@ -49,13 +49,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>NOMBRE</th>
                         <th>TIPO</th>
+                        <th>CATEGORÍAS</th>
+                        <th>TALLAS</th>
+                        <th>TEMÁTICAS</th>
                         <th>UNIDADES DISPONIBLES</th>
                         <th>PRECIO</th>
-                        <th>FECHA MOD</th>
-                        <th>USUARIO MOD</th>
                         <th>VER</th>
                         <th>MODIFICAR</th>
                         <th>ELIMINAR</th>
@@ -63,15 +63,32 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 </thead>
                 <tbody>
                 <?php
-                    $stmt = $conexion->prepare("SELECT id, nombre, tipo, unidades_disponibles, precio, fechamod, usumod FROM producto ORDER BY id");
+                    $sql = "SELECT p.id, p.nombre, p.tipo, p.unidades_disponibles, p.precio, p.fechamod, p.usumod,
+                        GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
+                        GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
+                        GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas
+                    FROM producto p
+                    LEFT JOIN categoria c ON c.id_producto = p.id
+                    LEFT JOIN talla t ON t.id_producto = p.id
+                    LEFT JOIN tematica tm ON tm.id_producto = p.id
+                    GROUP BY p.id
+                    ORDER BY p.id";
+
+
+                   $stmt = $conexion->prepare($sql);
+
+                    if (!$stmt) {
+                        die("Error en prepare: " . $conexion->error);
+                    }
+
                     $stmt->execute();
                     $result = $stmt->get_result();
 
-                    if ($result->num_rows > 0) {
+
+                    if ($result && $result->num_rows > 0) {
                         while ($producto = $result->fetch_assoc()) {
                             ?>
                             <tr>
-                                <td><?= htmlspecialchars($producto['id']) ?></td>
                                 <td><?= htmlspecialchars($producto['nombre']) ?></td>
                                 <?php 
                                     if($producto['tipo'] == 1){
@@ -85,10 +102,11 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                                         }
                                     }
                                 ?>
+                                <td><?= htmlspecialchars($producto['categorias']) ?></td>
+                                <td><?= htmlspecialchars($producto['tallas']) ?></td>
+                                <td><?= htmlspecialchars($producto['tematicas']) ?></td>
                                 <td><?= htmlspecialchars($producto['unidades_disponibles']) ?></td>
                                 <td><?= htmlspecialchars($producto['precio']) ?></td>
-                                <td><?= htmlspecialchars($producto['fechamod']) ?></td>
-                                <td><?= htmlspecialchars($producto['usumod']) ?></td>
 
                                 <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Ver"><i class="bi bi-eye"></i></button></a></td>
                                 <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
@@ -163,4 +181,28 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         }
     </script>
 </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tipoSelect = document.getElementById('tipo');
+    const tallaSelect = document.getElementById('talla');
+
+    function toggleTalla() {
+        if (tipoSelect.value === '2') { // 2 = Accesorio
+            tallaSelect.disabled = true;
+            tallaSelect.value = ''; // Limpiar selección si estaba activa
+        } else {
+            tallaSelect.disabled = false;
+        }
+    }
+
+    // Ejecutar al cargar por si ya está seleccionado
+    toggleTalla();
+
+    // Ejecutar cuando cambia el tipo
+    tipoSelect.addEventListener('change', toggleTalla);
+});
+</script>
+
+
 </html>

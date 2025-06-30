@@ -200,4 +200,3 @@ git commit -m "Mi mensaje de commit"
 git pull origin nombre-de-la-rama --rebase
 git push origin nombre-de-la-rama
 El --rebase reordena tus cambios locales encima de los de tu compañero. Esto evita un "merge commit" innecesario.
-
