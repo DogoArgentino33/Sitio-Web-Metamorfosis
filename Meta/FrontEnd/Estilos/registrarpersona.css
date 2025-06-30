@@ -1,75 +1,60 @@
-/* ===== Estilos Generales ===== */
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    font-size: 17px;
-}
+/* ================== REGISTRAR PERSONA ================== */
 
-h1 {
-    text-align: center;
-    color: #007bff;
-    font-size: 30px;
-    margin-top: 30px;
-}
-
-/* ===== Contenedor del formulario ===== */
-.wrapper {
+/* Contenedor general */
+.wrapper-persona {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: flex-start; /* para que el formulario no se centre verticalmente sino empiece arriba */
     padding: 30px 20px;
+    min-height: 100vh; /* para ocupar toda la pantalla */
+    box-sizing: border-box;
+    background-color: #f9f9f9;
 }
 
+/* Formulario principal */
 form#employee {
     background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
-    max-width: 700px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 40px 30px;
     width: 100%;
+    max-width: 700px;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ===== Títulos y fieldsets ===== */
-form#employee h2 {
+/* Título del formulario */
+form#employee h2,
+form#employee legend {
     text-align: center;
     margin-bottom: 25px;
-    font-size: 26px;
-    color: #007bff;
+    font-weight: 600;
+    color: #d12e3b;
+    font-size: 28px;
 }
 
-fieldset {
-    border: none;
-    padding: 0;
-}
-
-legend {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #444;
-}
-
-/* ===== Inputs y Labels ===== */
-.input-box {
+/* Grupos de inputs */
+.input-box,
+.input-box-genero {
     margin-bottom: 20px;
 }
 
-.input-box label {
+/* Etiquetas */
+.input-box label,
+.input-box-genero label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #444;
+    font-size: 16px;
+    color: #471e1a;
 }
 
+/* Inputs de texto, número, fecha, file */
 .input-box input[type="text"],
-.input-box input[type="date"],
 .input-box input[type="number"],
+.input-box input[type="date"],
 .input-box input[type="file"],
-.input-box input[type="email"],
-.input-box input[type="password"] {
+.input-box input[type="hidden"] {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #ccc;
@@ -79,180 +64,156 @@ legend {
     transition: border-color 0.3s;
 }
 
-.input-box input:focus {
-    border-color: #007bff;
+/* Inputs al enfocarse */
+.input-box input:focus,
+.input-box-genero input[type="radio"]:focus {
+    border-color: #d12e3b;
     outline: none;
 }
 
-/* ===== Género (radio buttons) ===== */
-.input-box-genero {
-    margin: 20px 0;
-}
-
+/* Inputs radio */
 .input-box-genero label {
     font-weight: normal;
-    display: block;
-    margin-bottom: 6px;
-    font-size: 16px;
+    margin-right: 15px;
+    cursor: pointer;
 }
 
-/* ===== Mapa de Leaflet ===== */
-#map {
-    height: 350px;
-    width: 100%;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.input-box-genero input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
 }
 
-/* ===== Botón Registrar ===== */
-.btn-register {
+/* Botón registrar */
+form#employee button.btn-register {
     width: 100%;
-    background-color: #007bff;
+    background-color: #d12e3b;
     color: white;
     border: none;
     font-size: 18px;
     padding: 14px 0;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     transition: background-color 0.3s ease;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
-.btn-register:hover {
-    background-color: #0056b3;
+form#employee button.btn-register:hover {
+    background-color: #a1222d;
 }
 
-/* ===== Link debajo del botón ===== */
+/* Enlace volver */
 form#employee p a {
     display: inline-block;
-    margin-top: 12px;
-    color: #007bff;
+    margin-top: 15px;
     text-decoration: none;
-    font-weight: bold;
-    font-size: 16px;
+    color: #d12e3b;
+    font-weight: 600;
+    transition: color 0.3s;
 }
 
 form#employee p a:hover {
+    color: #a1222d;
     text-decoration: underline;
 }
 
-/* ===== Validaciones dinámicas ===== */
-.barra-validacion {
-    height: 5px;
-    border-radius: 3px;
-    margin-top: 6px;
-}
-
-.barra-validacion.valido {
-    background-color: #28a745;
-}
-
-.barra-validacion.invalido {
-    background-color: #dc3545;
-}
-
-.mensaje-validacion {
+/* Mensajes de error */
+.error {
     font-size: 14px;
-    margin-top: 6px;
-    font-weight: 500;
-}
-
-.mensaje-validacion.valido {
-    color: #28a745;
-}
-
-.mensaje-validacion.invalido {
-    color: #dc3545;
-}
-
-/* ===== Imagen: vista previa y botón cancelar ===== */
-#preview-img {
+    color: red;
+    margin-top: 5px;
     display: block;
-    max-width: 220px;
-    margin-top: 12px;
-    border-radius: 5px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.15);
 }
 
-#cancelar-img {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 14px;
-    cursor: pointer;
-    margin-top: 12px;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-    font-size: 15px;
+/* Video instructivo centrado */
+section.nav-route,
+h1 {
+    text-align: center;
 }
 
-#cancelar-img:hover {
-    background-color: #a71d2a;
+video {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* ===== Errores PHP (lado servidor) ===== */
-span.error {
-    display: block;
-    font-size: 15px;
-    color: #dc3545;
-    margin-top: 6px;
+/* Mapa */
+#map {
+    height: 350px;
+    width: 350px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
-/*Modal de Camara*/
-.modal 
- {
-    display: none; /* oculto por predeterminado */
-    position: fixed; /* se mantiene en posicion establecida */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full altura y ancho*/
-    height: 100%; 
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
+/* Modal cámara */
+.modal {
+    display: none; /* oculto por defecto */
+    position: fixed;
+    z-index: 999;
+    padding-top: 60px;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
 
-  /* Modal Content/Box */
-  .modal-content 
-  {
-    background-color: #f86776;
-    margin: 15% auto; /* 15% desde el top y centrado */
+.modal-content {
+    background-color: #fff;
+    margin: auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 40%; /* el tamaño de la ventana puede variar por el tamaño de la pantalla */
-  }
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
 
-  .close 
-  {
-    color: white;
-    float: right;
+/* Botón cerrar modal */
+.close {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    color: #aaa;
     font-size: 28px;
     font-weight: bold;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  }
-  
-  .close:hover, .close:focus 
-  {
-    color: white;
-    text-decoration: none;
     cursor: pointer;
-  }
-
-
-  input[type="button"] 
-  {
-    background-color: #dc3545;
-    color: white;
-    padding: 5px 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 15px;
 }
 
+.close:hover {
+    color: #d12e3b;
+}
 
+/* Video de cámara */
+.camera video {
+    width: 100%;
+    border-radius: 8px;
+    background-color: black;
+}
+
+/* Foto capturada */
+#photo {
+    display: block;
+    margin: 15px auto;
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Botones tomar foto y confirmar */
+#sacar-foto,
+input[type="submit"] {
+    background-color: #d12e3b;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 10px 5px 0 5px;
+    transition: background-color 0.3s ease;
+}
+
+#sacar-foto:hover,
+input[type="submit"]:hover {
+    background-color: #a1222d;
+}

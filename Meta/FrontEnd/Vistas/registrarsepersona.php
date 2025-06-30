@@ -225,7 +225,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/registrarpersona.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
 
@@ -711,7 +710,7 @@ function getLocalidades() {
             </video>
             <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar una persona</p>
             </div>
-    <section class="wrapper">
+    <section class="wrapper-persona">
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="employee">
             <h2>Formulario Registrar Persona</h2>
             <fieldset>

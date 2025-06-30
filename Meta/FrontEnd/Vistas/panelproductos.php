@@ -52,15 +52,10 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>ID</th>
                         <th>NOMBRE</th>
                         <th>TIPO</th>
-                        <th>DISPONIBILIDAD</th>
                         <th>UNIDADES DISPONIBLES</th>
                         <th>PRECIO</th>
-                        <th>ID TALLA</th>
-                        <th>ID CATEGORÍA</th>
-                        <th>ID IMAGEN</th>
                         <th>FECHA MOD</th>
                         <th>USUARIO MOD</th>
-                        <th>ID TEMÁTICA</th>
                         <th>VER</th>
                         <th>MODIFICAR</th>
                         <th>ELIMINAR</th>
@@ -68,7 +63,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 </thead>
                 <tbody>
                 <?php
-                    $stmt = $conexion->prepare("SELECT id, nombre, tipo, disponibilidad, unidades_disponibles, precio, id_talla, id_categoria, id_img_producto, fechamod, usumod, id_tematica FROM producto ORDER BY id");
+                    $stmt = $conexion->prepare("SELECT id, nombre, tipo, unidades_disponibles, precio, fechamod, usumod FROM producto ORDER BY id");
                     $stmt->execute();
                     $result = $stmt->get_result();
 
@@ -78,16 +73,22 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                             <tr>
                                 <td><?= htmlspecialchars($producto['id']) ?></td>
                                 <td><?= htmlspecialchars($producto['nombre']) ?></td>
-                                <td><?= htmlspecialchars($producto['tipo']) ?></td>
-                                <td><?= htmlspecialchars($producto['disponibilidad']) ?></td>
+                                <?php 
+                                    if($producto['tipo'] == 1){
+                                        ?><td><?= htmlspecialchars('Disfraz') ?></td>
+                                    <?php
+                                    }
+                                    else{
+                                        if($producto['tipo'] == 2){
+                                            ?><td><?= htmlspecialchars('Accesorio') ?></td>
+                                        <?php
+                                        }
+                                    }
+                                ?>
                                 <td><?= htmlspecialchars($producto['unidades_disponibles']) ?></td>
                                 <td><?= htmlspecialchars($producto['precio']) ?></td>
-                                <td><?= htmlspecialchars($producto['id_talla']) ?></td>
-                                <td><?= htmlspecialchars($producto['id_categoria']) ?></td>
-                                <td><?= htmlspecialchars($producto['id_img_producto']) ?></td>
                                 <td><?= htmlspecialchars($producto['fechamod']) ?></td>
                                 <td><?= htmlspecialchars($producto['usumod']) ?></td>
-                                <td><?= htmlspecialchars($producto['id_tematica']) ?></td>
 
                                 <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Ver"><i class="bi bi-eye"></i></button></a></td>
                                 <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
