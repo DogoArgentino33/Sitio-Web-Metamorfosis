@@ -1,17 +1,17 @@
-<?php
-session_start();
-include('conexion.php'); 
+<?php session_start(); include('conexion.php'); 
 
+//Función escapar
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
-// función que validará sólo letras y espacios
+// función de validación: sólo letras y espacios
 function validarSoloLetras($cadena) {
-    // Permite letras (mayúsculas y minúsculas), espacios y caracteres acentuados
+    // Permite letras (mayúsculas y minúsculas), espacios y caracteres con acentos
     return preg_match("/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/", $cadena);
 }
 
+//Inicializando variables de errores y de registro existoso
 $errores = [];
 $mensaje_dni_duplicado = '';
 $error_fecha_nac = '';
@@ -38,8 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
     $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
     $img_base64 = isset($_POST['foto']) ? $_POST['foto'] : null;
-    $lat          = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
-    $lng          = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
+    $lat = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
+    $lng = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
+
 
     // Validaciones
     if ($nombre === '' || !validarSoloLetras($nombre)) {
@@ -224,7 +225,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/registrarpersona.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
 
@@ -236,6 +236,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""> </script>
+
+     <!-- Link y Script de Sweetalert2 -->
+     <script src="sweetalert2.min.js"></script>
+     <link rel="stylesheet" href="sweetalert2.min.css">
 
 </head>
 
@@ -284,6 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             barrio: {
                 regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
                 mensaje: "El barrio solo puede contener letras, números y espacios simples. No se permiten símbolos."
+            }
         };
 
         for (const id in validaciones) {
@@ -456,6 +461,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   map.on('click', e => {
     const {lat,lng} = e.latlng;
+    document.getElementById('lat').value = lat.toFixed(6);
+    document.getElementById('lng').value = lng.toFixed(6);
 
     fetch(`reverseLocalidad.php?latitud=${lat}&longitud=${lng}`)
       .then(r => r.json())
@@ -477,9 +484,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function moveMarker(lat,lng) 
   {
     const punto = L.latLng(lat,lng);
-    if (marker) marker.setLatLng(punto);
-    else        marker = L.marker(punto).addTo(map);
-    map.setView(punto, 14);
+    
+    if (marker) 
+    {
+        marker.setLatLng(punto);
+        /* popup */
+        marker.bindPopup("").openPopup();
+    }
+    else        
+    {
+        marker = L.marker(punto).addTo(map);
+        map.setView(punto, 14);
+    }
   }
 
   //funciones de relleno
@@ -511,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-//<!-- Función de la cámara -->
+<!-- Función de la cámara -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -598,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = canvas.toDataURL("image/png");
     photo.src   = data;
     hidden.value = data;                // se enviará en el <form>
-      } 
+  } 
     });
 </script>
 
@@ -688,9 +704,9 @@ function getLocalidades() {
   formData.append('codmun', municipio);
 
   fetchAndSetData('getLocalidad.php', formData, cbxLocalidad);
-  } 
+}
     });
-</script>
+ </script>
 
 
 <!-- Cuerpo del formulario -->
@@ -709,7 +725,7 @@ function getLocalidades() {
             </video>
             <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar una persona</p>
             </div>
-    <section class="wrapper">
+    <section class="wrapper-persona">
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="employee">
             <h2>Formulario Registrar Persona</h2>
             <fieldset>
@@ -764,7 +780,7 @@ function getLocalidades() {
                 <!-- Departamento -->
                 <section class="input-box">
                     <label for="departamento">Departamento:</label>
-                                        <select name="departamento" id="departamento" required>
+                    <select name="departamento" id="departamento" required>
                         <?php 
                         $sql = "SELECT coddpto, nomdpto FROM dpto";
                         $result = mysqli_query($conexion, $sql);
@@ -782,7 +798,7 @@ function getLocalidades() {
                 <!-- Municipio -->
                 <section class="input-box">
                     <label for="municipio">Municipio:</label>
-                                        <select name="municipio" id="municipio" required>
+                    <select name="municipio" id="municipio" required>
                         <option value="">Seleccionar</option>
                     </select>
                 </section>
@@ -790,7 +806,7 @@ function getLocalidades() {
                 <!-- Localidad -->
                 <section class="input-box">
                     <label for="localidad">Localidad:</label>
-                                        <select name="localidad" id="localidad" required>
+                    <select name="localidad" id="localidad" required>
                         <option value="">Seleccionar</option>
                     </select>
                 </section>
