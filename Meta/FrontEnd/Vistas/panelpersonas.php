@@ -1,20 +1,28 @@
-<?php include('auth.php'); include('conexion.php'); 
+<?php
+include('auth.php');
+include('conexion.php'); 
 
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);
     
-    // Preparar y ejecutar la eliminación
-    $stmt = $conexion->prepare("DELETE FROM persona WHERE id = ?");
-    $stmt->bind_param("i", $idEliminar);
+    // Primero eliminar de la tabla `usuario`
+    $stmt1 = $conexion->prepare("DELETE FROM usuario WHERE id_persona = ?");
+    $stmt1->bind_param("i", $idEliminar);
+    $stmt1->execute();
 
-    if ($stmt->execute()) {
+    // Luego eliminar de la tabla `persona`
+    $stmt2 = $conexion->prepare("DELETE FROM persona WHERE id = ?");
+    $stmt2->bind_param("i", $idEliminar);
+
+    if ($stmt2->execute()) {
         // Redirigir para evitar reenvíos y actualizar la tabla
         header("Location: panelpersonas.php");
         exit;
     } else {
         echo "<script>alert('Error al eliminar la persona');</script>";
     }
-} ?>
+}
+?>
 
 <!-- CUERPO DE LA PAGINA -->
 <!DOCTYPE html>
