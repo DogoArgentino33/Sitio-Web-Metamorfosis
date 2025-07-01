@@ -36,8 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $provincia    = isset($_POST['provincia']) ? trim($_POST['provincia']) : '';
     $pais         = isset($_POST['pais']) ? trim($_POST['pais']) : '';
     $genero       = isset($_POST['genero']) ? $_POST['genero'] : '';
-    $img          = isset($_FILES['img-persona']) ? $_FILES['img-persona'] : null;
-    $img_base64 = isset($_POST['foto']) ? $_POST['foto'] : null;
+    $foto = $_FILES['foto'];
     $lat = isset($_POST['lat']) ? floatval($_POST['lat']) : 0;
     $lng = isset($_POST['lng']) ? floatval($_POST['lng']) : 0;
 
@@ -97,87 +96,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Validación y procesamiento de imagen
-    if ($img_base64) {
-        // Procesar imagen desde base64 (cámara)
-        $data = explode(',', $img_base64);
-        if (count($data) === 2) {
-            $imagen_decodificada = base64_decode($data[1]);
-
-            $nombre_img = uniqid() . ".jpg";
-            $directorio_destino = "uploads/persona/";
-            $ruta_completa = $directorio_destino . $nombre_img;
-
-            if (file_put_contents($ruta_completa, $imagen_decodificada)) {
-                $ruta_imagen = $ruta_completa;
-            } else {
-                $errores[] = "No se pudo guardar la imagen capturada.";
-            }
+    // Validación imagen
+    if ($foto && $foto['error'] === 0) {
+        $permitidos = ['image/jpeg', 'image/png'];
+        if (!in_array($foto['type'], $permitidos)) {
+            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
+        } elseif ($foto['size'] > 4 * 1024 * 1024) {
+            $errores[] = "La imagen no debe superar los 4MB.";
         } else {
-            $errores[] = "Formato de imagen de cámara no válido.";
-        }
-
-    } elseif ($img && $img['error'] == 0) {
-        // Procesar imagen subida por archivo
-        $permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-
-        if (!in_array($img['type'], $permitidos)) {
-            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG, PNG o GIF.";
-        } else {
-            $origen_temp = $img['tmp_name'];
-            list($ancho_original, $alto_original) = getimagesize($origen_temp);
+            // Redimensionar si es necesario
+            $origen_temp = $foto['tmp_name'];
+            list($ancho, $alto) = getimagesize($origen_temp);
             $ancho_nuevo = 1280;
             $alto_nuevo = 1280;
 
-            switch ($img['type']) {
-                case 'image/jpeg':
-                case 'image/jpg':
-                    $origen = imagecreatefromjpeg($origen_temp);
-                    break;
-                case 'image/png':
-                    $origen = imagecreatefrompng($origen_temp);
-                    break;
-                case 'image/gif':
-                    $origen = imagecreatefromgif($origen_temp);
-                    break;
-                default:
-                    $errores[] = "Tipo de imagen no soportado.";
-                    $origen = false;
-            }
+            $origen = null;
+            if ($foto['type'] == 'image/jpeg') $origen = imagecreatefromjpeg($origen_temp);
+            elseif ($foto['type'] == 'image/png') $origen = imagecreatefrompng($origen_temp);
 
             if ($origen) {
-                $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
-                $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
-                imagefill($imagen_redimensionada, 0, 0, $blanco);
+                $imagen_final = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
+                $blanco = imagecolorallocate($imagen_final, 255, 255, 255);
+                imagefill($imagen_final, 0, 0, $blanco);
+                imagecopyresampled($imagen_final, $origen, 0, 0, 0, 0, $ancho_nuevo, $alto_nuevo, $ancho, $alto);
 
-                imagecopyresampled(
-                    $imagen_redimensionada,
-                    $origen,
-                    0, 0, 0, 0,
-                    $ancho_nuevo,
-                    $alto_nuevo,
-                    $ancho_original,
-                    $alto_original
-                );
+                $nombre_archivo = uniqid() . ".jpg";
+                $ruta = "uploads/persona/" . $nombre_archivo;
 
-                $nombre_img = uniqid() . ".jpg";
-                $directorio_destino = "uploads/persona/";
-                $ruta_completa = $directorio_destino . $nombre_img;
-
-                if (imagejpeg($imagen_redimensionada, $ruta_completa, 90)) {
-                    $ruta_imagen = $ruta_completa;
-                } else {
-                    $errores[] = "No se pudo guardar la imagen redimensionada.";
+                if (!imagejpeg($imagen_final, $ruta, 90)) {
+                    $errores[] = "No se pudo guardar la imagen.";
                 }
 
                 imagedestroy($origen);
-                imagedestroy($imagen_redimensionada);
+                imagedestroy($imagen_final);
+            } else {
+                $errores[] = "Error al procesar la imagen.";
             }
         }
     } else {
-        $errores[] = "Debes subir una imagen válida o tomar una con la cámara.";
+        $errores[] = "Debe subir o tomar una imagen.";
     }
-
-
+    
     foreach ($errores as $error) {
         if (strpos($error, 'imagen') !== false || strpos($error, 'formato') !== false) {
             $error_img = $error;
@@ -199,16 +158,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $provincia    = mysqli_real_escape_string($conexion, $provincia);
         $pais         = mysqli_real_escape_string($conexion, $pais);
         $genero       = mysqli_real_escape_string($conexion, $genero);
-        $ruta_imagen  = mysqli_real_escape_string($conexion, $ruta_imagen);
+        $ruta         = mysqli_real_escape_string($conexion, $ruta);
         $lat          = mysqli_real_escape_string($conexion, $lat);
         $lng          = mysqli_real_escape_string($conexion, $lng);
 
         $sql_insert = "INSERT INTO `persona`(`nombre`, `apellido`, `dni`, `fec_nac`, `pais`, `provincia`, `genero`, `img`, `calle`, `altura`, `barrio`, `departamento`, `municipio`, `localidad`, `lat`, `lng`) 
-        VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta_imagen','$calle','$altura','$barrio','$departamento','$municipio','$localidad','$lat','$lng')";
+        VALUES ('$nombre','$apellido','$dni','$fec_nac','$pais','$provincia','$genero','$ruta','$calle','$altura','$barrio','$departamento','$municipio','$localidad','$lat','$lng')";
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-            header("Location: registrarseusuario.php?registropersona=ok");
+            echo '<script>alert("Persona registrada exitosamente."); window.location.href="registrarseusuario.php";</script>';
             exit;
         } else {
             $errores[] = "Error al registrar la persona: " . mysqli_error($conexion);
@@ -238,8 +197,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""> </script>
 
-     <!-- Script de SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <!-- Link y Script de Sweetalert2 -->
+     <script src="sweetalert2.min.js"></script>
+     <link rel="stylesheet" href="sweetalert2.min.css">
 
 </head>
 
@@ -457,189 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  /* ---------- Variables generales ---------- */
-  const inputImg = document.getElementById("img-persona");
-  const maxPesoMB = 4;
-  const maxAncho = 1280;
-  const maxAlto = 1280;
-  const hidden = document.getElementById("foto-base64");
-
-  const modal = document.getElementById("modalMAIN");
-  const btn = document.getElementById("btnmostrarmodalverbo");
-  const span = document.getElementsByClassName("close")[0];
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  const startBt = document.getElementById("sacar-foto");
-
-  const width = 350;
-  let height = 0;
-  let streaming = false;
-  let stream = null;
-
-  /* ---------- Función de previsualización común ---------- */
-  function mostrarPreviewFoto(base64) {
-    // Eliminar preview anterior y botón cancelar si existen
-    const previewExistente = document.getElementById("preview-img");
-    if (previewExistente) previewExistente.remove();
-    const botonCancelar = document.getElementById("cancelar-img");
-    if (botonCancelar) botonCancelar.remove();
-
-    // Crear imagen preview
-    const img = document.createElement("img");
-    img.id = "preview-img";
-    img.src = base64;
-    img.style.maxWidth = "200px";
-    img.style.marginTop = "10px";
-
-    const contenedor = inputImg.parentNode;
-    contenedor.appendChild(img);
-
-    // Crear botón cancelar
-    const btnCancelar = document.createElement("button");
-    btnCancelar.id = "cancelar-img";
-    btnCancelar.textContent = "Cancelar imagen";
-    btnCancelar.type = "button";
-    btnCancelar.style.display = "block";
-    btnCancelar.style.marginTop = "10px";
-    btnCancelar.onclick = function () {
-      inputImg.value = "";
-      hidden.value = "";
-      img.remove();
-      btnCancelar.remove();
-      inputImg.disabled = false;
-    };
-
-    contenedor.appendChild(btnCancelar);
-    inputImg.disabled = true;
-  }
-
-  /* ---------- Vista previa al subir imagen desde archivo ---------- */
-  inputImg.addEventListener("change", function () {
-    const archivo = this.files[0];
-    const mensajeError = this.nextElementSibling;
-
-    const previewExistente = document.getElementById("preview-img");
-    if (previewExistente) previewExistente.remove();
-    const botonCancelar = document.getElementById("cancelar-img");
-    if (botonCancelar) botonCancelar.remove();
-
-    if (!archivo) return;
-
-    if (archivo.size > maxPesoMB * 1024 * 1024) {
-      mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
-      this.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = new Image();
-      img.src = e.target.result;
-
-      img.onload = function () {
-        if (img.width !== maxAncho || img.height !== maxAlto) {
-          mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
-        } else {
-          mensajeError.textContent = "";
-        }
-
-        mostrarPreviewFoto(e.target.result);
-      };
-    };
-
-    reader.readAsDataURL(archivo);
-  });
-
-  /* ---------- Control del modal ---------- */
-  btn.onclick = () => {
-    modal.style.display = "block";
-    initCamera();
-  };
-
-  span.onclick = closeModal;
-  window.onclick = (e) => { if (e.target === modal) closeModal(); };
-
-  function closeModal() {
-    inputImg.disabled = false;
-    modal.style.display = "none";
-    stopCamera();
-  }
-
-  /* ---------- Cámara ---------- */
-  function initCamera() {
-    if (stream) return;
-
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "user" }, audio: false })
-      .then(s => {
-        stream = s;
-        video.srcObject = s;
-        video.play();
-      })
-      .catch(err => console.error("Error cámara:", err));
-  }
-
-  function stopCamera() {
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      stream = null;
-      streaming = false;
-    }
-  }
-
-  video.addEventListener("canplay", () => {
-    if (!streaming) {
-      height = video.videoHeight / (video.videoWidth / width);
-      if (isNaN(height)) height = width / (4 / 3);
-
-      video.width = width;
-      video.height = height;
-      canvas.width = width;
-      canvas.height = height;
-      streaming = true;
-    }
-  });
-
-  startBt.addEventListener("click", e => {
-    e.preventDefault();
-    takePicture();
-  });
-
-
-
-  function takePicture() {
-    document.getElementById("img-persona").required = false;
-    document.getElementById("img-persona-mobile").required = false;
-    if (!streaming) return;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, width, height);
-    const data = canvas.toDataURL("image/png");
-
-    hidden.value = data;
-    canvas.style.display = "none";
-    closeModal();
-    mostrarPreviewFoto(data);
-  }
-});
-
-        // Validación al enviar el formulario para asegurarse de que haya una imagen
-    document.querySelector("form").addEventListener("submit", function (e) {
-        const inputFilePC = document.getElementById("img-persona");
-        const inputFileMobile = document.getElementById("img-persona-mobile");
-        const base64 = document.getElementById("foto-base64").value;
-
-        if (!inputFilePC.value && !inputFileMobile.value && !base64) {
-            e.preventDefault();
-            alert("Debes subir una imagen o tomar una foto.");
-        }
-    });
-
-</script>
-
 
 <!-- Funcion de obtener Municipio -->
  <script>
@@ -900,68 +677,76 @@ function getLocalidades() {
                 <!-- Imagen de perfil -->
                 <section class="input-box">
                     <br>
-                    <label for="img-persona">Imagen personal:</label>
-                    <!-- Input para PC -->
-                    <input id="img-persona" name="img-persona" type="file" accept="image/*" required style="display:none;">
-                    <!-- Input para móvil -->
-                    <input id="img-persona-mobile" name="img-persona" type="file" accept="image/*" capture="environment" style="display:none;" required>
+                     <label for="foto">Subir foto o usar cámara:</label><br>
+    <input type="file" name="foto" id="foto" accept="image/*" capture="user" required>
+    <span class="error"><?= $error_img ?></span><br>
+    <img id="preview-img" class="preview" style="display:none;" /><br><br>
 
-                    <script>
-                            document.addEventListener("DOMContentLoaded", function () {
-                                function esMovil() {
-                                    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                                }
+    <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
 
-                                if (esMovil()) {
-                                    const inputMobile = document.getElementById('img-persona-mobile');
-                                    const inputPC = document.getElementById('img-persona');
-                                    inputMobile.style.display = 'block';
-                                    inputMobile.required = true;
-                                    inputPC.required = false;
-                                } else {
-                                    const inputPC = document.getElementById('img-persona');
-                                    const inputMobile = document.getElementById('img-persona-mobile');
-                                    inputPC.style.display = 'block';
-                                    inputPC.required = true;
-                                    inputMobile.required = false;
-                                }
-                            });
+    <button type="button" onclick="iniciarCamara()">Activar cámara</button>
+    <button type="button" onclick="capturarFoto()">Tomar Foto</button><br><br>
 
-                    </script>
-                <!-- Camara -->
-                 <br>
-                 <input type="button" value="Activar Camara" id="btnmostrarmodalverbo">
+    <button type="submit">Registrar Persona</button>
+</form>
 
-                <!-- Modal de la Cámara -->
-                <section id="modalMAIN" class="modal">
-                <section class="modal-content">
+<script>
+const fotoInput = document.getElementById("foto");
+const previewImg = document.getElementById("preview-img");
 
-                <!-- Aqui inicia el contenido de la cámara -->
-                <section class="camera">
-                <video id="video">Video stream not available.</video>    
-                </section>
+fotoInput.addEventListener("change", () => {
+    const archivo = fotoInput.files[0];
+    if (!archivo) return;
 
-                <!-- Muestra la imagen -->
-                <canvas id="canvas" style="display:none;"></canvas>
-                
-                <br>
-                <br>
-                <section class="modal-btns">
-                    <!-- Botones de sacar foto y guardar en base de datos -->
-                    <input id="sacar-foto" type="button" value="Tomar foto"></input>
-                </section>
+    if (archivo.size > 4 * 1024 * 1024) {
+        alert("La imagen no debe superar los 4MB.");
+        fotoInput.value = "";
+        previewImg.style.display = "none";
+        return;
+    }
 
+    const lector = new FileReader();
+    lector.onload = function(e) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = "block";
+    };
+    lector.readAsDataURL(archivo);
+});
 
-                <!-- este  imput guarda y envia la foto -->
-                <input type="hidden" name="foto" id="foto-base64" />
+let stream;
 
-                <span class="close">X</span>
-                </section>
-                </section>
-                <!-- Fin Cámara -->
+function iniciarCamara() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(mediaStream => {
+            stream = mediaStream;
+            document.getElementById("video").srcObject = stream;
+            document.getElementById("video").style.display = "block";
+        })
+        .catch(() => alert("No se pudo acceder a la cámara."));
+}
 
+function capturarFoto() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    <span class="error" style="color:red;"><?php echo $error_img; ?></span>
+    canvas.toBlob(blob => {
+        const archivo = new File([blob], "captura.jpg", { type: "image/jpeg" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(archivo);
+        fotoInput.files = dataTransfer.files;
+
+        const lector = new FileReader();
+        lector.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = "block";
+        };
+        lector.readAsDataURL(archivo);
+    }, "image/jpeg", 0.95);
+}
+</script>
                 </section>
 
                 <button type="submit" class="btn">Registrar persona</button>
