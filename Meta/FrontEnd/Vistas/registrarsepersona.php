@@ -238,9 +238,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""> </script>
 
-     <!-- Link y Script de Sweetalert2 -->
-     <script src="sweetalert2.min.js"></script>
-     <link rel="stylesheet" href="sweetalert2.min.css">
+     <!-- Script de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 

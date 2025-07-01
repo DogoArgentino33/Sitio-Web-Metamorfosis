@@ -1,7 +1,6 @@
-<?php
-include('auth.php');
-include('conexion.php'); // Ajusta la ruta si es necesario
+<?php include('auth.php'); include('conexion.php');
 
+//Operación de eliminar usuario
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);
     
@@ -17,9 +16,10 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         echo "<script>alert('Error al eliminar el usuario');</script>";
     }
 }
-
-
 ?>
+
+
+<!-- Cuerpo de la página -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,6 +30,8 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/panelusuario.css">
+    <!-- Script de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <?php include('cabecera.php'); ?>
