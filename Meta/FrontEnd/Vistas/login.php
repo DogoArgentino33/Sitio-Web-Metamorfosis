@@ -43,6 +43,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
             window.location.href = 'index.php';
             });
         </script>";
+
+        header("Location: index.php?login=ok");
     exit;
     }
     else {
@@ -112,6 +114,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </html>
 
 
+<!-- Función de Logout alert - Continuación - -->
 <script>
 document.addEventListener('DOMContentLoaded', () => 
 {
@@ -133,6 +136,5 @@ document.addEventListener('DOMContentLoaded', () =>
     history.replaceState({}, '', location.pathname);
   }
 });
-
 </script>
 

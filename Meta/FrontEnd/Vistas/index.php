@@ -76,3 +76,27 @@
 
 </body>
 </html>
+
+<!-- Función de Login alert - Continuación - -->
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos en logout.php
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('login') === 'ok') 
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Sesión iniciada con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
+  //3. Al refrescar la página, no volverá a salir el mensaje
+    history.replaceState({}, '', location.pathname);
+  }
+});
+</script>
