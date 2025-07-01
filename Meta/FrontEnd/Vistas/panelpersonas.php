@@ -35,6 +35,8 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/panelusuario.css">
+    <!-- Script de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <?php include('cabecera.php'); ?>
@@ -93,7 +95,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td>
                         
                         <?php if($usuario['estadousu'] == true): ?>
-                        <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=3" onclick="return confirmarEliminacion()"><button class="add-panel" title="Eliminar" onclick="openModalAgregar()"><i class="bi bi-trash"></i></button></a></a></td>
+                        <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=3" id="btn-eliminar" class="add-panel"><i class="bi bi-trash"></i></a>
                 </a>
 
                         <?php else: ?>
@@ -171,11 +173,41 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     </script>
 
 <script>
-    function confirmarEliminacion() {
-        return confirm("¿Estás seguro de que deseas eliminar este usuario?");
-    }
+document.addEventListener('DOMContentLoaded', () => 
+{
+    //Boton Eliminar
+        //1.Llamamos y definimos la variable
+    document.querySelectorAll('#btn-eliminar').forEach(link => 
+    {
+        //2.Le asignamos el evento
+        link.addEventListener('click', evt => 
+        {
+            evt.preventDefault();
+            const url = link.href;
 
-    function openModalAgregar() {
+            //3.Agregamos sweetalert
+            Swal.fire
+            ({
+                title: 'Advertencia',
+                text: 'Está seguro de eliminar la persona?',
+                icon: 'warning',
+                showDenyButton: true,
+                confirmButtonText: 'Si',
+                denyButtonText: 'No',
+            })
+            .then(res => {
+            if (res.isConfirmed) 
+            {
+                Swal.fire("Se eliminó la persona","","success"),
+                window.location.href = url;
+            }
+      });
+    });
+  });
+});
+
+    function openModalAgregar() 
+    {
         window.location.href = 'agregarusuario.php';
     }
 </script>

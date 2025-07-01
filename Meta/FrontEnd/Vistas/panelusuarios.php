@@ -18,7 +18,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 }
 ?>
 
-
 <!-- Cuerpo de la página -->
 <!DOCTYPE html>
 <html lang="es">
@@ -33,9 +32,12 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
+<!-- Cuerpo de la página -->
 <body>
     <?php include('cabecera.php'); ?>
     <main>
+        <!-- Navegador -->
         <section class="nav-route">
             <a href="index.php">Inicio / </a>
             <a href="gerente.php">Gerente /</a>
@@ -50,6 +52,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus"></i></button>
                 </div>
             </section>
+            <!-- Tabla -->
             <table>
                 <thead>
                     <tr>
@@ -77,12 +80,15 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
                         <tr>
                         <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
+                        
                         <td>
                         <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
                         </td>
 
                         <td><?= htmlspecialchars($usuario['correo']) ?></td>
                         <td><?= htmlspecialchars($usuario['telefono']) ?></td>
+                        
+                        <!-- Determinando Roles de usuario -->
                         <?php 
                             if($usuario['rol'] == 0){
                                 ?><td><?= htmlspecialchars('Usuario') ?></td>
@@ -94,7 +100,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                                 <?php
                                 }
                             }
-
                             if($usuario['rol'] == 2){
                                 ?><td><?= htmlspecialchars('Empleado') ?></td>
                             <?php
@@ -124,7 +129,8 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td>
                         
                         <?php if($usuario['estadousu'] == true): ?>
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" onclick="return confirmarEliminacion()"><button class="add-panel" title="Eliminar" onclick="openModalAgregar()"><i class="bi bi-trash"></i></button></a></a></td>
+                            <!-- ESTO DE ABAJO TIENE UN ONCLICK QUE LLEVA A MODAL -->
+                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar" class="add-panel"><i class="bi bi-trash"></i></a>
                 </a>
 
                         <?php else: ?>
@@ -166,6 +172,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
     <?php include('footer.php');?>
 
+    <!-- Filtrando datos -->
     <script>
         function filtrarTabla(tipo) {
             let input;
@@ -201,15 +208,46 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         }
     </script>
 
-<script>
-    function confirmarEliminacion() {
-        return confirm("¿Estás seguro de que deseas eliminar este usuario?");
-    }
 
-    function openModalAgregar() {
-        window.location.href = 'agregarusuario.php';
-    }
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+   //1.Llamamos y definimos la variable
+  document.querySelectorAll('#btn-eliminar').forEach(link => 
+  {
+    //2.Le asignamos el evento
+    link.addEventListener('click', evt => 
+    {
+      evt.preventDefault();
+      const url = link.href;
+
+      //3.Agregamos sweetalert
+      Swal.fire
+      ({
+        title: 'Advertencia',
+        text: 'Está seguro de eliminar el usuario?',
+        icon: 'warning',
+        showDenyButton: true,
+        confirmButtonText: 'Si',
+        denyButtonText: 'No',
+      })
+      .then(res => {
+        if (res.isConfirmed) 
+        {
+            Swal.fire("Se eliminó el usuario","","success"),
+            window.location.href = url;
+        }
+      });
+    });
+  });
+});
+
+function openModalAgregar() 
+{
+    window.location.href = 'agregarusuario.php';
+}
 </script>
+
 
 </body>
 </html>
