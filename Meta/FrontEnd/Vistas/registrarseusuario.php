@@ -484,8 +484,8 @@ document.addEventListener('DOMContentLoaded', () =>
                     <input id="img-perfil" name="img-perfil" type="file" required>
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
-
-                <button type="submit" class="btn">Registrar usuario</button>
+                
+                <input type="submit" value="Registrar Usuario" class="btn">
                 <p><a href="../Vistas/registrarsepersona.php">Volver a Registrar persona</a></p>
             </fieldset>
         </form>

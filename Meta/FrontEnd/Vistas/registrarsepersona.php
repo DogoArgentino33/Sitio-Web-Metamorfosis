@@ -678,79 +678,133 @@ function getLocalidades() {
                 <section class="input-box">
                     <br>
                      <label for="foto">Subir foto o usar cámara:</label><br>
-    <input type="file" name="foto" id="foto" accept="image/*" capture="user" required>
-    <span class="error"><?= $error_img ?></span><br>
-    <img id="preview-img" class="preview" style="display:none;" /><br><br>
+                    <input type="file" name="foto" id="foto" accept="image/*" capture="user" required>
+                    <span class="error"><?= $error_img ?></span><br>
+                    <img id="preview-img" class="preview" style="display:none;" /><br>
+                    <button type="button" id="cancelar-imagen" style="display:none;" class="btn" ><i class="bi bi-x-lg"></i> Cancelar Imagen</button><br>
+                    <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
+                    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
 
-    <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
-    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
+                    
+                    <button type="button" onclick="iniciarCamara()"  class="btn" >Activar cámara</button>
+                    
+                    <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
+ 
+                    <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none;" class="btn" ><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
 
-    <button type="button" onclick="iniciarCamara()">Activar cámara</button>
-    <button type="button" onclick="capturarFoto()">Tomar Foto</button><br><br>
+        
 
-    <button type="submit">Registrar Persona</button>
-</form>
+                    <script>
+                    const abrirCamaraBtn = document.getElementById("abrir-camara");
+                    const fotoInput = document.getElementById("foto");
+                    const previewImg = document.getElementById("preview-img");
+                    const cerrarBtn = document.getElementById("cerrar-camara");
+                    const cancelarImgBtn = document.getElementById("cancelar-imagen");
+                    let stream;
 
-<script>
-const fotoInput = document.getElementById("foto");
-const previewImg = document.getElementById("preview-img");
+                    fotoInput.addEventListener("change", () => {
+                        const archivo = fotoInput.files[0];
+                        if (!archivo) return;
 
-fotoInput.addEventListener("change", () => {
-    const archivo = fotoInput.files[0];
-    if (!archivo) return;
+                        if (archivo.size > 4 * 1024 * 1024) {
+                            alert("La imagen no debe superar los 4MB.");
+                            fotoInput.value = "";
+                            previewImg.style.display = "none";
+                            cancelarImgBtn.style.display = "none";
+                            return;
+                        }
 
-    if (archivo.size > 4 * 1024 * 1024) {
-        alert("La imagen no debe superar los 4MB.");
-        fotoInput.value = "";
-        previewImg.style.display = "none";
-        return;
-    }
+                        const lector = new FileReader();
+                        lector.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            previewImg.style.display = "block";
+                            cancelarImgBtn.style.display = "inline";
+                        };
+                        lector.readAsDataURL(archivo);
+                    });
 
-    const lector = new FileReader();
-    lector.onload = function(e) {
-        previewImg.src = e.target.result;
-        previewImg.style.display = "block";
-    };
-    lector.readAsDataURL(archivo);
-});
+                    function iniciarCamara() {
+                        const esMovil = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+                        navigator.mediaDevices.getUserMedia({ video: true })
+                            .then(mediaStream => {
+                                stream = mediaStream;
+                                const video = document.getElementById("video");
+                                video.srcObject = stream;
+                                video.style.display = "block";
+                                video.style.border = "2px solidrgb(122, 0, 0)";
+                                video.style.borderRadius = "10px";
+                                video.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                                video.style.margin = "1vw auto";
+                                video.style.display = "block";
 
-let stream;
+                                if (esMovil) {
+                                    console.log("Usando cámara en dispositivo móvil");
+                                    // Podés ajustar resoluciones o UI específicas para móviles
+                                } else {
+                                    console.log("Usando cámara en PC");
+                                    // Opcional: mostrar instrucciones distintas
+                                }
 
-function iniciarCamara() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(mediaStream => {
-            stream = mediaStream;
-            document.getElementById("video").srcObject = stream;
-            document.getElementById("video").style.display = "block";
-        })
-        .catch(() => alert("No se pudo acceder a la cámara."));
-}
+                                cerrarBtn.style.display = "inline";
+                                abrirCamaraBtn.style.display = "inline";
+                            })
+                            .catch(() => alert("No se pudo acceder a la cámara."));
+                    }
 
-function capturarFoto() {
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    function capturarFoto() {
+                        const video = document.getElementById("video");
+                        const canvas = document.getElementById("canvas");
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    canvas.toBlob(blob => {
-        const archivo = new File([blob], "captura.jpg", { type: "image/jpeg" });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(archivo);
-        fotoInput.files = dataTransfer.files;
+                        canvas.toBlob(blob => {
+                            const archivo = new File([blob], "captura.jpg", { type: "image/jpeg" });
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(archivo);
+                            fotoInput.files = dataTransfer.files;
 
-        const lector = new FileReader();
-        lector.onload = function(e) {
-            previewImg.src = e.target.result;
-            previewImg.style.display = "block";
-        };
-        lector.readAsDataURL(archivo);
-    }, "image/jpeg", 0.95);
-}
-</script>
+                            const lector = new FileReader();
+                            lector.onload = function(e) {
+                                previewImg.src = e.target.result;
+                                previewImg.style.display = "block";
+                                previewImg.style.border = "3px solid rgb(122, 0, 0)";
+                                cancelarImgBtn.style.display = "inline";
+                            };
+                            lector.readAsDataURL(archivo);
+                        }, "image/jpeg", 0.95);
+                    }
+
+                    function cerrarCamara() {
+                        const video = document.getElementById("video");
+                        if (video && video.srcObject) {
+                            const tracks = video.srcObject.getTracks();
+                            tracks.forEach(track => track.stop());
+                            video.srcObject = null;
+                            video.style.display = "none";
+                        }
+                        if (typeof stream !== "undefined" && stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                            stream = null;
+                        }
+                        abrirCamaraBtn.style.display = "none";
+                        cerrarBtn.style.display = "none";
+                    }
+
+                    // Función para cancelar imagen seleccionada o capturada
+                    cancelarImgBtn.addEventListener("click", () => {
+                        fotoInput.value = "";
+                        previewImg.src = "";
+                        previewImg.style.display = "none";
+                        cancelarImgBtn.style.display = "none";
+                    });
+
+                    </script>
                 </section>
-
-                <button type="submit" class="btn">Registrar persona</button>
-                <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
+                <input type="submit" value="Registrar Persona" class="btn">
+                <section class="register-link" >
+                    <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
+                </section>
+                
             </fieldset>
         </form>
     </section>
