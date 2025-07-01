@@ -375,75 +375,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     });
 </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const inputImg = document.getElementById("img-persona");
-    const maxPesoMB = 4;
-    const maxAncho = 1280;
-    const maxAlto = 1280;
-
-    inputImg.addEventListener("change", function () 
-    {
-        const archivo = this.files[0];
-        const mensajeError = this.nextElementSibling;
-
-        // Eliminar vista previa anterior y botón cancelar
-        const previewExistente = document.getElementById("preview-img");
-        if (previewExistente) previewExistente.remove();
-
-        const botonCancelar = document.getElementById("cancelar-img");
-        if (botonCancelar) botonCancelar.remove();
-
-        if (!archivo) return;
-
-        // Validar tamaño
-        if (archivo.size > maxPesoMB * 1024 * 1024) {
-            mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
-            this.value = "";
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.src = e.target.result;
-
-            img.onload = function () {
-                // Validar dimensiones
-                if (img.width !== maxAncho || img.height !== maxAlto) {
-                    mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
-                } else {
-                    mensajeError.textContent = "";
-                }
-
-                // Mostrar vista previa
-                img.id = "preview-img";
-                img.style.maxWidth = "200px";
-                img.style.marginTop = "10px";
-                inputImg.parentNode.appendChild(img);
-
-                // Agregar botón cancelar
-                const btnCancelar = document.createElement("button");
-                btnCancelar.id = "cancelar-img";
-                btnCancelar.textContent = "Cancelar imagen";
-                btnCancelar.type = "button";
-                btnCancelar.style.display = "block";
-                btnCancelar.style.marginTop = "10px";
-                btnCancelar.onclick = function () {
-                    inputImg.value = "";
-                    img.remove();
-                    btnCancelar.remove();
-                    mensajeError.textContent = "";
-                };
-                inputImg.parentNode.appendChild(btnCancelar);
-            };
-        };
-
-        reader.readAsDataURL(archivo);
-    });
-});
-</script>
-
 <!-- Función del mapa actualizado -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -528,48 +459,124 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- Función de la cámara -->
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-         /* Inicializacion de variables */
-  const width  = 350; // Ancho
-  let   height = 0; // Alto
-  let   streaming = false; 
-  let   stream    = null;   // Para Detener video al salir del modal
-  const modal   = document.getElementById("modalMAIN");
-  const btn     = document.getElementById("btnmostrarmodalverbo");
-  const span    = document.getElementsByClassName("close")[0];
-  const video   = document.getElementById("video");
-  const canvas  = document.getElementById("canvas");
-  const photo   = document.getElementById("photo");
-  const startBt = document.getElementById("sacar-foto"); // para tomar foto
-  const hidden  = document.getElementById("foto-base64");
+  /* ---------- Variables generales ---------- */
+  const inputImg = document.getElementById("img-persona");
+  const maxPesoMB = 4;
+  const maxAncho = 1280;
+  const maxAlto = 1280;
+  const hidden = document.getElementById("foto-base64");
 
-  /* ---------- control del modal ---------- */
+  const modal = document.getElementById("modalMAIN");
+  const btn = document.getElementById("btnmostrarmodalverbo");
+  const span = document.getElementsByClassName("close")[0];
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const startBt = document.getElementById("sacar-foto");
+
+  const width = 350;
+  let height = 0;
+  let streaming = false;
+  let stream = null;
+
+  /* ---------- Función de previsualización común ---------- */
+  function mostrarPreviewFoto(base64) {
+    // Eliminar preview anterior y botón cancelar si existen
+    const previewExistente = document.getElementById("preview-img");
+    if (previewExistente) previewExistente.remove();
+    const botonCancelar = document.getElementById("cancelar-img");
+    if (botonCancelar) botonCancelar.remove();
+
+    // Crear imagen preview
+    const img = document.createElement("img");
+    img.id = "preview-img";
+    img.src = base64;
+    img.style.maxWidth = "200px";
+    img.style.marginTop = "10px";
+
+    const contenedor = inputImg.parentNode;
+    contenedor.appendChild(img);
+
+    // Crear botón cancelar
+    const btnCancelar = document.createElement("button");
+    btnCancelar.id = "cancelar-img";
+    btnCancelar.textContent = "Cancelar imagen";
+    btnCancelar.type = "button";
+    btnCancelar.style.display = "block";
+    btnCancelar.style.marginTop = "10px";
+    btnCancelar.onclick = function () {
+      inputImg.value = "";
+      hidden.value = "";
+      img.remove();
+      btnCancelar.remove();
+      inputImg.disabled = false;
+    };
+
+    contenedor.appendChild(btnCancelar);
+    inputImg.disabled = true;
+  }
+
+  /* ---------- Vista previa al subir imagen desde archivo ---------- */
+  inputImg.addEventListener("change", function () {
+    const archivo = this.files[0];
+    const mensajeError = this.nextElementSibling;
+
+    const previewExistente = document.getElementById("preview-img");
+    if (previewExistente) previewExistente.remove();
+    const botonCancelar = document.getElementById("cancelar-img");
+    if (botonCancelar) botonCancelar.remove();
+
+    if (!archivo) return;
+
+    if (archivo.size > maxPesoMB * 1024 * 1024) {
+      mensajeError.textContent = `La imagen no debe superar los ${maxPesoMB} MB.`;
+      this.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.src = e.target.result;
+
+      img.onload = function () {
+        if (img.width !== maxAncho || img.height !== maxAlto) {
+          mensajeError.textContent = `Nota: la imagen será redimensionada automáticamente a ${maxAncho} x ${maxAlto} píxeles.`;
+        } else {
+          mensajeError.textContent = "";
+        }
+
+        mostrarPreviewFoto(e.target.result);
+      };
+    };
+
+    reader.readAsDataURL(archivo);
+  });
+
+  /* ---------- Control del modal ---------- */
   btn.onclick = () => {
     modal.style.display = "block";
-    clearPhoto();               // Limpiar foto y canvas al abrir el modal
-    initCamera();               // inicia la camara, al abrir el modal saldra el pedido de permiso
+    initCamera();
   };
 
   span.onclick = closeModal;
   window.onclick = (e) => { if (e.target === modal) closeModal(); };
 
   function closeModal() {
-    document.getElementById("img-persona").disabled = false;
+    inputImg.disabled = false;
     modal.style.display = "none";
-    stopCamera();                // ← apagar cámara al salir
-    clearPhoto();                // Limpiar foto y canvas al cerrar el modal
+    stopCamera();
   }
 
-  /* ---------- cámara ---------- */
+  /* ---------- Cámara ---------- */
   function initCamera() {
-    if (stream) return;          // ya está encendida
+    if (stream) return;
 
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: "user" }, audio: false })
-      .then( s => {
+      .then(s => {
         stream = s;
         video.srcObject = s;
         video.play();
@@ -580,7 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function stopCamera() {
     if (stream) {
       stream.getTracks().forEach(t => t.stop());
-      stream    = null;
+      stream = null;
       streaming = false;
     }
   }
@@ -588,38 +595,52 @@ document.addEventListener('DOMContentLoaded', () => {
   video.addEventListener("canplay", () => {
     if (!streaming) {
       height = video.videoHeight / (video.videoWidth / width);
-      if (isNaN(height)) height = width / (4/3);
+      if (isNaN(height)) height = width / (4 / 3);
 
-      video.width  = width;
+      video.width = width;
       video.height = height;
-      canvas.width  = width;
+      canvas.width = width;
       canvas.height = height;
       streaming = true;
     }
   });
 
-  startBt.addEventListener("click", e => { takePicture(); e.preventDefault(); });
+  startBt.addEventListener("click", e => {
+    e.preventDefault();
+    takePicture();
+  });
 
-  function clearPhoto() {
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar canvas
-    canvas.style.display = "none"; // Ocultar canvas
-    photo.src = ""; // Limpiar imagen
-    hidden.value = "";
-  }
+
 
   function takePicture() {
-    document.getElementById("img-persona").disabled = true;
+    document.getElementById("img-persona").required = false;
+    document.getElementById("img-persona-mobile").required = false;
     if (!streaming) return;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, width, height);
     const data = canvas.toDataURL("image/png");
-    photo.src   = data;
-    hidden.value = data;                // se enviará en el <form>
-    canvas.style.display = "none";      // Ocultar canvas después de tomar la foto
-  } 
+
+    hidden.value = data;
+    canvas.style.display = "none";
+    closeModal();
+    mostrarPreviewFoto(data);
+  }
+});
+
+        // Validación al enviar el formulario para asegurarse de que haya una imagen
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const inputFilePC = document.getElementById("img-persona");
+        const inputFileMobile = document.getElementById("img-persona-mobile");
+        const base64 = document.getElementById("foto-base64").value;
+
+        if (!inputFilePC.value && !inputFileMobile.value && !base64) {
+            e.preventDefault();
+            alert("Debes subir una imagen o tomar una foto.");
+        }
     });
+
 </script>
+
 
 <!-- Funcion de obtener Municipio -->
  <script>
@@ -887,16 +908,26 @@ function getLocalidades() {
                     <input id="img-persona-mobile" name="img-persona" type="file" accept="image/*" capture="environment" style="display:none;" required>
 
                     <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            function esMovil() {
-                                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                            }
-                            if (esMovil()) {
-                                document.getElementById('img-persona-mobile').style.display = 'block';
-                            } else {
-                                document.getElementById('img-persona').style.display = 'block';
-                            }
-                        });
+                            document.addEventListener("DOMContentLoaded", function () {
+                                function esMovil() {
+                                    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                                }
+
+                                if (esMovil()) {
+                                    const inputMobile = document.getElementById('img-persona-mobile');
+                                    const inputPC = document.getElementById('img-persona');
+                                    inputMobile.style.display = 'block';
+                                    inputMobile.required = true;
+                                    inputPC.required = false;
+                                } else {
+                                    const inputPC = document.getElementById('img-persona');
+                                    const inputMobile = document.getElementById('img-persona-mobile');
+                                    inputPC.style.display = 'block';
+                                    inputPC.required = true;
+                                    inputMobile.required = false;
+                                }
+                            });
+
                     </script>
                 <!-- Camara -->
                  <br>
@@ -913,14 +944,12 @@ function getLocalidades() {
 
                 <!-- Muestra la imagen -->
                 <canvas id="canvas" style="display:none;"></canvas>
-                <img id="photo" alt="La foto capturada aparecerá aquí" />
                 
                 <br>
                 <br>
                 <section class="modal-btns">
                     <!-- Botones de sacar foto y guardar en base de datos -->
                     <input id="sacar-foto" type="button" value="Tomar foto"></input>
-                    <input type="submit" value="Confirmar y Guardar"></input>
                 </section>
 
 
