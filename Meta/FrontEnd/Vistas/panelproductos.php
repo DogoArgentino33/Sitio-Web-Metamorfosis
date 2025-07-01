@@ -110,7 +110,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
                                 <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Ver"><i class="bi bi-eye"></i></button></a></td>
                                 <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
-                                <td><a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" onclick="return confirmarEliminacion()"><button class="add-panel" title="Eliminar"><i class="bi bi-trash"></i></button></a></td>
+                                <td><a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" id="btn-eliminar" class="add-panel"><i class="bi bi-trash"></i></a>
                             </tr>
                             <?php
                         }
@@ -171,16 +171,48 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 }
             }
         }
-
-        function confirmarEliminacion() {
-            return confirm("¿Estás seguro de que deseas eliminar este producto?");
-        }
-
-        function openModalAgregar() {
-            window.location.href = 'agregarproducto.php';
-        }
     </script>
 </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+    //1.Llamamos y definimos la variable
+    document.querySelectorAll('#btn-eliminar').forEach(link => 
+    {
+        //2.Le asignamos el evento
+        link.addEventListener('click', evt => 
+        {
+            evt.preventDefault();
+            const url = link.href;
+        
+            //3.Agregamos sweetalert
+            Swal.fire
+            ({
+                title: 'Advertencia',
+                text: 'Está seguro de eliminar el usuario?',
+                icon: 'warning',
+                showDenyButton: true,
+                confirmButtonText: 'Si',
+                denyButtonText: 'No',
+            })
+            .then(res => 
+            {
+                if (res.isConfirmed) 
+                {
+                    Swal.fire("Se eliminó el usuario","","success"),
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+});
+        
+function openModalAgregar() 
+{
+    window.location.href = 'agregarproducto.php';
+}
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {

@@ -7,14 +7,16 @@ if (session_status() === PHP_SESSION_NONE) {
 
 include('conexion.php');
 
-if (isset($_SESSION['id'])) {
+if (isset($_SESSION['id'])) 
+{
     $id = $_SESSION['id'];
     $sql = "UPDATE usuario SET estadousu = 1 WHERE id = $id";
     mysqli_query($conexion, $sql);
+    
+    session_unset();
+    session_destroy();
+
+    header("Location: login.php?logout=ok");
+    exit;
 }
-
-session_unset();
-session_destroy();
-
-header("Location: login.php");
-exit;
+?>
