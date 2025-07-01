@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (mysqli_query($conexion, $sql_insert)) {
             $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-            echo "<script>alert('Usuario Registrado Exitosamente'); window.location.href='login.php';</script>";
+            header("Location: login.php?registrouser=ok");
             exit;
         } else {
             $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);
@@ -396,6 +396,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
         reader.readAsDataURL(archivo);
     });
+});
+</script>
+
+<script> //Registro persona
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos en registropersona.php
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('registropersona') === 'ok') 
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'La persona fue registrada',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
+  //3. Al refrescar la página, no volverá a salir el mensaje
+    history.replaceState({}, '', location.pathname);
+  }
 });
 </script>
 

@@ -118,11 +118,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 <script>
 document.addEventListener('DOMContentLoaded', () => 
 {
+  
   //1. Traemos lo que definimos en logout.php
   const p = new URLSearchParams(location.search);
 
   //2. Como lo definimos como "ok", procede a mostrar el mensaje
-  if (p.get('logout') === 'ok') 
+  if (p.get('logout') === 'ok') //Para cierre de sesión
   {
     Swal.fire({
       position: 'top',
@@ -131,10 +132,21 @@ document.addEventListener('DOMContentLoaded', () =>
       showConfirmButton: false,
       timer: 1500
     });
-
   //3. Al refrescar la página, no volverá a salir el mensaje
     history.replaceState({}, '', location.pathname);
   }
+  if (p.get('registrouser') === 'ok') //Para registrar usuario validacion
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'El usuario fue registrado',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  }
+  ///////////////////////////////////////////////////////////////////
 });
 </script>
 
