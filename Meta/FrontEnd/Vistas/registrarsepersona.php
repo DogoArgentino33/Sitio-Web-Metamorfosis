@@ -227,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
+    <link rel="stylesheet" href="../Estilos/registrarpersona.css">
 
     <!-- Link y script de Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -548,7 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- control del modal ---------- */
   btn.onclick = () => {
     modal.style.display = "block";
-    initCamera();                // inicia la camara, al abrir el modal saldra el pedido de permiso
+    clearPhoto();               // Limpiar foto y canvas al abrir el modal
+    initCamera();               // inicia la camara, al abrir el modal saldra el pedido de permiso
   };
 
   span.onclick = closeModal;
@@ -558,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("img-persona").disabled = false;
     modal.style.display = "none";
     stopCamera();                // ← apagar cámara al salir
-    clearPhoto();
+    clearPhoto();                // Limpiar foto y canvas al cerrar el modal
   }
 
   /* ---------- cámara ---------- */
@@ -600,9 +602,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function clearPhoto() {
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#AAA";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    photo.src = canvas.toDataURL("image/png");
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar canvas
+    canvas.style.display = "none"; // Ocultar canvas
+    photo.src = ""; // Limpiar imagen
     hidden.value = "";
   }
 
@@ -614,6 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = canvas.toDataURL("image/png");
     photo.src   = data;
     hidden.value = data;                // se enviará en el <form>
+    canvas.style.display = "none";      // Ocultar canvas después de tomar la foto
   } 
     });
 </script>
@@ -719,14 +722,18 @@ function getLocalidades() {
     </section>
     <br>
     <h1 style="text-align: center;">Registrar Persona</h1>
-            <div style="text-align:center; margin-bottom:20px;">
+
+        <section>
+           <div style="text-align:center; margin-bottom:20px; justify-content:center;">
             <video src="uploads/METAMORFOSIS VIDEO REGISTRAR PERSONA.mp4" controls width="480" poster="">
             Tu navegador no soporta la reproducción de video.
             </video>
             <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar una persona</p>
             </div>
-    <section class="wrapper-persona">
-        <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="employee">
+        </section>
+
+    <section class="wrapperregistro" id="wrapperregistro">
+        <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="formregistro">
             <h2>Formulario Registrar Persona</h2>
             <fieldset>
                 <legend>Datos personales</legend>
@@ -826,9 +833,28 @@ function getLocalidades() {
                 <!-- Estilo de Leaflet -->
                 <style>
                 #map {
-                        height: 350px; 
-                        width: 350px;
-                        margin: auto; }
+                        width: 100%;
+                        max-width: 400px;
+                        aspect-ratio: 1 / 1;
+                        height: auto;
+                        margin: auto;
+                        z-index: 1;
+                        position: relative;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                }
+                @media (max-width: 500px) {
+                        #map {
+                                max-width: 100vw;
+                                min-width: 0;
+                                aspect-ratio: 1 / 1;
+                        }
+                }
+                /* Asegura que el modal esté por encima del mapa */
+                #modalMAIN {
+                        z-index: 9999 !important;
+                        position: fixed !important;
+                }
                 </style>
 
                 <!-- Div del mapa -->
@@ -855,11 +881,26 @@ function getLocalidades() {
                 <section class="input-box">
                     <br>
                     <label for="img-persona">Imagen personal:</label>
-                    <input id="img-persona" name="img-persona" type="file" accept="image/*" required>
+                    <!-- Input para PC -->
+                    <input id="img-persona" name="img-persona" type="file" accept="image/*" required style="display:none;">
+                    <!-- Input para móvil -->
+                    <input id="img-persona-mobile" name="img-persona" type="file" accept="image/*" capture="environment" style="display:none;" required>
 
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            function esMovil() {
+                                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                            }
+                            if (esMovil()) {
+                                document.getElementById('img-persona-mobile').style.display = 'block';
+                            } else {
+                                document.getElementById('img-persona').style.display = 'block';
+                            }
+                        });
+                    </script>
                 <!-- Camara -->
+                 <br>
                  <input type="button" value="Activar Camara" id="btnmostrarmodalverbo">
-                 <input type="file" accept="/image*" capture="enviroment" value="Activar camara cel" >
 
                 <!-- Modal de la Cámara -->
                 <section id="modalMAIN" class="modal">
@@ -876,10 +917,12 @@ function getLocalidades() {
                 
                 <br>
                 <br>
-                
-                <!-- Botones de sacar foto y guardar en base de datos -->
-                <input id="sacar-foto" type="button" value="Tomar foto"></input>
-                <input type="submit" value="Confirmar y Guardar"></input>
+                <section class="modal-btns">
+                    <!-- Botones de sacar foto y guardar en base de datos -->
+                    <input id="sacar-foto" type="button" value="Tomar foto"></input>
+                    <input type="submit" value="Confirmar y Guardar"></input>
+                </section>
+
 
                 <!-- este  imput guarda y envia la foto -->
                 <input type="hidden" name="foto" id="foto-base64" />
@@ -893,7 +936,7 @@ function getLocalidades() {
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
 
-                <button type="submit" class="btn-register">Registrar persona</button>
+                <button type="submit" class="btn">Registrar persona</button>
                 <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
             </fieldset>
         </form>
