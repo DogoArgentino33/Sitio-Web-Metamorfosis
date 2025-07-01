@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -28,7 +34,11 @@
                 <img src="../img/img-gerente.jpg" width="50%" height="40%" style="border-radius: 3%;">
             </section>
             
-            <input type="button" value="Editar Descripcion" class="action-button" onclick="openModalShow()">
+            <?php if(isset($_SESSION['rol']) and $_SESSION['rol'] == 1):
+            {
+                echo '<input type="button" value="Editar Descripcion" class="action-button" onclick="openModalShow()">';
+            }
+            endif?>
         </section>
     </main>
 

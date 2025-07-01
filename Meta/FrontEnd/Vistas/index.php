@@ -81,7 +81,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => 
 {
-  //1. Traemos lo que definimos en logout.php
+  //1. Traemos lo que definimos en login.php
   const p = new URLSearchParams(location.search);
 
   //2. Como lo definimos como "ok", procede a mostrar el mensaje

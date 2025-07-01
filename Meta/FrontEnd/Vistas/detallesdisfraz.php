@@ -15,6 +15,7 @@ include('conexion.php'); // Ajusta la ruta si es necesario
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    
     <script>
         const usuarioLogueado = <?= isset($_SESSION['id']) ? 'true' : 'false' ?>;
     </script>
