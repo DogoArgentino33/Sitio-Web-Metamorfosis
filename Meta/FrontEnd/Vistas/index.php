@@ -1,3 +1,4 @@
+<!-- Inicio del HTML -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,12 +14,17 @@
 </head>
 <body>
     <?php include('cabecera.php'); ?>
-    <main> 
+    
+    <main>
+         <!--Nav-->
         <section class="nav-route">
             <a>Inicio /</a>
         </section>
+
+        <!-- Texto Principal -->
         <h2 style="text-align: center;">¡Bienvenido a Metamorfosis - Alquiler de disfraces y accesorios!</h2>
 
+        <!-- Aqui inicia el Slider -->
         <section class="slider">
             <section class="slides">
                 <section class="slide">
@@ -32,11 +38,12 @@
                 </section>
             </section>
             <section class="slider-controls">
-                <button class="control-button" id="btnSlider"  onclick="changeSlide(-1)"><i class="bi bi-arrow-left-circle"></i></button>
-                <button class="control-button" id="btnSlider" onclick="changeSlide(1)"><i class="bi bi-arrow-right-circle"></i></button>
+                <button class="control-button" id="botonSliderPrev"><i class="bi bi-arrow-left-circle"></i></button>
+                <button class="control-button" id="botonSliderNext"><i class="bi bi-arrow-right-circle"></i></button>
             </section>
         </section>
 
+        <!-- Aqui inicia el catalogo -->
         <h2 style="text-align: center;">Dale un vistazo a nuestro catalogo</h2>
         
         <section class="cards-container">
@@ -62,20 +69,55 @@
     </main>
     
     <?php include('footer.php');?>
-
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelector('.slides');
-
-        function changeSlide(direction) {
-            const totalSlides = document.querySelectorAll('.slide').length;
-            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
-    </script>
-
 </body>
 </html>
+
+    <!-- Funcion del slider -->
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+    let currentSlide = 0;
+    const slides = document.querySelector('.slides');
+    const intervalMs   = 5000; //Esto equivale a 5 segunfos
+    let timerId        = null;
+    movimiento();  //Iniciamos el proceso
+
+    // Iniciamos los botones  //
+    document.getElementById('botonSliderPrev').addEventListener('click', () => 
+    {
+        CambioSlide(-1);
+        ReiniciarMov();
+    });
+
+    document.getElementById('botonSliderNext').addEventListener('click', () => 
+    {
+        CambioSlide(1);
+        ReiniciarMov();
+    });
+
+    function CambioSlide(direction = 1) 
+    { 
+        const totalSlides = document.querySelectorAll('.slide').length;
+        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    function movimiento() 
+    {
+        if (timerId) 
+        {
+            return;
+        }                        
+            timerId = setInterval(() => CambioSlide(1), intervalMs);
+    }
+
+    function pararmovimiento() 
+    {
+        clearInterval(timerId);
+        timerId = null;
+    }
+});
+</script>
 
 <!-- Función de Login alert - Continuación - -->
 <script>

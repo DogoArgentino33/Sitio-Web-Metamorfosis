@@ -69,6 +69,9 @@
 
 <?php include('footer.php');?>
 
+</body>
+</html>
+
 <script>
     function filterDisfraces() {
         const input = document.getElementById('searchInput');
@@ -108,5 +111,3 @@
         })
     });
 </script>
-</body>
-</html>
