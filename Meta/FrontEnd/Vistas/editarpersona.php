@@ -9,8 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql_persona = "SELECT * FROM persona WHERE id = $id";
     $result_persona = mysqli_query($conexion, $sql_persona);
     $persona = mysqli_fetch_assoc($result_persona);
+    $nombre = $_POST['nombre'] ?? $persona['nombre'];
+    $apellido = $_POST['apellido'] ?? $persona['apellido'];
+    $dni = $_POST['dni'] ?? $persona['dni'];
+    $fec_nac = $_POST['fec_nac'] ?? $persona['fec_nac'];
     $pais = $_POST['pais'];
     $provincia = $_POST['provincia'];
+    $genero = $_POST['genero'] ?? $persona['genero'];
     $calle = $_POST['calle'];
     $altura = intval($_POST['altura']);
     $barrio = $_POST['barrio'];
@@ -18,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $municipio = $_POST['municipio'];
     $localidad = $_POST['localidad'];
     $fechamod = date('Y-m-d H:i:s');
-    $usumod = $_SESSION['usuario'] ?? 'sistema';
+    $usumod = $_SESSION['nom_usu'] ?? 'sistema';
 
     // Manejo de imagen
     if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
@@ -263,6 +268,20 @@ function getLocalidades() {
             </div>
         </section>
 
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" value="<?= htmlspecialchars($persona['nombre']) ?>" readonly><br>
+
+        <label for="apellido">Apellido:</label>
+        <input type="text" name="apellido" id="apellido" value="<?= htmlspecialchars($persona['apellido']) ?>" readonly><br>
+
+        <label for="dni">DNI:</label>
+        <input type="text" name="dni" id="dni" value="<?= htmlspecialchars($persona['dni']) ?>" readonly><br>
+
+        <label for="fec_nac">Fecha de Nacimiento:</label>
+        <input type="date" name="fec_nac" id="fec_nac" value="<?= htmlspecialchars($persona['fec_nac']) ?>" readonly><br>
+
+        <label for="genero">Género:</label>
+        <input type="text" name="genero" id="genero" value="<?= htmlspecialchars($persona['genero']) ?>" readonly><br>
 
         <label>País:</label>
         <input type="text" name="pais" value="<?= htmlspecialchars($persona['pais']) ?>" required><br>
@@ -317,6 +336,13 @@ function getLocalidades() {
 
         <label>Altura:</label>
         <input type="text" name="altura" value="<?= htmlspecialchars($persona['altura']) ?>" required><br>
+
+        <label for="fechamod">Última Modificacion</label>
+        <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($persona['fechamod']) ?>" readonly><br>
+
+        <label for="usumod">Usuario que realizó la modificacion</label>
+        <input type="text" name="usumod" id="usumod" value="<?= htmlspecialchars($persona['usumod']) ?>" readonly><br>
+
 
         <button type="submit">Guardar cambios</button>
         <a href="panelpersonas.php"><button type="button">Cancelar</button></a>

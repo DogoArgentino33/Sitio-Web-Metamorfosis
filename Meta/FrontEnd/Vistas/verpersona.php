@@ -105,7 +105,6 @@ $persona = $resultado->fetch_assoc();
 
                 <fieldset>
                     <legend>Selecciona los atributos a exportar:</legend>
-                    <label><input type="checkbox" name="atributos[]" value="id" checked> ID</label>
                     <label><input type="checkbox" name="atributos[]" value="img" checked> Imagen</label>
                     <label><input type="checkbox" name="atributos[]" value="nombre" checked> Nombre</label>
                     <label><input type="checkbox" name="atributos[]" value="apellido"> Apellido</label>
@@ -134,8 +133,8 @@ $persona = $resultado->fetch_assoc();
                 </fieldset>
 
                 <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
-                    <button type="submit" class="boton">Exportar</button>
                     <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
+                    <button type="submit" class="boton">Exportar</button>
                 </nav>
             </form>
         </section>

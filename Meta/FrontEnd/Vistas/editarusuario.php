@@ -8,11 +8,17 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_GET['id']; // o $_POST['id'], según cómo lo llames
+    $sql_usuario = "SELECT * FROM usuario WHERE id = $id";
+    $result_usuario = mysqli_query($conexion, $sql_usuario);
+    $usuario = mysqli_fetch_assoc($result_usuario);
     $nom_usu = $_POST['nom_usu'];
     $correo = $_POST['correo'];
     $telefono = $_POST['telefono'];
     $rol = $_POST['rol'];
-
+    $estadousu = $_POST['estadousu']; 
+    $fechamod = date('Y-m-d H:i:s'); // Fecha de modificación
+    $usumod = $_SESSION['nom_usu'] ?? 'sistema'; // Usuario que realiza la modificación
 
 
     if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
@@ -22,16 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (move_uploaded_file($tmp_name, $destino)) {
             // Si se subió una nueva imagen, actualizamos también img_perfil
-            $stmt = $conexion->prepare("UPDATE usuario SET nom_usu=?, correo=?, telefono=?, rol=?, img_perfil=? WHERE id=?");
-            $stmt->bind_param("sssssi", $nom_usu, $correo, $telefono, $rol, $destino, $id);
+            $stmt = $conexion->prepare("UPDATE usuario SET nom_usu=?, correo=?, telefono=?, rol=?, img_perfil=?, fechamod=?, usumod=? WHERE id=?");
+            $stmt->bind_param("sssssssi", $nom_usu, $correo, $telefono, $rol, $destino, $fechamod, $usumod, $id);
         } else {
             echo "Error al mover la imagen.";
             exit;
         }
     } else {
         // Si no se subió imagen, dejamos img_perfil como está
-        $stmt = $conexion->prepare("UPDATE usuario SET nom_usu=?, correo=?, telefono=?, rol=? WHERE id=?");
-        $stmt->bind_param("ssssi", $nom_usu, $correo, $telefono, $rol, $id);
+        $stmt = $conexion->prepare("UPDATE usuario SET nom_usu=?, correo=?, telefono=?, rol=?, fechamod=?, usumod=? WHERE id=?");
+        $stmt->bind_param("ssssssi", $nom_usu, $correo, $telefono, $rol, $fechamod, $usumod, $id);
     }
 
 
@@ -44,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario WHERE id = ?");
+$stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu, fechamod, usumod FROM usuario WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -107,7 +113,27 @@ $ruta_imagen = $usuario['img_perfil']; // Mantener actual por defecto
             <option value="2" <?= $usuario['rol'] === 'empleado' ? 'selected' : '' ?>>Empleado</option>
             <option value="0" <?= $usuario['rol'] === 'usuario' ? 'selected' : '' ?>>Usuario</option>
             <!-- Agregá más roles si tenés -->
-        </select><br><br>
+        </select><br>
+
+        <label for="estadosusu">Estado del Usuario</label>
+        <input type="text" name="estadousu" id="estadousu" value="<?php 
+                            if($usuario['estadousu'] == 2){
+                                ?><?= htmlspecialchars('Activo') ?>
+                            <?php
+                            }
+                            else{
+                                if($usuario['estadousu'] == 1){
+                                    ?><?= htmlspecialchars('Inactivo') ?>
+                                <?php
+                                }
+                            }
+                        ?>" readonly>
+
+        <label for="fechamod">Última Modificacion</label>
+        <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($usuario['fechamod']) ?>" readonly><br>
+
+        <label for="usumod">Usuario que realizó la modificacion</label>
+        <input type="text" name="usumod" id="usumod" value="<?= htmlspecialchars($usuario['usumod']) ?>" readonly><br>
 
         <button type="submit">Guardar cambios</button>
         <a href="panelusuarios.php"><button type="button">Cancelar</button></a>

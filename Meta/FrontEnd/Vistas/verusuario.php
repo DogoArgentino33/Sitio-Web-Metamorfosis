@@ -37,13 +37,43 @@ $usuario = $resultado->fetch_assoc();
             <img class="img-perfil" src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Imagen de perfil" onclick="mostrarModal(this)">
         </div>
         <div class="dni-info">
-            <p><strong>ID:</strong> <?= htmlspecialchars($usuario['id']) ?></p>
             <p><strong>Nombre de Usuario:</strong> <?= htmlspecialchars($usuario['nom_usu']) ?></p>
             <p><strong>Correo:</strong> <?= htmlspecialchars($usuario['correo']) ?></p>
             <p><strong>Teléfono:</strong> <?= htmlspecialchars($usuario['telefono']) ?></p>
-            <p><strong>ID Persona:</strong> <?= htmlspecialchars($usuario['id_persona']) ?></p>
-            <p><strong>Rol:</strong> <?= htmlspecialchars($usuario['rol']) ?></p>
-            <p><strong>Estado Usuario:</strong> <?= htmlspecialchars($usuario['estadousu']) ?></p>
+            <p><strong>Rol:</strong> <?php 
+                            if($usuario['rol'] == 0){
+                                ?><td><?= htmlspecialchars('Usuario') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['rol'] == 1){
+                                    ?><td><?= htmlspecialchars('Gerente') ?></td>
+                                <?php
+                                }
+                            }
+                            if($usuario['rol'] == 2){
+                                ?><td><?= htmlspecialchars('Empleado') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['rol'] == 4){
+                                    ?><td><?= htmlspecialchars('Administrador') ?></td>
+                                <?php
+                                }
+                            }
+                        ?></p>
+            <p><strong>Estado Usuario:</strong>                         <?php 
+                            if($usuario['estadousu'] == 2){
+                                ?><td><?= htmlspecialchars('Activo') ?></td>
+                            <?php
+                            }
+                            else{
+                                if($usuario['estadousu'] == 1){
+                                    ?><td><?= htmlspecialchars('Inactivo') ?></td>
+                                <?php
+                                }
+                            }
+                        ?></p>
             <br>
             <a href="panelusuarios.php"><button type="button" class="boton">Volver al panel</button></a>
             <button type="button" class="boton" onclick="abrirModalExportar()">Exportar</button>
@@ -79,12 +109,10 @@ $usuario = $resultado->fetch_assoc();
 
                 <fieldset>
                     <legend>Selecciona los atributos a exportar:</legend>
-                    <label><input type="checkbox" name="atributos[]" value="id" checked> ID</label>
                     <label><input type="checkbox" name="atributos[]" value="nom_usu" checked> Nombre de Usuario</label>
                     <label><input type="checkbox" name="atributos[]" value="img_perfil"> Imagen de Perfil</label>
                     <label><input type="checkbox" name="atributos[]" value="correo"> Correo</label>
                     <label><input type="checkbox" name="atributos[]" value="telefono"> Teléfono</label>
-                    <label><input type="checkbox" name="atributos[]" value="id_persona"> ID Persona</label>
                     <label><input type="checkbox" name="atributos[]" value="rol"> Rol</label>
                     <label><input type="checkbox" name="atributos[]" value="estadousu"> Estado Usuario</label>
                 </fieldset>
@@ -98,8 +126,8 @@ $usuario = $resultado->fetch_assoc();
                 </fieldset>
 
                 <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
-                    <button type="submit" class="boton">Exportar</button>
                     <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
+                    <button type="submit" class="boton">Exportar</button>
                 </nav>
             </form>
         </section>
