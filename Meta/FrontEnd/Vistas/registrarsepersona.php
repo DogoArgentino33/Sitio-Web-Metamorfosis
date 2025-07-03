@@ -508,6 +508,50 @@ function getLocalidades() {
     });
  </script>
 
+<!-- Funcion de obtener Provincia -->
+ <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const cbxProvincia = document.getElementById('provincia');
+    const cbxDepartamento    = document.getElementById('departamento');
+
+    cbxProvincia.addEventListener('change', GetDpto);
+
+    function fetchAndSetData(url, formData, targetElement) {
+    return fetch(url, 
+    {
+      method: 'POST',
+      body: formData            // mismo dominio → no necesitas 'mode:cors'
+    })
+    .then(r => r.text())          // ⬅ HTML, no JSON
+    .then(html => {
+      targetElement.innerHTML  =
+        '<option value="">Seleccionar…</option>' + html;
+      targetElement.disabled = false;   // por si estaba deshabilitado
+    })
+    .catch(err => 
+    {
+      console.error(err);
+      targetElement.innerHTML =
+        '<option value="">(error)</option>';
+      targetElement.disabled = true;
+    });
+}
+
+function GetDpto() {
+  const provincia = cbxProvincia.value;
+  if (!provincia) {          // nada elegido → vaciar segundo select
+    cbxDepartamento.innerHTML = '<option value="">Seleccionar…</option>';
+    cbxDepartamento.disabled  = true;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('codprov', provincia);
+
+  fetchAndSetData('GetDpto.php', formData, cbxDepartamento);
+}
+    });
+ </script> 
 
 <!-- Cuerpo del formulario -->
 <body>
@@ -618,7 +662,9 @@ function getLocalidades() {
                 <!-- Provincia -->
                 <section class="input-box">
                     <label for="provincia">Provincia:</label>
-                    <input id="provincia" name="provincia" type="text" class="solo-letras" required>
+                    <select name="provincia" id="provincia" required>
+                        <option value="">Seleccionar</option>
+                    </select>
                 </section>
 
                 <!-- Pais -->
