@@ -84,6 +84,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             $stmtTema->bind_param("ii", $id_producto, $id_tematica);
             $stmtTema->execute();
 
+            // 5. Insertar Imagenes
+            if (!empty($_FILES['imagenes']['name'][0])) {
+                $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+                $directorio_subida = 'uploads/producto/'; 
+
+                // Asegúrate de que la carpeta exista
+                if (!is_dir($directorio_subida)) {
+                    mkdir($directorio_subida, 0755, true);
+                }
+
+                foreach ($_FILES['imagenes']['tmp_name'] as $key => $tmp_name) {
+                    $nombre_original = $_FILES['imagenes']['name'][$key];
+                    $tipo_archivo = $_FILES['imagenes']['type'][$key];
+                    $error = $_FILES['imagenes']['error'][$key];
+                    $tamano = $_FILES['imagenes']['size'][$key];
+
+                    if ($error === UPLOAD_ERR_OK) {
+                        if (in_array($tipo_archivo, $tipos_permitidos)) {
+                            // Crear un nombre único para evitar sobreescritura
+                            $extension = pathinfo($nombre_original, PATHINFO_EXTENSION);
+                            $nombre_nuevo = uniqid('img_') . '.' . $extension;
+                            $ruta_destino = $directorio_subida . $nombre_nuevo;
+
+                            if (move_uploaded_file($tmp_name, $ruta_destino)) {
+                                // Insertar en la tabla img_producto
+                                $tipo_producto = intval($tipo); // 1 o 2 ya lo tienes
+                                $stmtImg = $conexion->prepare("INSERT INTO img_producto (tipo, img, id_producto) VALUES (?, ?, ?)");
+                                $stmtImg->bind_param("isi", $tipo_producto, $nombre_nuevo, $id_producto);
+                                $stmtImg->execute();
+                            } else {
+                                $errores[] = "Error al mover la imagen $nombre_original.";
+                            }
+                        } else {
+                            $errores[] = "Tipo de archivo no permitido para la imagen $nombre_original.";
+                        }
+                    } else {
+                        $errores[] = "Error en la subida de la imagen $nombre_original.";
+                    }
+                }
+            }
+
+
             echo "<script>alert('Producto agregado correctamente'); window.location.href='panelproductos.php';</script>";
             exit;
         } 
@@ -120,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
 <main class="dni-card">
     <!-- Inicio del Formulario -->
-    <form action="agregarproducto.php" method="POST" class="dni-info" novalidate>
+    <form action="agregarproducto.php" method="POST" class="dni-info" novalidate enctype="multipart/form-data">
         <h2 style="text-align:center;">Agregar Producto</h2>
 
         <!-- Nombre -->
@@ -139,9 +181,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         <p><label for="tematica">Tematica:</label>
         <select id="tematica" name="tematica" class="boton" required>
             <option value="">-- Seleccionar Tematica --</option>
-            <?php while ($cat = $resultado_tematica->fetch_assoc()): ?>
-                <option value="<?= $cat['id'] ?>" <?= (isset($_POST['tematica']) && $_POST['tematica'] == $cat['id']) ? 'selected' : '' ?>>
-                    <?= escapar($cat['nombre_tema']) ?>
+            <?php while ($tem = $resultado_tematica->fetch_assoc()): ?>
+                <option value="<?= $tem['id'] ?>" <?= (isset($_POST['tematica']) && $_POST['tematica'] == $tem['id']) ? 'selected' : '' ?>>
+                    <?= escapar($tem['nombre_tema']) ?>
                 </option>
             <?php endwhile; ?>
         </select></p>
@@ -177,6 +219,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         <p><label for="precio">Precio:</label>
         <input id="precio" type="number" name="precio" class="boton" step="0.01" min="0"
             value="<?= escapar($_POST['precio'] ?? '') ?>"></p>
+
+        <!-- Imagenes -->
+        <p>
+            <label for="imagenes">Imágenes:</label>
+            <input id="imagenes" type="file" name="imagenes[]" multiple accept="image/*" class="boton" required>
+        </p>
 
         <!-- Mostrar errores -->
         <?php if (!empty($errores)): ?>

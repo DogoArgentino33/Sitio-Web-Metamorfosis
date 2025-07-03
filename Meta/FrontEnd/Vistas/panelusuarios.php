@@ -79,12 +79,12 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         ?>
 
                         <tr>
-                        <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
-                        
                         <td>
-                        <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
+                            <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
                         </td>
 
+                        <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
+                        
                         <td><?= htmlspecialchars($usuario['correo']) ?></td>
                         <td><?= htmlspecialchars($usuario['telefono']) ?></td>
                         
