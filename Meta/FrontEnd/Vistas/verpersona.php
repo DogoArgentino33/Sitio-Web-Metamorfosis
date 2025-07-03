@@ -7,10 +7,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-$stmt = $conexion->prepare("SELECT  id, nombre, apellido, dni, fec_nac, pais, provincia, nomdpto, nommun, nomloc, barrio, calle, altura, genero, img, lat, lng FROM persona
+$stmt = $conexion->prepare("SELECT  id, nombre, apellido, dni, fec_nac, pais, nomprov, nomdpto, nommun, nomloc, barrio, calle, altura, genero, img, lat, lng FROM persona
 INNER JOIN localidades ON persona.localidad  = localidades.codloc
 INNER JOIN municipio ON localidades.codmun  = municipio.codmun
 INNER JOIN dpto ON municipio.coddpto = dpto.coddpto
+INNER JOIN provincias ON dpto.codprov = provincias.codprov
 WHERE persona.id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -62,7 +63,7 @@ $persona = $resultado->fetch_assoc();
 
             <h2> Dirección </h2>
             <p><strong>Pais:</strong> <?= htmlspecialchars($persona['pais']) ?></p>
-            <p><strong>Provincia:</strong> <?= htmlspecialchars($persona['provincia']) ?></p>
+            <p><strong>Provincia:</strong> <?= htmlspecialchars($persona['nomprov']) ?></p>
             <p><strong>Departamento:</strong> <?= htmlspecialchars($persona['nomdpto']) ?></p>
             <p><strong>Municipio:</strong> <?= htmlspecialchars($persona['nommun']) ?></p>
             <p><strong>Localidad:</strong> <?= htmlspecialchars($persona['nomloc']) ?></p>

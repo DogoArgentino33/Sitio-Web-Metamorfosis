@@ -229,10 +229,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 regex: /^[0-9]{7,8}$/,
                 mensaje: "El DNI debe tener entre 7 y 8 números, sin letras ni símbolos."
             },
-            provincia: {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "La provincia debe contener solo letras y espacios simples. No numeros ni sibolos"
-            },
             pais: {
                 regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
                 mensaje: "El país debe contener solo letras y espacios simples. No numeros ni sibolos"
@@ -346,11 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let marker;
 
   /* selects */
+  const select_provincia    = document.getElementById('provincia');
   const select_departamento = document.getElementById('departamento');
   const select_municipio    = document.getElementById('municipio');
   const select_localidad    = document.getElementById('localidad');
 
-  map.on('click', e => {
+  map.on('click', e => 
+  {
     const {lat,lng} = e.latlng;
     document.getElementById('lat').value = lat.toFixed(6);
     document.getElementById('lng').value = lng.toFixed(6);
@@ -361,9 +359,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.error) { console.warn(data.error); return; }
 
         //Guardando datos en cada select
-        select_departamento.value = data.coddpto;
+        select_provincia.value = data.codprov;
         await fillMunicipios(data.coddpto, data.codmun); 
         await fillLocalidades(data.codmun, data.codloc);
+        await fillDpto(data.codprov, data.coddpto);
 
         //Funcion de movimiento
         moveMarker(lat,lng);
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
         marker.setLatLng(punto);
         /* popup */
-        marker.bindPopup("").openPopup();
+        marker.openPopup();
     }
     else        
     {
@@ -413,6 +412,20 @@ document.addEventListener('DOMContentLoaded', () => {
         select_localidad.innerHTML = '<option value="">Seleccionar…</option>'+html;
         select_localidad.value = codlocSel;
       });
+  }
+
+  function fillDpto(codprov, codDptoSel)
+  {
+    const fd = new FormData();  fd.append('codprov', codprov);
+    return fetch('GetDpto.php', {method:'POST', body:fd})
+      .then(r => r.text())
+      //Esta parte cambia el valor de select, no tocar
+      .then(html => 
+      {
+        select_departamento.innerHTML = '<option value="">Seleccionar…</option>'+html;
+        select_departamento.value = codDptoSel;
+      });
+
   }
 
 });
@@ -629,17 +642,7 @@ function GetDpto() {
                 <section class="input-box">
                     <label for="departamento">Departamento:</label>
                     <select name="departamento" id="departamento" required>
-                        <?php 
-                        $sql = "SELECT coddpto, nomdpto FROM dpto";
-                        $result = mysqli_query($conexion, $sql);
-
-                        while($row = $result->fetch_assoc()) 
-                        { ?>
-                            <option value="<?php echo $row['coddpto'];?>"><?php echo $row['nomdpto'];?></option>
-                        <?php }
-                        
-                        
-                        ?>
+                        <option value="">Seleccionar</option>
                     </select>
                 </section>
 
@@ -663,7 +666,16 @@ function GetDpto() {
                 <section class="input-box">
                     <label for="provincia">Provincia:</label>
                     <select name="provincia" id="provincia" required>
-                        <option value="">Seleccionar</option>
+                        <?php 
+                        $sql = "SELECT codprov, nomprov FROM provincias";
+                        $result = mysqli_query($conexion, $sql);
+
+                        while($row = $result->fetch_assoc()) 
+                        { ?>
+                            <option value="<?php echo $row['codprov'];?>"><?php echo $row['nomprov'];?></option>
+                        <?php 
+                        }
+                        ?>
                     </select>
                 </section>
 
