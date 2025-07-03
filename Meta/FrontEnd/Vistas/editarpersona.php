@@ -252,8 +252,9 @@ function getLocalidades() {
     <form method="POST" enctype="multipart/form-data">
         <section class="perfil-editar">
             <div class="foto-perfil-editar">
-                <img src="<?= htmlspecialchars($persona['img']) ?>" alt="Foto de perfil"
-                style="width: 6vw; height: 6vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid white;">
+                <img src="<?= htmlspecialchars($persona['img']) ?>" alt="Foto de perfil" id="foto-perfil"
+                style="width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid white;">
+                <img id="preview-img" class="preview" style="display: none; width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid gray;">
 
             </div>
             <div class="input-imagen">
@@ -321,5 +322,32 @@ function getLocalidades() {
         <a href="panelpersonas.php"><button type="button">Cancelar</button></a>
     </form>
     </section>
+
+
+    <script>
+        document.getElementById('nueva_imagen').addEventListener('change', function(event) {
+        const fotoperfil = document.getElementById('foto-perfil');
+        const preview = document.getElementById('preview-img');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                fotoperfil.style.display = 'none'; // Ocultar la imagen original
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            fotoperfil.style.display = 'block'; // Mostrar la imagen original si no hay archivo
+            preview.style.display = 'none';
+            preview.src = '';
+        }
+        });
+    </script>
+
+
 </body>
 </html>
