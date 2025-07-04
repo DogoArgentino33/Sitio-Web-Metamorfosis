@@ -44,24 +44,27 @@
 <?php
 
 $sql = "SELECT 
-            p.id, 
-            p.nombre, 
-            p.tipo, 
-            p.unidades_disponibles, 
-            p.precio, 
-            p.fechamod, 
-            p.usumod,
-            GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
-            GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
-            GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
-            (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
-            FROM producto p
-            LEFT JOIN categoria c ON c.id_producto = p.id
-            LEFT JOIN talla t ON t.id_producto = p.id
-            LEFT JOIN tematica tm ON tm.id_producto = p.id
-            WHERE p.tipo = 1
-            GROUP BY p.id
-            ORDER BY p.id;
+                            p.id,
+                            p.nombre,
+                            p.tipo,
+                            p.unidades_disponibles,
+                            p.precio,
+                            p.fechamod,
+                            p.usumod,
+                            GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
+                            GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
+                            GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
+                            (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
+                        FROM producto p
+                        LEFT JOIN producto_categoria pc ON pc.id_producto = p.id
+                        LEFT JOIN categoria c ON c.id = pc.id_categoria
+                        LEFT JOIN producto_talla pt ON pt.id_producto = p.id
+                        LEFT JOIN talla t ON t.id = pt.id_talla
+                        LEFT JOIN producto_tematica ptem ON ptem.id_producto = p.id
+                        LEFT JOIN tematica tm ON tm.id = ptem.id_tematica
+                        WHERE p.tipo = 1
+                        GROUP BY p.id
+                        ORDER BY p.id;
         ";
 $stmt = $conexion->prepare($sql);
 $stmt->execute();
