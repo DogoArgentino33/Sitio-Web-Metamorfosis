@@ -1,3 +1,5 @@
+<?php include('conexion.php'); ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,20 +28,72 @@
             <input type="text" id="searchInput" placeholder="Buscar accesorios..." onkeyup="filterAccesorios()">
             <button id="helpInput"><i class="bi bi-question"></i></button>
         </section>
+    </main>
 
-        <section class="cards-container-accessory" id="accessory-Container">
-            <a href="detallesaccesorios.php" class="asection" style="text-decoration: none">
-                <section class="card-accessory">
-                    <img src="../img/Accesorios/Historico/espada_pirata_1.jpg" class="category-image">
-                    <h4> Espada Pirata</h4>
-                    <p>Tematica: historia</p>
-                    <p>Categoria: niño</p>
-                    <label class="btn">Disponible hoy</label>
+<?php
+$sql = "SELECT 
+            p.id, 
+            p.nombre, 
+            p.tipo, 
+            p.unidades_disponibles, 
+            p.precio, 
+            p.fechamod, 
+            p.usumod,
+            GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
+            GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
+            GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
+            (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
+            FROM producto p
+            LEFT JOIN categoria c ON c.id_producto = p.id
+            LEFT JOIN talla t ON t.id_producto = p.id
+            LEFT JOIN tematica tm ON tm.id_producto = p.id
+            WHERE p.tipo = 2
+            GROUP BY p.id
+            ORDER BY p.id;
+        ";
+$stmt = $conexion->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+
+
+if ($result && $result->num_rows > 0) 
+{
+    while ($producto = $result->fetch_assoc()) 
+    { ?>
+        <section class="cards-container-costume" id="costume-Container">
+            <a href="detallesaccesorios.php" class="asection" style="text-decoration: none;">
+
+                <section class="card-costume">
+                    <?php if (!empty($producto['imagenes'])): ?>
+                        <img src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?>" alt="Imagen" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
+                    <?php else: ?>
+                        <span>Sin imagen</span>
+                    <?php endif; ?>
+
+                    <h4><?= htmlspecialchars($producto['nombre']) ?></h4>
+
+                    <p>Tematica: <?= htmlspecialchars($producto['tematicas']) ?></p>
+
+                    <p>Categoria: <?= htmlspecialchars($producto['categorias']) ?></p>
+
+                    <p>Precio: <?= htmlspecialchars($producto['precio']) ?></p>
+
+                    <label class="btn" disponible="hoy"> Disponible hoy</label>
                 </section>
             </a>
-
         </section>
-    </main>
+    <?php
+    }
+} 
+else 
+{
+    ?>
+    <tr>
+    <td colspan="15">No hay accesorios registrados</td>
+    </tr>
+<?php
+}
+?>
 
     <section>
         <ul class="pagination">

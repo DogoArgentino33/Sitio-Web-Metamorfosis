@@ -1,20 +1,22 @@
-<?php
-include('auth.php');
-include('conexion.php'); // Ajusta la ruta si es necesario
+<?php include('auth.php'); include('conexion.php');
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+//Verificamos si existe
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) 
+{
     echo "ID de usuario no válido.";
     exit;
 }
 
 $id = intval($_GET['id']);
 
+//Realizamos la consulta
 $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $resultado = $stmt->get_result();
 
-if ($resultado->num_rows === 0) {
+if ($resultado->num_rows === 0) 
+{
     echo "Usuario no encontrado.";
     exit;
 }
@@ -22,6 +24,7 @@ if ($resultado->num_rows === 0) {
 $usuario = $resultado->fetch_assoc();
 ?>
 
+<!-- Inicio del Html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -37,9 +40,13 @@ $usuario = $resultado->fetch_assoc();
             <img class="img-perfil" src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Imagen de perfil" onclick="mostrarModal(this)">
         </div>
         <div class="dni-info">
+
+        <!-- Datos del usuario -->
             <p><strong>Nombre de Usuario:</strong> <?= htmlspecialchars($usuario['nom_usu']) ?></p>
             <p><strong>Correo:</strong> <?= htmlspecialchars($usuario['correo']) ?></p>
             <p><strong>Teléfono:</strong> <?= htmlspecialchars($usuario['telefono']) ?></p>
+            
+        <!-- Rol del usuario, dependiendo del número, mostrará el respectivo nombre -->
             <p><strong>Rol:</strong> <?php 
                             if($usuario['rol'] == 0){
                                 ?><td><?= htmlspecialchars('Usuario') ?></td>
@@ -62,6 +69,7 @@ $usuario = $resultado->fetch_assoc();
                                 }
                             }
                         ?></p>
+        <!-- Lo mismo de arriba pero con estado -->
             <p><strong>Estado Usuario:</strong>                         <?php 
                             if($usuario['estadousu'] == 2){
                                 ?><td><?= htmlspecialchars('Activo') ?></td>
@@ -80,25 +88,29 @@ $usuario = $resultado->fetch_assoc();
         </div>
     </section>
 
+<!-- Imagen del usuario -->
 <div id="modalImagen" class="modal-imagen" onclick="cerrarModal()">
     <span class="cerrar">&times;</span>
     <img class="modal-contenido" id="imagenAmpliada">
 </div>
 
+<!-- Modal de imagen -->
 <script>
-    function mostrarModal(imagen) {
+    function mostrarModal(imagen) 
+    {
         const modal = document.getElementById("modalImagen");
         const imgAmpliada = document.getElementById("imagenAmpliada");
         imgAmpliada.src = imagen.src;
         modal.style.display = "flex";
     }
 
-    function cerrarModal() {
+    function cerrarModal() 
+    {
         document.getElementById("modalImagen").style.display = "none";
     }
 </script>
 
-<!-- Modal de exportación -->
+<!-- Función exportación -->
 <section id="modalExportar"  onclick="cerrarModalExportar()">
     <section class="modal-exportar-card" onclick="event.stopPropagation();">
         <section class="modal-exportar-content">
@@ -134,13 +146,16 @@ $usuario = $resultado->fetch_assoc();
     </section>
 </section>
 
+<!-- Para el exportar -->
 <script>
-    function abrirModalExportar() {
+    function abrirModalExportar() 
+    {
         const modal = document.getElementById('modalExportar');
         modal.style.display = 'flex';  // Aquí sí poner display:flex para mostrarlo
     }
 
-    function cerrarModalExportar() {
+    function cerrarModalExportar() 
+    {
         const modal = document.getElementById('modalExportar');
         modal.style.display = 'none';  // Ocultarlo
     }

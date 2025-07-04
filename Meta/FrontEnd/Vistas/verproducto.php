@@ -1,8 +1,7 @@
-<?php
-include('auth.php');
-include('conexion.php');
+<?php include('auth.php'); include('conexion.php');
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) 
+{
     echo "ID de producto no válido.";
     exit;
 }
