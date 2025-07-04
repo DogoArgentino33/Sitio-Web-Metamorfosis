@@ -70,17 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             $id_producto = $stmt->insert_id;
 
             // 2. Insertar en categoria
-            $stmtCat = $conexion->prepare("INSERT INTO categoria (nombre_cat, id_producto) SELECT nombre_cat, ? FROM categoria WHERE id = ?");
+            $stmtCat = $conexion->prepare("INSERT INTO producto_categoria (id_producto, id_categoria) VALUES (?, ?)");
             $stmtCat->bind_param("ii", $id_producto, $id_categoria);
             $stmtCat->execute();
 
             // 3. Insertar en talla
-            $stmtTalla = $conexion->prepare("INSERT INTO talla (talla, id_producto) SELECT talla, ? FROM talla WHERE id = ?");
+            $stmtTalla = $conexion->prepare("INSERT INTO producto_talla (id_producto, id_talla) VALUES (?, ?)");
             $stmtTalla->bind_param("ii", $id_producto, $id_talla);
             $stmtTalla->execute();
 
             // 4. Insertar en tematica
-            $stmtTema = $conexion->prepare("INSERT INTO tematica (nombre_tema, id_producto) SELECT nombre_tema, ? FROM tematica WHERE id = ?");
+            $stmtTema = $conexion->prepare("INSERT INTO producto_tematica (id_producto, id_tematica) VALUES (?, ?)");
             $stmtTema->bind_param("ii", $id_producto, $id_tematica);
             $stmtTema->execute();
 

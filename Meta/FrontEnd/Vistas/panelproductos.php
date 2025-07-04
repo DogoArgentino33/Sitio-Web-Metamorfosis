@@ -4,58 +4,43 @@ include('conexion.php'); // Ajusta la ruta si es necesario
 
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);
-
-    // Iniciar una transacción para que sea todo o nada
     $conexion->begin_transaction();
 
     try {
-        // Eliminar imágenes del producto
+        // Eliminar imágenes
         $stmt = $conexion->prepare("DELETE FROM img_producto WHERE id_producto = ?");
         $stmt->bind_param("i", $idEliminar);
         $stmt->execute();
 
-        // Eliminar relaciones con categorías
-        $stmt = $conexion->prepare("DELETE FROM categoria WHERE id_producto = ?");
+        // Eliminar relaciones intermedias
+        $stmt = $conexion->prepare("DELETE FROM producto_categoria WHERE id_producto = ?");
         $stmt->bind_param("i", $idEliminar);
         $stmt->execute();
 
-        // Eliminar relaciones con tallas
-        $stmt = $conexion->prepare("DELETE FROM talla WHERE id_producto = ?");
+        $stmt = $conexion->prepare("DELETE FROM producto_talla WHERE id_producto = ?");
         $stmt->bind_param("i", $idEliminar);
         $stmt->execute();
 
-        // Eliminar relaciones con temáticas
-        $stmt = $conexion->prepare("DELETE FROM tematica WHERE id_producto = ?");
+        $stmt = $conexion->prepare("DELETE FROM producto_tematica WHERE id_producto = ?");
         $stmt->bind_param("i", $idEliminar);
         $stmt->execute();
 
-        // Eliminar relaciones con img_producto
-        $stmt = $conexion->prepare("DELETE FROM img_producto WHERE id_producto = ?");
-        $stmt->bind_param("i", $idEliminar);
-        $stmt->execute();
-
-        // Finalmente, eliminar el producto
+        // Finalmente eliminar el producto
         $stmt = $conexion->prepare("DELETE FROM producto WHERE id = ?");
         $stmt->bind_param("i", $idEliminar);
         if (!$stmt->execute()) {
             throw new Exception("No se pudo eliminar el producto: " . $stmt->error);
         }
 
-        // Confirmar todo
         $conexion->commit();
-
-        // Redirigir tras éxito
         header("Location: panelproductos.php");
         exit;
-
     } catch (Exception $e) {
-        // Revertir cambios si algo falló
         $conexion->rollback();
         echo "<script>alert('Error al eliminar el producto: " . addslashes($e->getMessage()) . "');</script>";
     }
 }
 
-//
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -105,25 +90,29 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 </thead>
                 <tbody>
                 <?php
-                    $sql = "SELECT 
-                                p.id, 
-                                p.nombre, 
-                                p.tipo, 
-                                p.unidades_disponibles, 
-                                p.precio, 
-                                p.fechamod, 
-                                p.usumod,
-                                GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
-                                GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
-                                GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
-                                (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
-                                FROM producto p
-                                LEFT JOIN categoria c ON c.id_producto = p.id
-                                LEFT JOIN talla t ON t.id_producto = p.id
-                                LEFT JOIN tematica tm ON tm.id_producto = p.id
-                                GROUP BY p.id
-                                ORDER BY p.id;
-                            ";
+                    $sql = "
+                        SELECT 
+                            p.id,
+                            p.nombre,
+                            p.tipo,
+                            p.unidades_disponibles,
+                            p.precio,
+                            p.fechamod,
+                            p.usumod,
+                            GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
+                            GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
+                            GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
+                            (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
+                        FROM producto p
+                        LEFT JOIN producto_categoria pc ON pc.id_producto = p.id
+                        LEFT JOIN categoria c ON c.id = pc.id_categoria
+                        LEFT JOIN producto_talla pt ON pt.id_producto = p.id
+                        LEFT JOIN talla t ON t.id = pt.id_talla
+                        LEFT JOIN producto_tematica ptem ON ptem.id_producto = p.id
+                        LEFT JOIN tematica tm ON tm.id = ptem.id_tematica
+                        GROUP BY p.id
+                        ORDER BY p.id;
+                        ";
 
                    $stmt = $conexion->prepare($sql);
 
