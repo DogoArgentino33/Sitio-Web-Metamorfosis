@@ -744,7 +744,7 @@ function GetDpto() {
                     <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
 
                     
-                    <button type="button" onclick="iniciarCamara()"  class="btn" >Activar cámara</button>
+                    <button type="button" onclick="iniciarCamara()"  class="btn" style="background-color: #007bff;" >Activar cámara</button>
                     
                     <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
  
