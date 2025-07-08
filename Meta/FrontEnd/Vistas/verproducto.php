@@ -8,12 +8,16 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id']))
 
 $id = intval($_GET['id']);
 
-$stmt = $conexion->prepare("SELECT id, nombre, tipo, unidades_disponibles, precio, fechamod, usumod FROM producto WHERE id = ?");
+$stmt = $conexion->prepare("SELECT producto.nombre, producto.tipo, producto.unidades_disponibles, producto.precio, producto.fechamod, producto.usumod,
+                                    (SELECT img FROM img_producto WHERE img_producto.id_producto = producto.id LIMIT 1) as imagenes
+                                    FROM producto 
+                                    WHERE producto.id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $resultado = $stmt->get_result();
 
-if ($resultado->num_rows === 0) {
+if ($resultado->num_rows === 0) 
+{
     echo "Producto no encontrado.";
     exit;
 }
@@ -32,8 +36,18 @@ $tipos = [1 => "Disfraz", 2 => "Accesorio"];
 <body>
     <h1>Información del Producto</h1>
     <section class="dni-card">
+
+        <div class="dni-img">
+            <?php if (!empty($producto['imagenes'])): ?>
+                        <img class="img-perfil" src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?> "onclick="mostrarModal(this)" >
+                    <?php else: ?>
+                        <span>Sin imagen</span>
+                    <?php endif; ?>
+        </div>
+
+
+
         <div class="dni-info">
-            <p><strong>ID:</strong> <?= htmlspecialchars($producto['id']) ?></p>
             <p><strong>Nombre:</strong> <?= htmlspecialchars($producto['nombre']) ?></p>
             <p><strong>Tipo:</strong> <?= $tipos[$producto['tipo']] ?? 'Desconocido' ?></p>
             <p><strong>Unidades Disponibles:</strong> <?= htmlspecialchars($producto['unidades_disponibles']) ?></p>
@@ -44,5 +58,28 @@ $tipos = [1 => "Disfraz", 2 => "Accesorio"];
             <a href="panelproductos.php"><button type="button" class="boton">Volver al panel</button></a>
         </div>
     </section>
+
+    <!-- Imagen del usuario -->
+<div id="modalImagen" class="modal-imagen" onclick="cerrarModal()">
+    <span class="cerrar">&times;</span>
+    <img class="modal-contenido" id="imagenAmpliada">
+</div>
+
+<!-- Modal de imagen -->
+<script>
+    function mostrarModal(imagen) 
+    {
+        const modal = document.getElementById("modalImagen");
+        const imgAmpliada = document.getElementById("imagenAmpliada");
+        imgAmpliada.src = imagen.src;
+        modal.style.display = "flex";
+    }
+
+    function cerrarModal() 
+    {
+        document.getElementById("modalImagen").style.display = "none";
+    }
+</script>
+
 </body>
 </html>
