@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
         $tmp_name = $_FILES['nueva_imagen']['tmp_name'];
         $nombre_archivo = basename($_FILES['nueva_imagen']['name']);
-        $destino = 'uploads/' . uniqid() . '_' . $nombre_archivo;
+        $destino = 'uploads/usuario/' . uniqid() . '_' . $nombre_archivo;
 
         if (move_uploaded_file($tmp_name, $destino)) {
             // Si se subió una nueva imagen, actualizamos también img_perfil
