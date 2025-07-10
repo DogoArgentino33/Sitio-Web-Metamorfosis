@@ -79,19 +79,24 @@ h1 {
     background-color: #a1222d;
 }
 
-.modal-imagen {
-    display: none; /* Se muestra solo al hacer clic */
+.modal-imagen 
+{
+    display: none;         
     position: fixed;
-    top: 0;
+    top: 0; 
     left: 0;
-    width: 100vw;
+    width: 100vw; 
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
-    justify-content: center;   /* Centrar horizontalmente */
-    align-items: center;       /* Centrar verticalmente */
+    background: rgba(0,0,0,.85);
+    justify-content: center;
+    align-items: center;
     z-index: 1000;
-    display: flex;
     flex-direction: column;
+}
+
+.modal-imagen.show 
+{ 
+    display:flex; 
 }
 
 .modal-contenido {
@@ -100,17 +105,6 @@ h1 {
     object-fit: contain;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-}
-
-.cerrar {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: #ffffff;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1100;
 }
 
 /* Modal de exportar */

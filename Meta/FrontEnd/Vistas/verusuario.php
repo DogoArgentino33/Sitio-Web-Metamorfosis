@@ -96,18 +96,17 @@ $usuario = $resultado->fetch_assoc();
 
 <!-- Modal de imagen -->
 <script>
-    function mostrarModal(imagen) 
-    {
-        const modal = document.getElementById("modalImagen");
-        const imgAmpliada = document.getElementById("imagenAmpliada");
-        imgAmpliada.src = imagen.src;
-        modal.style.display = "flex";
-    }
+function mostrarModal(img)
+{
+    const modal = document.getElementById('modalImagen');
+    document.getElementById('imagenAmpliada').src = img.src;
+    modal.classList.add('show');
+}
 
-    function cerrarModal() 
-    {
-        document.getElementById("modalImagen").style.display = "none";
-    }
+function cerrarModal()
+{
+  document.getElementById('modalImagen').classList.remove('show');
+}
 </script>
 
 <!-- Función exportación -->

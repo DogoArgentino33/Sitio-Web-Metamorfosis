@@ -39,7 +39,7 @@ $tipos = [1 => "Disfraz", 2 => "Accesorio"];
 
         <div class="dni-img">
             <?php if (!empty($producto['imagenes'])): ?>
-                        <img class="img-perfil" src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?> "onclick="mostrarModal(this)" >
+                        <img class="img-perfil" src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?> "onclick="mostrarModal(this)">
                     <?php else: ?>
                         <span>Sin imagen</span>
                     <?php endif; ?>
