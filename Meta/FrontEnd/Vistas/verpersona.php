@@ -47,6 +47,15 @@ $persona = $resultado->fetch_assoc();
      crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      crossorigin=""> </script>
+
+     <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .swal2-container {
+            z-index: 99999 !important;
+        }
+    </style>
 </head>
 <body>
     <h1>Información de la Persona</h1>
@@ -55,13 +64,14 @@ $persona = $resultado->fetch_assoc();
             <img class="img-perfil" src="<?= htmlspecialchars($persona['img']) ?>" alt="Imagen de perfil" onclick="mostrarModal(this)">
         </div>
         <div class="dni-info">
+            <h3>Datos Personales</h3>
             <p><strong>Nombre:</strong> <?= htmlspecialchars($persona['nombre']) ?></p>
             <p><strong>Apellido:</strong> <?= htmlspecialchars($persona['apellido']) ?></p>
             <p><strong>Dni:</strong> <?= htmlspecialchars($persona['dni']) ?></p>
             <p><strong>Fecha de Nacimiento:</strong> <?= htmlspecialchars($persona['fec_nac']) ?></p>
             <p><strong>Genero:</strong> <?= htmlspecialchars($persona['genero']) ?></p>
 
-            <h2> Dirección </h2>
+            <h3>Datos de Domicilio</h3>
             <p><strong>Pais:</strong> <?= htmlspecialchars($persona['pais']) ?></p>
             <p><strong>Provincia:</strong> <?= htmlspecialchars($persona['nomprov']) ?></p>
             <p><strong>Departamento:</strong> <?= htmlspecialchars($persona['nomdpto']) ?></p>
@@ -73,7 +83,7 @@ $persona = $resultado->fetch_assoc();
             <div id="map"></div>
             <br>
             <a href="panelpersonas.php"><button type="button" class="boton">Volver al panel</button></a>
-            <button type="button" class="boton" onclick="abrirModalExportar()">Exportar</button>
+            <button type="button" class="boton-exportar" onclick="abrirModalExportar()">Exportar</button>
         </div>
     </section>
 
@@ -99,43 +109,52 @@ $persona = $resultado->fetch_assoc();
 <section id="modalExportar"  onclick="cerrarModalExportar()">
     <section class="modal-exportar-card" onclick="event.stopPropagation();">
         <section class="modal-exportar-content">
-            <h2>Exportar Usuario</h2>
-            <form action="exportarusuario.php" method="POST" novalidate>
+            <h2>Exportar Persona</h2>
+            <form id="formExportar" action="exportarpersona.php" method="POST" novalidate>
+                <input type="hidden" name="id" value="<?= htmlspecialchars($persona['id']) ?>">
 
-                <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
-
-                <fieldset>
+               <fieldset>
                     <legend>Selecciona los atributos a exportar:</legend>
-                    <label><input type="checkbox" name="atributos[]" value="img" checked> Imagen</label>
-                    <label><input type="checkbox" name="atributos[]" value="nombre" checked> Nombre</label>
-                    <label><input type="checkbox" name="atributos[]" value="apellido"> Apellido</label>
-                    <label><input type="checkbox" name="atributos[]" value="dni"> Dni</label>
-                    <label><input type="checkbox" name="atributos[]" value="genero"> Género</label>
-                    <label><input type="checkbox" name="atributos[]" value="fec_nac"> Fecha de Nacimiento</label>
-                    <label><input type="checkbox" name="atributos[]" value="pais"> País</label>
-                    <label><input type="checkbox" name="atributos[]" value="provincia"> Provincia</label>
-                    <label><input type="checkbox" name="atributos[]" value="departamento"> Departamento</label>
-                    <label><input type="checkbox" name="atributos[]" value="municipio"> Municipio</label>
-                    <label><input type="checkbox" name="atributos[]" value="localidad"> Localidad</label>
-                    <label><input type="checkbox" name="atributos[]" value="barrio"> Barrio</label>
-                    <label><input type="checkbox" name="atributos[]" value="calle"> Calle</label>
-                    <label><input type="checkbox" name="atributos[]" value="altura"> Altura</label>
-                    <label><input type="checkbox" name="atributos[]" value="lat"> Latitud</label>
-                    <label><input type="checkbox" name="atributos[]" value="lng"> Longitud</label>
 
+                    <div class="exportar-categorias">
+                        <div class="categoria">
+                            <h3>Datos Personales</h3>
+                            <label><input type="checkbox" name="atributos[]" value="img" checked> Imagen</label>
+                            <label><input type="checkbox" name="atributos[]" value="nombre" checked> Nombre</label>
+                            <label><input type="checkbox" name="atributos[]" value="apellido"> Apellido</label>
+                            <label><input type="checkbox" name="atributos[]" value="dni"> DNI</label>
+                            <label><input type="checkbox" name="atributos[]" value="genero"> Género</label>
+                            <label><input type="checkbox" name="atributos[]" value="fec_nac"> Fecha de Nacimiento</label>
+                        </div>
+
+                        <div class="categoria">
+                            <h3>Datos de Domicilio</h3>
+                            <label><input type="checkbox" name="atributos[]" value="nomprov"> Provincia</label>
+                            <label><input type="checkbox" name="atributos[]" value="nomdpto"> Departamento</label>
+                            <label><input type="checkbox" name="atributos[]" value="nommun"> Municipio</label>
+                            <label><input type="checkbox" name="atributos[]" value="nomloc"> Localidad</label>
+                            <label><input type="checkbox" name="atributos[]" value="barrio"> Barrio</label>
+                            <label><input type="checkbox" name="atributos[]" value="calle"> Calle</label>
+                            <label><input type="checkbox" name="atributos[]" value="altura"> Altura</label>
+                        </div>
+                    </div>
                 </fieldset>
 
                 <fieldset>
                     <legend>Formato de exportación:</legend>
-                    <label><input type="radio" name="formato" value="pdf" required> PDF</label>
-                    <label><input type="radio" name="formato" value="xls"> XLS</label>
-                    <label><input type="radio" name="formato" value="xlsx"> XLSX</label>
-                    <label><input type="radio" name="formato" value="csv"> CSV</label>
+                    <label for="formato">Selecciona un formato:</label>
+                    <select name="formato" id="formato" required>
+                        <option value="" disabled selected>-- Seleccionar formato --</option>
+                        <option value="pdf">PDF</option>
+                        <option value="xls">XLS</option>
+                        <option value="xlsx">XLSX</option>
+                        <option value="csv">CSV</option>
+                    </select>
                 </fieldset>
 
                 <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
                     <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
-                    <button type="submit" class="boton">Exportar</button>
+                    <button type="submit" class="boton-exportar">Exportar</button>
                 </nav>
             </form>
         </section>
@@ -174,6 +193,21 @@ $persona = $resultado->fetch_assoc();
         .openPopup();
 </script>
 
+<script>
+    document.getElementById('formExportar').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="atributos[]"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault(); // Evita que se envíe el formulario
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos requeridos',
+                text: 'Debe seleccionar al menos un campo para exportar.',
+                confirmButtonText: 'Entendido'
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

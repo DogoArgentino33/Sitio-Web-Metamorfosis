@@ -110,7 +110,7 @@ function cerrarModal()
 </script>
 
 <!-- Función exportación -->
-<section id="modalExportar"  onclick="cerrarModalExportar()">
+<section id="modalExportar" onclick="cerrarModalExportar()">
     <section class="modal-exportar-card" onclick="event.stopPropagation();">
         <section class="modal-exportar-content">
             <h2>Exportar Usuario</h2>
@@ -130,10 +130,14 @@ function cerrarModal()
 
                 <fieldset>
                     <legend>Formato de exportación:</legend>
-                    <label><input type="radio" name="formato" value="pdf" required> PDF</label>
-                    <label><input type="radio" name="formato" value="xls"> XLS</label>
-                    <label><input type="radio" name="formato" value="xlsx"> XLSX</label>
-                    <label><input type="radio" name="formato" value="csv"> CSV</label>
+                    <label for="formato">Selecciona un formato:</label>
+                    <select name="formato" id="formato" required>
+                        <option value="" disabled selected>-- Seleccionar formato --</option>
+                        <option value="pdf">PDF</option>
+                        <option value="xls">XLS</option>
+                        <option value="xlsx">XLSX</option>
+                        <option value="csv">CSV</option>
+                    </select>
                 </fieldset>
 
                 <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
@@ -144,6 +148,7 @@ function cerrarModal()
         </section>
     </section>
 </section>
+
 
 <!-- Para el exportar -->
 <script>

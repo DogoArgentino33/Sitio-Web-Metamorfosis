@@ -59,6 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         $errores[] = 'Debe seleccionar una temática.';
     }
 
+    $max_imagenes = 5;
+
+    if (empty($_FILES['imagenes']['name'][0])) {
+        $errores[] = 'Debe subir al menos una imagen del producto.';
+    } elseif (count($_FILES['imagenes']['name']) > $max_imagenes) {
+        $errores[] = "Solo se permite un máximo de $max_imagenes imágenes.";
+    }
+
+
     if (count($errores) === 0) 
     {
         // 1. Insertar en producto
@@ -222,9 +231,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
         <!-- Imagenes -->
         <p>
-            <label for="imagenes">Imágenes:</label>
+            <label for="imagenes">Imágenes (Si desea mas de 1 imagen, seleccionar varias y enviarlas al mismo tiempo):</label>
             <input id="imagenes" type="file" name="imagenes[]" multiple accept="image/*" class="boton" required>
         </p>
+        <!-- Contenedor para la vista previa -->
+        <div id="preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+
 
         <!-- Mostrar errores -->
         <?php if (!empty($errores)): ?>
@@ -333,6 +345,66 @@ selects.forEach(id =>
 
 });
 </script>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const inputImagenes = document.getElementById('imagenes');
+    const maxImagenes = 5;
+
+    if (inputImagenes.files.length === 0) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'warning',
+            title: 'Faltan imágenes',
+            text: 'Debes subir al menos una imagen del producto.'
+        });
+        return;
+    }
+
+    if (inputImagenes.files.length > maxImagenes) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Demasiadas imágenes',
+            text: `Solo se permite un máximo de ${maxImagenes} imágenes.`
+        });
+    }
+});
+</script>
+
+<script>
+document.getElementById('imagenes').addEventListener('change', function () {
+    const preview = document.getElementById('preview');
+    preview.innerHTML = ''; // Limpia previas anteriores
+
+    const archivos = this.files;
+
+    if (archivos.length === 0) return;
+
+    for (let i = 0; i < archivos.length; i++) {
+        const archivo = archivos[i];
+
+        if (!archivo.type.startsWith('image/')) continue;
+
+        const lector = new FileReader();
+
+        lector.onload = function (e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '120px';
+            img.style.height = '120px';
+            img.style.objectFit = 'cover';
+            img.style.border = '1px solid #ccc';
+            img.style.borderRadius = '8px';
+            img.title = archivo.name;
+            preview.appendChild(img);
+        }
+
+        lector.readAsDataURL(archivo);
+    }
+});
+</script>
+
 
 </body>
 </html>

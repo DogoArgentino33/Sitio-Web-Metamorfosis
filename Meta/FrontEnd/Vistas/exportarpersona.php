@@ -42,22 +42,48 @@ if (empty($inAtributos)) {
     die("No seleccionaste atributos válidos.");
 }
 
-$stmt = $conexion->prepare("SELECT $inAtributos, nom_usu FROM usuario WHERE id = ?");
+$sql = "
+SELECT 
+    p.id,
+    p.nombre,
+    p.apellido,
+    p.dni,
+    p.fec_nac,
+    p.genero,
+    p.img,
+    p.calle,
+    p.altura,
+    p.barrio,
+    pr.nomprov AS nomprov,
+    d.nomdpto AS nomdpto,
+    m.nommun AS nommun,
+    l.nomloc AS nomloc,
+    p.lat,
+    p.lng
+FROM persona p
+LEFT JOIN localidades l ON p.localidad = l.codloc
+LEFT JOIN municipio m ON l.codmun = m.codmun
+LEFT JOIN dpto d ON m.coddpto = d.coddpto
+LEFT JOIN provincias pr ON d.codprov = pr.codprov
+WHERE p.id = ?
+";
+
+$stmt = $conexion->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows === 0) {
-    die("Usuario no encontrado.");
+    die("Persona no encontrado.");
 }
-$usuario = $result->fetch_assoc();
+$persona = $result->fetch_assoc();
 
 // Función para obtener valor seguro
-function valor($usuario, $key) {
-    return isset($usuario[$key]) ? $usuario[$key] : '';
+function valor($persona, $key) {
+    return isset($persona[$key]) ? $persona[$key] : '';
 }
 
 // Nombre archivo
-$nomArchivo = "usuario_" . (isset($usuario['nom_usu']) ? preg_replace('/[^a-zA-Z0-9_\-]/', '_', strtolower($usuario['nom_usu'])) : "id_$id") . "_$id";
+$nomArchivo = "persona_" . (isset($persona['nombre']) ? preg_replace('/[^a-zA-Z0-9_\-]/', '_', strtolower($persona['nombre'])) : "id_$id") . "_$id";
 
 // --- PDF ---
 if ($formato === 'pdf') {
@@ -69,7 +95,7 @@ if ($formato === 'pdf') {
             // Título principal
             $this->SetFont('helvetica', 'B', 14);
             $this->SetTextColor(209, 46, 59); // Color rojo corporativo
-            $this->Cell(0, 10, 'Metamorfosis - Exportación de Usuario', 0, 1, 'C');
+            $this->Cell(0, 10, 'Metamorfosis - Exportación de Persona', 0, 1, 'C');
 
             // Subtítulo con ID y fecha/hora
             $this->SetFont('helvetica', '', 10);
@@ -89,7 +115,7 @@ if ($formato === 'pdf') {
     $pdf = new CustomPDF();
     $pdf->SetCreator('Sistema Metamorfosis');
     $pdf->SetAuthor('Metamorfosis');
-    $pdf->SetTitle("Exportación Usuario ID $id");
+    $pdf->SetTitle("Exportación Persona ID $id");
 
     // Márgenes
     $pdf->SetMargins(20, 40, 20); // top 40 para dejar espacio al header
@@ -109,9 +135,21 @@ if ($formato === 'pdf') {
 
     // Diccionario de nombres amigables
     $nombresCampos = [
-        'nom_usu' => 'Nombre de Usuario',
-        'img_perfil' => 'Imagen de Perfil',
-        'estadousu' => 'Estado del Usuario'
+        'nombre' => 'Nombre(s)',
+        'apellido' => 'Apellido(s)',
+        'dni' => 'DNI',
+        'fec_nac' => 'Fecha de Nacimiento',
+        'genero' => 'Género',
+        'img' => 'Imagen de Perfil',
+        'calle' => 'Calle',
+        'altura' => 'Altura',
+        'barrio' => 'Barrio',
+        'nomprov' => 'Provincia',
+        'nomdpto' => 'Departamento',
+        'nommun' => 'Municipio',
+        'nomloc' => 'Localidad',
+        'lat' => 'Latitud',
+        'lng' => 'Longitud'
     ];
 
     $html = '
@@ -151,13 +189,13 @@ if ($formato === 'pdf') {
         }
     </style>
 
-    <h2>Ficha del Usuario</h2>
+    <h2>Ficha de Persona</h2>
     <table>';
 
     // --- Mostrar imagen primero ---
-    if (in_array('img_perfil', $atributos)) {
-        $imgPath = valor($usuario, 'img_perfil');
-        $label = isset($nombresCampos['img_perfil']) ? $nombresCampos['img_perfil'] : 'Imagen';
+    if (in_array('img', $atributos)) {
+        $imgPath = valor($persona, 'img');
+        $label = isset($nombresCampos['img']) ? $nombresCampos['img'] : 'Imagen';
 
         if ($imgPath && (file_exists($imgPath) || filter_var($imgPath, FILTER_VALIDATE_URL))) {
             if (filter_var($imgPath, FILTER_VALIDATE_URL)) {
@@ -183,28 +221,10 @@ if ($formato === 'pdf') {
 
     // --- Mostrar el resto de los atributos ---
     foreach ($atributos as $attr) {
-        if ($attr === 'img_perfil') continue; // ya se mostró
+        if ($attr === 'img') continue; // ya se mostró
 
         $label = isset($nombresCampos[$attr]) ? $nombresCampos[$attr] : ucwords(str_replace('_', ' ', $attr));
-        $valorCampo = valor($usuario, $attr);
-
-        // Personalizar valores especiales
-        if ($attr === 'estadousu') {
-            $valorCampo = match (intval($valorCampo)) {
-                1 => 'Inactivo',
-                2 => 'Activo',
-                default => 'Desconocido'
-            };
-        } elseif ($attr === 'rol') {
-            $valorCampo = match (intval($valorCampo)) {
-                0 => 'Usuario',
-                1 => 'Gerente',
-                2 => 'Empleado',
-                4 => 'Administrador',
-                default => 'Desconocido'
-            };
-        }
-
+        $valorCampo = valor($persona, $attr);
         $valorCampo = htmlspecialchars($valorCampo); // Sanear para evitar HTML no deseado
         $html .= "<tr><th>$label</th><td>$valorCampo</td></tr>";
     }
@@ -227,7 +247,7 @@ if ($formato === 'xls' || $formato === 'xlsx') {
 
     // Título principal
     $sheet->mergeCells('A1:E1');
-    $sheet->setCellValue('A1', 'METAMORFOSIS - Exportación de Usuario');
+    $sheet->setCellValue('A1', 'METAMORFOSIS - Exportación de Persona');
     $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16)->getColor()->setRGB($blanco);
     $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($rojo);
     $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -245,17 +265,19 @@ if ($formato === 'xls' || $formato === 'xlsx') {
 
     // Nombres amigables para encabezados
     $nombresCampos = [
-        'nom_usu'    => 'Nombre de Usuario',
-        'img_perfil' => 'Imagen de Perfil',
-        'estadousu'  => 'Estado del Usuario',
-        'rol'        => 'Rol'
+        'nombre' => 'Nombre(s)',
+        'apellido' => 'Apellido(s)',
+        'fec_nac' => 'Fecha de Nacimiento',
+        'img' => 'Imagen de Perfil',
+        'lat' => 'Latitud',
+        'lng' => 'Longitud'
     ];
 
     // Reorganizar atributos: img_perfil al principio
     $atributosOrdenados = $atributos;
-    if (($key = array_search('img_perfil', $atributosOrdenados)) !== false) {
+    if (($key = array_search('img', $atributosOrdenados)) !== false) {
         unset($atributosOrdenados[$key]);
-        array_unshift($atributosOrdenados, 'img_perfil');
+        array_unshift($atributosOrdenados, 'img');
     }
 
     // Encabezados
@@ -279,9 +301,9 @@ if ($formato === 'xls' || $formato === 'xlsx') {
     foreach ($atributosOrdenados as $attr) {
         $cell = $col . $row;
 
-        if ($attr === 'img_perfil') {
+        if ($attr === 'img') {
             $imgCol = $col;
-            $imgPath = valor($usuario, 'img_perfil');
+            $imgPath = valor($persona, 'img');
 
             if ($imgPath && file_exists($imgPath)) {
                 $drawing = new Drawing();
@@ -298,25 +320,7 @@ if ($formato === 'xls' || $formato === 'xlsx') {
                 $sheet->setCellValue($cell, 'Imagen no disponible');
             }
         } else {
-            $valorCampo = valor($usuario, $attr);
-
-            if ($attr === 'estadousu') {
-                $valorCampo = match (intval($valorCampo)) {
-                    1 => 'Inactivo',
-                    2 => 'Activo',
-                    default => 'Desconocido',
-                };
-            } elseif ($attr === 'rol') {
-                $valorCampo = match (intval($valorCampo)) {
-                    0 => 'Usuario',
-                    1 => 'Gerente',
-                    2 => 'Empleado',
-                    4 => 'Administrador',
-                    default => 'Desconocido',
-                };
-            }
-
-            $sheet->setCellValue($cell, $valorCampo);
+            $sheet->setCellValue($cell, 'Datos no disponibles');
         }
 
         $sheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
@@ -340,89 +344,6 @@ if ($formato === 'xls' || $formato === 'xlsx') {
     header("Content-Disposition: attachment;filename=\"$nomArchivo.$formato\"");
     header('Cache-Control: max-age=0');
     $writer->save('php://output');
-    exit;
-}
-
-
-// --- EXPORTAR CSV ---
-if ($formato === 'csv') {
-    header('Content-Type: text/csv; charset=UTF-8');
-    header("Content-Disposition: attachment;filename=\"$nomArchivo.csv\"");
-
-    $output = fopen('php://output', 'w');
-
-    // Separador visual
-    fputcsv($output, []);
-    fputcsv($output, ['==============================']);
-    fputcsv($output, ['METAMORFOSIS - Exportación de Usuario']);
-    fputcsv($output, ['==============================']);
-    fputcsv($output, []);
-
-    // Fecha y hora (sin ID)
-    $fecha = date('d-m-Y');
-    $hora = date('H:i');
-    fputcsv($output, ['Fecha de Exportación', "Fecha: $fecha | Hora: $hora"]);
-    fputcsv($output, []);
-
-    // Línea divisoria
-    fputcsv($output, ['------------------------------']);
-
-    // Nombres amigables
-    $nombresCampos = [
-        'nom_usu'    => 'Nombre de Usuario',
-        'img_perfil' => 'Imagen de Perfil',
-        'estadousu'  => 'Estado del Usuario',
-        'rol'        => 'Rol'
-    ];
-
-    // Reordenar atributos: img_perfil primero
-    $atributosOrdenados = $atributos;
-    if (($key = array_search('img_perfil', $atributosOrdenados)) !== false) {
-        unset($atributosOrdenados[$key]);
-        array_unshift($atributosOrdenados, 'img_perfil');
-    }
-
-    // Cabeceras
-    $cabeceras = [];
-    foreach ($atributosOrdenados as $attr) {
-        $cabeceras[] = $nombresCampos[$attr] ?? ucwords(str_replace('_', ' ', $attr));
-    }
-    fputcsv($output, $cabeceras);
-
-    // Datos
-    $fila = [];
-    foreach ($atributosOrdenados as $attr) {
-        $valorCampo = valor($usuario, $attr);
-
-        if ($attr === 'estadousu') {
-            $valorCampo = match (intval($valorCampo)) {
-                1 => 'Inactivo',
-                2 => 'Activo',
-                default => 'Desconocido',
-            };
-        } elseif ($attr === 'rol') {
-            $valorCampo = match (intval($valorCampo)) {
-                0 => 'Usuario',
-                1 => 'Gerente',
-                2 => 'Empleado',
-                4 => 'Administrador',
-                default => 'Desconocido',
-            };
-        } elseif ($attr === 'img_perfil') {
-            $valorCampo = $valorCampo ?: 'Imagen no disponible';
-        }
-
-        $fila[] = $valorCampo;
-    }
-    fputcsv($output, $fila);
-
-    // Línea final
-    fputcsv($output, []);
-    fputcsv($output, ['------------------------------']);
-    fputcsv($output, ['Documento generado por Metamorfosis']);
-    fputcsv($output, ['Fin del documento.']);
-
-    fclose($output);
     exit;
 }
 
