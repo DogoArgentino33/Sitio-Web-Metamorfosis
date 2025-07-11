@@ -129,7 +129,7 @@ if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
 
 
         // 4. Confirmación
-        echo "<script>alert('Producto modificado correctamente'); window.location.href='panelproductos.php';</script>";
+        header("Location: panelproductos.php?productomodificado=ok");
         exit;
     }
 }

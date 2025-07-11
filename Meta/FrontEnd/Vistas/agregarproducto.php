@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             }
 
 
-            echo "<script>alert('Producto agregado correctamente'); window.location.href='panelproductos.php';</script>";
+            header("Location: panelproductos.php?productoagregado=ok");
             exit;
         } 
         else 
