@@ -649,12 +649,15 @@ function GetDpto() {
                         <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
 
                         
-                        <button type="button" onclick="iniciarCamara()"  class="btn">Activar cámara</button>
+                        <button type="button" id="activar-camara" onclick="iniciarCamara()"  class="btn">Activar cámara</button>
+                        <br><br>
                         <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
-                        <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none;" class="btn" ><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
+                        <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none; background-color: #d12e3b;" class="btn"><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
+
 
             
                         <script>
+                            const activarCamaraBtn = document.getElementById("activar-camara");
                             const abrirCamaraBtn = document.getElementById("abrir-camara");
                             const fotoInput = document.getElementById("foto");
                             const previewImg = document.getElementById("preview-img");
@@ -696,6 +699,7 @@ function GetDpto() {
                                         video.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
                                         video.style.margin = "1vw auto";
                                         video.style.display = "block";
+                                        activarCamaraBtn.style.display = "none";
 
                                         if (esMovil) {
                                             console.log("Usando cámara en dispositivo móvil");
@@ -749,6 +753,7 @@ function GetDpto() {
                                 }
                                 abrirCamaraBtn.style.display = "none";
                                 cerrarBtn.style.display = "none";
+                                activarCamaraBtn.style.display = "inline";
                             }
 
                             // Función para cancelar imagen seleccionada o capturada
