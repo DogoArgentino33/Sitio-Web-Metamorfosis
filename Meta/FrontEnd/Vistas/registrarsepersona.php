@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/validacion.css">
-    <link rel="stylesheet" href="../Estilos/registrarpersona.css">
+    <link rel="stylesheet" href="../Estilos/registroP.css">
 
     <!-- Link y script de Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -198,15 +198,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      crossorigin=""> </script>
 
      <!-- Link y Script de Sweetalert2 -->
-     <script src="sweetalert2.min.js"></script>
-     <link rel="stylesheet" href="sweetalert2.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => 
+    {
 
-        function capitalizar(texto) {
+        function capitalizar(texto) 
+        {
             return texto
                 .replace(/\s+/g, ' ') // un solo espacio
                 .trim()
@@ -575,22 +576,23 @@ function GetDpto() {
         <a>Registrarse</a>
     </section>
     <br>
-    <h1 style="text-align: center;">Registrar Persona</h1>
+    <h1 id="titulo-formulario">Registrar Persona</h1>
 
         <section>
-           <div style="text-align:center; margin-bottom:20px; justify-content:center;">
+           <div class="contenedor-video">
             <video src="uploads/METAMORFOSIS VIDEO REGISTRAR PERSONA.mp4" controls width="480" poster="">
             Tu navegador no soporta la reproducción de video.
             </video>
-            <p style="font-size:14px; color:#555;">Video instructivo: Cómo registrar una persona</p>
+            <p class="titulo-video">Video instructivo: Cómo registrar una persona</p>
             </div>
         </section>
 
-    <section class="wrapperregistro" id="wrapperregistro">
+    <section id="wrapperregistro">
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="formregistro">
             <h2>Formulario Registrar Persona</h2>
             <fieldset>
                 <legend>Datos personales</legend>
+
 
                 <!-- Nombre -->
                 <section class="input-box">
@@ -619,12 +621,13 @@ function GetDpto() {
                     <input id="fec-nac" name="fec-nac" type="date" required value="<?php echo isset($_POST['fec-nac']) ? htmlspecialchars($_POST['fec-nac']) : ''; ?>">
                     <span class="error" style="color:red;"><?php echo $error_fecha_nac; ?></span>
                 </section>
-
+                             
                 <!-- Calle -->
                 <section class="input-box">
                     <label for="calle">Calle:</label>
                     <input id="calle" name="calle" type="text" required>
                 </section>
+
 
                 <!-- Altura -->
                 <section class="input-box">
@@ -685,33 +688,6 @@ function GetDpto() {
                     <input id="pais" name="pais" type="text" class="solo-letras" required>
                 </section>
 
-                <!-- Estilo de Leaflet -->
-                <style>
-                #map {
-                        width: 100%;
-                        max-width: 400px;
-                        aspect-ratio: 1 / 1;
-                        height: auto;
-                        margin: auto;
-                        z-index: 1;
-                        position: relative;
-                        border-radius: 10px;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                }
-                @media (max-width: 500px) {
-                        #map {
-                                max-width: 100vw;
-                                min-width: 0;
-                                aspect-ratio: 1 / 1;
-                        }
-                }
-                /* Asegura que el modal esté por encima del mapa */
-                #modalMAIN {
-                        z-index: 9999 !important;
-                        position: fixed !important;
-                }
-                </style>
-
                 <!-- Div del mapa -->
                 <div id="map"></div>
 
@@ -732,7 +708,6 @@ function GetDpto() {
                 </section>
 
                 <!-- Imagen de perfil -->
-                <!-- Imagen de perfil -->
                 <section class="input-box">
                     <br>
                      <label for="foto">Subir foto o usar cámara:</label><br>
@@ -745,13 +720,10 @@ function GetDpto() {
 
                     
                     <button type="button" onclick="iniciarCamara()"  class="btn" style="background-color: #007bff;" >Activar cámara</button>
-                    
-                    <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
- 
+                    <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none; background-color: #007bff;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
                     <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none;" class="btn" ><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
 
         
-
                     <script>
                     const abrirCamaraBtn = document.getElementById("abrir-camara");
                     const fotoInput = document.getElementById("foto");
@@ -832,7 +804,8 @@ function GetDpto() {
                         }, "image/jpeg", 0.95);
                     }
 
-                    function cerrarCamara() {
+                    function cerrarCamara() 
+                    {
                         const video = document.getElementById("video");
                         if (video && video.srcObject) {
                             const tracks = video.srcObject.getTracks();
@@ -858,7 +831,7 @@ function GetDpto() {
 
                     </script>
                 </section>
-                <input type="submit" value="Registrar Persona" class="btn">
+                <input type="submit" value="Registrar Persona" class="btn" style="background-color: #007bff;">
                 <section class="register-link" >
                     <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
                 </section>

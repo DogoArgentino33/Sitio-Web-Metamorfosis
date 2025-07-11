@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () =>
         ReiniciarMov();
     });
 
+    // Agregamos el cambio de imagen //
     function CambioSlide(direction = 1) 
     { 
         const totalSlides = document.querySelectorAll('.slide').length;
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () =>
         slides.style.transform = `translateX(-${currentSlide * 100}%)`;
     }
 
+    // Agregamos movimiento //
     function movimiento() 
     {
         if (timerId) 
