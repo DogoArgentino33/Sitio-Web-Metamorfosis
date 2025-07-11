@@ -52,7 +52,9 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Personas..." onkeyup="filtrarTabla('user')">
                 <div class="btn-add-container">
-                    <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus"></i></button>
+                    <button class="add-panel" id="agregarpersona" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
+                    
+                    
                 </div>
             </section>
             <table>
@@ -92,6 +94,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td><a href="verpersona.php?id=<?= $persona['id'] ?>"><button class="add-panel" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
                         <td><a href="editarpersona.php?id=<?= $persona['id'] ?>"><button class="add-panel" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
                 
+
                         <td>
                         
                         <?php if($usuario['estadousu'] == true): ?>

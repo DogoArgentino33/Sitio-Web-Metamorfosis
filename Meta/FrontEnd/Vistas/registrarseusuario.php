@@ -1,10 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['id_persona'])) {
-    // Si alguien intenta entrar a registrarseusuario.php sin pasar por registrarsepersona.php
-    header("Location: registrarsepersona.php");
-    exit;
-}
+
 
 include('conexion.php'); 
 
@@ -194,21 +190,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $passusu1    = mysqli_real_escape_string($conexion, $passusu1);
         $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
 
-        $passusu_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
-        $id_persona = $_SESSION['id_persona'];
-            
-        $sql_insert = "INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, id_persona, rol) 
-                            VALUES ('$nombre_usu','$ruta_imagen','$correo','$telefono','$passusu_hash','$id_persona',0)";
+    if (!isset($passusu) || empty(trim($passusu))) {
+    $errores[] = "La contraseña no puede estar vacía.";
+    } else {
+        $passusu_hash = password_hash(strtolower(trim($passusu)), PASSWORD_DEFAULT);
+    }
 
-        if (mysqli_query($conexion, $sql_insert)) {
-            $_SESSION['id_persona'] = mysqli_insert_id($conexion);
-            header("Location: login.php?registrouser=ok");
-            exit;
-        } else {
-            $errores[] = "Error al registrar usuario: " . mysqli_error($conexion);
+
+    // Preparar la consulta
+    $stmt = $conexion->prepare("INSERT INTO usuario (nom_usu, img_perfil, correo, telefono, passusu, id_persona, rol) 
+                                VALUES (?, ?, ?, ?, ?, ?, 0)");
+
+    // Convertir el id_persona a NULL si no existe en la sesión
+    $id_persona = isset($_SESSION['id_persona']) && !empty($_SESSION['id_persona']) 
+                ? intval($_SESSION['id_persona']) 
+                : null;
+
+    // Enlazar parámetros (la 'i' acepta null correctamente si se usó con 'bind_param')
+    $stmt->bind_param("sssssi", $nombre_usu, $ruta_imagen, $correo, $telefono, $passusu_hash, $id_persona);
+
+    // Ejecutar y verificar
+    if ($stmt->execute()) {
+        $_SESSION['id_persona'] = $conexion->insert_id;
+        header("Location: login.php?registrouser=ok");
+        exit;
+    } else {
+        $errores[] = "Error al registrar usuario: " . $stmt->error;
+    }
         }
     }
-}
 ?>
 
 <!DOCTYPE html>

@@ -69,7 +69,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Productos..." onkeyup="filtrarTabla('product')">
                 <div class="btn-add-container">
-                    <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus"></i></button>
+                    <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
                 </div>
             </section>
             <table>
