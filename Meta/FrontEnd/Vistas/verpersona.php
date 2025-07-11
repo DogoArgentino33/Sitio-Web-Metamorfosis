@@ -196,6 +196,8 @@ $persona = $resultado->fetch_assoc();
 <script>
     document.getElementById('formExportar').addEventListener('submit', function(e) {
         const checkboxes = document.querySelectorAll('input[name="atributos[]"]:checked');
+        const formato = document.getElementById('formato').value;
+
         if (checkboxes.length === 0) {
             e.preventDefault(); // Evita que se envíe el formulario
 
@@ -205,6 +207,19 @@ $persona = $resultado->fetch_assoc();
                 text: 'Debe seleccionar al menos un campo para exportar.',
                 confirmButtonText: 'Entendido'
             });
+        }
+        else{
+            if(formato === ""){
+                e.preventDefault(); // Evita que se envíe el formulario
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos requeridos',
+                    text: 'Debe seleccionar un formato para exportar.',
+                    confirmButtonText: 'Entendido'
+                });
+
+            }
         }
     });
 </script>

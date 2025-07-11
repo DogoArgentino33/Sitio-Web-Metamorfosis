@@ -233,7 +233,7 @@ select[name="formato"]:focus {
     display: flex;
     gap: 30px;
     justify-content: space-between;
-    flex-wrap: nowrap; /* ⚠️ importante: no permitir salto de línea */
+    flex-wrap: nowrap;
     margin-top: 10px;
 }
 

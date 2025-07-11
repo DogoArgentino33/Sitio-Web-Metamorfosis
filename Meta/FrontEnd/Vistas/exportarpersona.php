@@ -89,19 +89,14 @@ $nomArchivo = "persona_" . (isset($persona['nombre']) ? preg_replace('/[^a-zA-Z0
 if ($formato === 'pdf') {
     class CustomPDF extends TCPDF {
         public function Header() {
-            // Logo (opcional)
-            // $this->Image('ruta/logo.png', 20, 10, 20);
-
-            // Título principal
             $this->SetFont('helvetica', 'B', 14);
-            $this->SetTextColor(209, 46, 59); // Color rojo corporativo
+            $this->SetTextColor(209, 46, 59);
             $this->Cell(0, 10, 'Metamorfosis - Exportación de Persona', 0, 1, 'C');
 
-            // Subtítulo con ID y fecha/hora
             $this->SetFont('helvetica', '', 10);
             $this->SetTextColor(0, 0, 0);
             $this->Cell(0, 5, 'Fecha: ' . date('d-m-Y') . ' | Hora: ' . date('H:i'), 0, 1, 'C');
-            $this->Ln(5); // Espacio después del encabezado
+            $this->Ln(5);
         }
 
         public function Footer() {
@@ -117,23 +112,16 @@ if ($formato === 'pdf') {
     $pdf->SetAuthor('Metamorfosis');
     $pdf->SetTitle("Exportación Persona ID $id");
 
-    // Márgenes
-    $pdf->SetMargins(20, 40, 20); // top 40 para dejar espacio al header
+    $pdf->SetMargins(20, 40, 20);
     $pdf->SetHeaderMargin(10);
     $pdf->SetFooterMargin(15);
     $pdf->SetAutoPageBreak(true, 25);
-
-    // Tipografía
     $pdf->SetFont('helvetica', '', 11);
-
-    // Header/Footer activos
     $pdf->setPrintHeader(true);
     $pdf->setPrintFooter(true);
-
-    // Agrega la página
     $pdf->AddPage();
 
-    // Diccionario de nombres amigables
+    // Diccionario de nombres
     $nombresCampos = [
         'nombre' => 'Nombre(s)',
         'apellido' => 'Apellido(s)',
@@ -152,36 +140,40 @@ if ($formato === 'pdf') {
         'lng' => 'Longitud'
     ];
 
+    // Atributos por sección
+    $atributosPersonales = ['img', 'nombre', 'apellido', 'dni', 'genero', 'fec_nac'];
+    $atributosDomicilio  = ['nomprov', 'nomdpto', 'nommun', 'nomloc', 'barrio', 'calle', 'altura'];
+
     $html = '
     <style>
         h2 {
             color: #d12e3b;
-            text-align: center;
+            text-align: left;
             font-family: helvetica;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
         table {
             border-collapse: collapse;
             width: 100%;
             margin-top: 10px;
             font-family: helvetica;
-            font-size: 12pt; /* tamaño aumentado */
+            font-size: 11pt;
         }
         th {
             background-color: #d12e3b;
             color: #ffffff;
-            padding: 10px; /* padding aumentado */
+            padding: 8px;
             border: 1px solid #d12e3b;
-            text-align: center;
+            text-align: left;
             vertical-align: middle;
             width: 35%;
         }
         td {
             background-color: #ffffff;
             color: #333333;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #d12e3b;
-            text-align: center;
+            text-align: left;
             vertical-align: middle;
         }
         tr:nth-child(even) td {
@@ -189,11 +181,11 @@ if ($formato === 'pdf') {
         }
     </style>
 
-    <h2>Ficha de Persona</h2>
+    <h2>Datos Personales</h2>
     <table>';
 
-    // --- Mostrar imagen primero ---
-    if (in_array('img', $atributos)) {
+    // Imagen primero
+    if (in_array('img', $atributosPersonales)) {
         $imgPath = valor($persona, 'img');
         $label = isset($nombresCampos['img']) ? $nombresCampos['img'] : 'Imagen';
 
@@ -219,13 +211,24 @@ if ($formato === 'pdf') {
         }
     }
 
-    // --- Mostrar el resto de los atributos ---
-    foreach ($atributos as $attr) {
-        if ($attr === 'img') continue; // ya se mostró
+    // Campos personales
+    foreach ($atributosPersonales as $attr) {
+        if ($attr === 'img') continue;
 
-        $label = isset($nombresCampos[$attr]) ? $nombresCampos[$attr] : ucwords(str_replace('_', ' ', $attr));
-        $valorCampo = valor($persona, $attr);
-        $valorCampo = htmlspecialchars($valorCampo); // Sanear para evitar HTML no deseado
+        $label = $nombresCampos[$attr] ?? ucwords(str_replace('_', ' ', $attr));
+        $valorCampo = htmlspecialchars(valor($persona, $attr));
+        $html .= "<tr><th>$label</th><td>$valorCampo</td></tr>";
+    }
+
+    $html .= '</table>';
+
+    // --- Domicilio ---
+    $html .= '<h2>Datos de Domicilio</h2>
+    <table>';
+
+    foreach ($atributosDomicilio as $attr) {
+        $label = $nombresCampos[$attr] ?? ucwords(str_replace('_', ' ', $attr));
+        $valorCampo = htmlspecialchars(valor($persona, $attr));
         $html .= "<tr><th>$label</th><td>$valorCampo</td></tr>";
     }
 
@@ -236,12 +239,13 @@ if ($formato === 'pdf') {
     exit;
 }
 
+
 // --- Excel (XLS / XLSX) ---
 if ($formato === 'xls' || $formato === 'xlsx') {
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Paleta corporativa
+    // Paleta
     $rojo = 'D12E3B';
     $blanco = 'FFFFFF';
 
@@ -252,7 +256,7 @@ if ($formato === 'xls' || $formato === 'xlsx') {
     $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($rojo);
     $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    // Subtítulo con Fecha y Hora (sin ID)
+    // Fecha y hora
     $sheet->mergeCells('A2:E2');
     $fecha = date('d-m-Y');
     $hora = date('H:i');
@@ -260,31 +264,41 @@ if ($formato === 'xls' || $formato === 'xlsx') {
     $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(11);
     $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
-    // Espacio antes de la tabla
-    $startRow = 4;
-
-    // Nombres amigables para encabezados
+    // Nombres amigables
     $nombresCampos = [
         'nombre' => 'Nombre(s)',
         'apellido' => 'Apellido(s)',
+        'dni' => 'DNI',
         'fec_nac' => 'Fecha de Nacimiento',
+        'genero' => 'Género',
         'img' => 'Imagen de Perfil',
+        'calle' => 'Calle',
+        'altura' => 'Altura',
+        'barrio' => 'Barrio',
+        'nomprov' => 'Provincia',
+        'nomdpto' => 'Departamento',
+        'nommun' => 'Municipio',
+        'nomloc' => 'Localidad',
         'lat' => 'Latitud',
         'lng' => 'Longitud'
     ];
 
-    // Reorganizar atributos: img_perfil al principio
-    $atributosOrdenados = $atributos;
-    if (($key = array_search('img', $atributosOrdenados)) !== false) {
-        unset($atributosOrdenados[$key]);
-        array_unshift($atributosOrdenados, 'img');
-    }
+    // Agrupar atributos
+    $atributosPersonales = ['img', 'nombre', 'apellido', 'dni', 'genero', 'fec_nac'];
+    $atributosDomicilio  = ['nomprov', 'nomdpto', 'nommun', 'nomloc', 'barrio', 'calle', 'altura'];
 
-    // Encabezados
+    $currentRow = 4;
+
+    // === Tabla 1: Datos Personales ===
+    $sheet->setCellValue("A{$currentRow}", 'Datos Personales');
+    $sheet->getStyle("A{$currentRow}")->getFont()->setBold(true)->setSize(14);
+    $currentRow++;
+
+    // Encabezados personales
     $col = 'A';
-    foreach ($atributosOrdenados as $attr) {
+    foreach ($atributosPersonales as $attr) {
         $label = isset($nombresCampos[$attr]) ? $nombresCampos[$attr] : ucwords(str_replace('_', ' ', $attr));
-        $cell = $col . $startRow;
+        $cell = $col . $currentRow;
         $sheet->setCellValue($cell, $label);
         $sheet->getStyle($cell)->getFont()->setBold(true)->getColor()->setRGB($blanco);
         $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($rojo);
@@ -293,13 +307,12 @@ if ($formato === 'xls' || $formato === 'xlsx') {
         $col++;
     }
 
-    // Datos (fila siguiente a los encabezados)
-    $row = $startRow + 1;
+    $currentRow++;
     $col = 'A';
     $imgCol = null;
 
-    foreach ($atributosOrdenados as $attr) {
-        $cell = $col . $row;
+    foreach ($atributosPersonales as $attr) {
+        $cell = $col . $currentRow;
 
         if ($attr === 'img') {
             $imgCol = $col;
@@ -314,13 +327,14 @@ if ($formato === 'xls' || $formato === 'xlsx') {
                 $drawing->setOffsetY(5);
                 $drawing->setWorksheet($sheet);
 
-                $sheet->getRowDimension($row)->setRowHeight(65);
+                $sheet->getRowDimension($currentRow)->setRowHeight(65);
                 $sheet->getColumnDimension($col)->setWidth(22);
             } else {
                 $sheet->setCellValue($cell, 'Imagen no disponible');
             }
         } else {
-            $sheet->setCellValue($cell, 'Datos no disponibles');
+            $valorCampo = valor($persona, $attr);
+            $sheet->setCellValue($cell, $valorCampo);
         }
 
         $sheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
@@ -335,10 +349,45 @@ if ($formato === 'xls' || $formato === 'xlsx') {
         }
     }
 
-    // Pie de página profesional
+    // === Tabla 2: Datos de Domicilio ===
+    $currentRow += 3; // espacio entre tablas
+    $sheet->setCellValue("A{$currentRow}", 'Datos de Domicilio');
+    $sheet->getStyle("A{$currentRow}")->getFont()->setBold(true)->setSize(14);
+    $currentRow++;
+
+    $col = 'A';
+    foreach ($atributosDomicilio as $attr) {
+        $label = isset($nombresCampos[$attr]) ? $nombresCampos[$attr] : ucwords(str_replace('_', ' ', $attr));
+        $cell = $col . $currentRow;
+        $sheet->setCellValue($cell, $label);
+        $sheet->getStyle($cell)->getFont()->setBold(true)->getColor()->setRGB($blanco);
+        $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($rojo);
+        $sheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+        $col++;
+    }
+
+    $currentRow++;
+    $col = 'A';
+    foreach ($atributosDomicilio as $attr) {
+        $cell = $col . $currentRow;
+        $valorCampo = valor($persona, $attr);
+        $sheet->setCellValue($cell, $valorCampo);
+
+        $sheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+        $col++;
+    }
+
+    // Autoajuste columnas domicilio
+    foreach (range('A', chr(ord($col) - 1)) as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Pie de página
     $sheet->getHeaderFooter()->setOddFooter('&LMetamorfosis&R Página &P de &N');
 
-    // Exportación
+    // Exportar
     $writer = $formato === 'xls' ? new Xls($spreadsheet) : new Xlsx($spreadsheet);
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header("Content-Disposition: attachment;filename=\"$nomArchivo.$formato\"");
@@ -346,5 +395,88 @@ if ($formato === 'xls' || $formato === 'xlsx') {
     $writer->save('php://output');
     exit;
 }
+
+// --- EXPORTAR CSV ---
+if ($formato === 'csv') {
+    header('Content-Type: text/csv; charset=UTF-8');
+    header("Content-Disposition: attachment;filename=\"$nomArchivo.csv\"");
+
+    $output = fopen('php://output', 'w');
+
+    // Título
+    fputcsv($output, []);
+    fputcsv($output, ['==============================']);
+    fputcsv($output, ['METAMORFOSIS - Exportación de Persona']);
+    fputcsv($output, ['==============================']);
+    fputcsv($output, []);
+
+    // Fecha y hora
+    $fecha = date('d-m-Y');
+    $hora = date('H:i');
+    fputcsv($output, ['Fecha de Exportación', "Fecha: $fecha | Hora: $hora"]);
+    fputcsv($output, []);
+
+    // Diccionario de nombres amigables
+    $nombresCampos = [
+        'nombre'   => 'Nombre(s)',
+        'apellido' => 'Apellido(s)',
+        'dni'      => 'DNI',
+        'fec_nac'  => 'Fecha de Nacimiento',
+        'genero'   => 'Género',
+        'img'      => 'Imagen de Perfil',
+        'calle'    => 'Calle',
+        'altura'   => 'Altura',
+        'barrio'   => 'Barrio',
+        'nomprov'  => 'Provincia',
+        'nomdpto'  => 'Departamento',
+        'nommun'   => 'Municipio',
+        'nomloc'   => 'Localidad',
+        'lat'      => 'Latitud',
+        'lng'      => 'Longitud'
+    ];
+
+    // Secciones
+    $atributosPersonales = ['img', 'nombre', 'apellido', 'dni', 'genero', 'fec_nac'];
+    $atributosDomicilio  = ['nomprov', 'nomdpto', 'nommun', 'nomloc', 'barrio', 'calle', 'altura'];
+
+    // --- Datos Personales ---
+    fputcsv($output, ['------------------------------']);
+    fputcsv($output, ['DATOS PERSONALES']);
+    fputcsv($output, ['------------------------------']);
+
+    foreach ($atributosPersonales as $attr) {
+        $label = $nombresCampos[$attr] ?? ucwords(str_replace('_', ' ', $attr));
+        $valorCampo = valor($persona, $attr);
+
+        if ($attr === 'img') {
+            $valorCampo = $valorCampo ?: 'Imagen no disponible';
+        }
+
+        fputcsv($output, [$label, $valorCampo]);
+    }
+
+    // --- Datos de Domicilio ---
+    fputcsv($output, []);
+    fputcsv($output, ['------------------------------']);
+    fputcsv($output, ['DATOS DE DOMICILIO']);
+    fputcsv($output, ['------------------------------']);
+
+    foreach ($atributosDomicilio as $attr) {
+        $label = $nombresCampos[$attr] ?? ucwords(str_replace('_', ' ', $attr));
+        $valorCampo = valor($persona, $attr);
+        fputcsv($output, [$label, $valorCampo]);
+    }
+
+    // Final
+    fputcsv($output, []);
+    fputcsv($output, ['------------------------------']);
+    fputcsv($output, ['Documento generado por Metamorfosis']);
+    fputcsv($output, ['Fin del documento.']);
+
+    fclose($output);
+    exit;
+}
+
+
 
 ?>

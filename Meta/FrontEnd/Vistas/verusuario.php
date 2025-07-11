@@ -32,6 +32,15 @@ $usuario = $resultado->fetch_assoc();
     <title>Información del Usuario</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/verusuario.css">
+
+     <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .swal2-container {
+            z-index: 99999 !important;
+        }
+    </style>
 </head>
 <body>
     <h1>Información del Usuario</h1>
@@ -84,7 +93,7 @@ $usuario = $resultado->fetch_assoc();
                         ?></p>
             <br>
             <a href="panelusuarios.php"><button type="button" class="boton">Volver al panel</button></a>
-            <button type="button" class="boton" onclick="abrirModalExportar()">Exportar</button>
+            <button type="button" class="boton-exportar" onclick="abrirModalExportar()">Exportar</button>
         </div>
     </section>
 
@@ -114,7 +123,7 @@ function cerrarModal()
     <section class="modal-exportar-card" onclick="event.stopPropagation();">
         <section class="modal-exportar-content">
             <h2>Exportar Usuario</h2>
-            <form action="exportarusuario.php" method="POST" novalidate>
+            <form id="formExportar" action="exportarusuario.php" method="POST" novalidate>
 
                 <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
 
@@ -142,7 +151,7 @@ function cerrarModal()
 
                 <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
                     <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
-                    <button type="submit" class="boton">Exportar</button>
+                    <button type="submit" class="boton-exportar">Exportar</button>
                 </nav>
             </form>
         </section>
@@ -163,6 +172,37 @@ function cerrarModal()
         const modal = document.getElementById('modalExportar');
         modal.style.display = 'none';  // Ocultarlo
     }
+</script>
+
+<script>
+    document.getElementById('formExportar').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="atributos[]"]:checked');
+        const formato = document.getElementById('formato').value;
+
+        if (checkboxes.length === 0) {
+            e.preventDefault(); // Evita que se envíe el formulario
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos requeridos',
+                text: 'Debe seleccionar al menos un campo para exportar.',
+                confirmButtonText: 'Entendido'
+            });
+        }
+        else{
+            if(formato === ""){
+                e.preventDefault(); // Evita que se envíe el formulario
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos requeridos',
+                    text: 'Debe seleccionar un formato para exportar.',
+                    confirmButtonText: 'Entendido'
+                });
+
+            }
+        }
+    });
 </script>
 
 </body>

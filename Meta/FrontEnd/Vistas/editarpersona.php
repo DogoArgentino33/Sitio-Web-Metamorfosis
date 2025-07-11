@@ -245,110 +245,127 @@ function getLocalidades() {
     <title>Editar Persona</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/editarusuario.css">
+    <link rel="stylesheet" href="../Estilos/editarpersona.css">
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h1>Editar Persona</h1>
+    <h1 style="text-align:center;">Editar Persona</h1>
+      <form method="POST" enctype="multipart/form-data">
 
-    <section class="dni-card">
-        
-    <form method="POST" enctype="multipart/form-data">
-        <section class="perfil-editar">
-            <div class="foto-perfil-editar">
-                <img src="<?= htmlspecialchars($persona['img']) ?>" alt="Foto de perfil" id="foto-perfil"
-                style="width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid white;">
-                <img id="preview-img" class="preview" style="display: none; width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid gray;">
+          <div class="form-columns">
 
-            </div>
-            <div class="input-imagen">
-                <label for="nueva_imagen">Cambiar foto de perfil:</label>
-                <input type="file" name="nueva_imagen" id="nueva_imagen" accept="image/*">
-            </div>
-        </section>
+            <section class="columna-formulario">
+              <h3>Datos Personales</h3>
 
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" id="nombre" value="<?= htmlspecialchars($persona['nombre']) ?>" readonly><br>
+              <section class="perfil-editar">
+                  <div class="foto-perfil-editar">
+                      <img src="<?= htmlspecialchars($persona['img']) ?>" alt="Foto de perfil" id="foto-perfil"
+                      style="width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid white;">
+                      <img id="preview-img" class="preview" style="display: none; width: 8vw; height: 8vw; object-fit: cover; border-radius: 50%; border: 0.25vw solid gray;">
 
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" id="apellido" value="<?= htmlspecialchars($persona['apellido']) ?>" readonly><br>
+                  </div>
+                  <div class="input-imagen">
+                      <label for="nueva_imagen">Cambiar foto de perfil:</label>
+                      <input type="file" name="nueva_imagen" id="nueva_imagen" accept="image/*">
+                  </div>
+              </section>
 
-        <label for="dni">DNI:</label>
-        <input type="text" name="dni" id="dni" value="<?= htmlspecialchars($persona['dni']) ?>" readonly><br>
+              <label for="nombre">Nombre:</label>
+              <input type="text" name="nombre" id="nombre" value="<?= htmlspecialchars($persona['nombre']) ?>" readonly><br>
 
-        <label for="fec_nac">Fecha de Nacimiento:</label>
-        <input type="date" name="fec_nac" id="fec_nac" value="<?= htmlspecialchars($persona['fec_nac']) ?>" readonly><br>
+              <label for="apellido">Apellido:</label>
+              <input type="text" name="apellido" id="apellido" value="<?= htmlspecialchars($persona['apellido']) ?>" readonly><br>
 
-        <label for="genero">Género:</label>
-        <input type="text" name="genero" id="genero" value="<?= htmlspecialchars($persona['genero']) ?>" readonly><br>
+              <label for="dni">DNI:</label>
+              <input type="text" name="dni" id="dni" value="<?= htmlspecialchars($persona['dni']) ?>" readonly><br>
 
-        <label>País:</label>
-        <input type="text" name="pais" value="<?= htmlspecialchars($persona['pais']) ?>" required><br>
+              <label for="fec_nac">Fecha de Nacimiento:</label>
+              <input type="date" name="fec_nac" id="fec_nac" value="<?= htmlspecialchars($persona['fec_nac']) ?>" readonly><br>
 
-        <label>Provincia:</label>
-        <input type="text" name="provincia" value="<?= htmlspecialchars($persona['provincia']) ?>" required><br>
+              <label for="genero">Género:</label>
+              <input type="text" name="genero" id="genero" value="<?= htmlspecialchars($persona['genero']) ?>" readonly><br>
+            </section>
+            
+            <section class="columna-formulario">
+              <h3>Datos de Domicilio</h3>
 
-        <label>Departamento:</label>
-            <select name="departamento" id="departamento" required>
-                <?php 
-                $sql = "SELECT coddpto, nomdpto FROM dpto";
-                $result = mysqli_query($conexion, $sql);
+              <label>Provincia:</label>
+                  <select name="provincia" id="provincia" required>
+                      <?php 
+                          $sql = "SELECT codprov, nomprov FROM provincias";
+                          $result = mysqli_query($conexion, $sql);
 
-                while($row = $result->fetch_assoc()) {
-                    $selected = ($row['coddpto'] == $persona['departamento']) ? 'selected' : '';
-                    echo "<option value='{$row['coddpto']}' $selected>{$row['nomdpto']}</option>";
-                }
-                ?>
-            </select>
-        <label>Municipio:</label>
-            <select name="municipio" id="municipio" required>
-                <?php 
-                $sql = "SELECT codmun, nommun FROM municipio";
-                $result = mysqli_query($conexion, $sql);
+                          while($row = $result->fetch_assoc()) 
+                            { ?>
+                              <option value="<?php echo $row['codprov'];?>"><?php echo $row['nomprov'];?></option>
+                              <?php 
+                            }
+                      ?>
+                  </select>
 
-                while($row = $result->fetch_assoc()) {
-                    $selected = ($row['codmun'] == $persona['municipio']) ? 'selected' : '';
-                    echo "<option value='{$row['codmun']}' $selected>{$row['nommun']}</option>";
-                }
-                ?>
-            </select>
+              <label>Departamento:</label>
+                  <select name="departamento" id="departamento" required>
+                      <?php 
+                      $sql = "SELECT coddpto, nomdpto FROM dpto";
+                      $result = mysqli_query($conexion, $sql);
 
-        <label>Localidad:</label>
-            <select name="localidad" id="localidad" required>
-                <?php 
-                $sql = "SELECT codloc, nomloc FROM localidades";
-                $result = mysqli_query($conexion, $sql);
+                      while($row = $result->fetch_assoc()) {
+                          $selected = ($row['coddpto'] == $persona['departamento']) ? 'selected' : '';
+                          echo "<option value='{$row['coddpto']}' $selected>{$row['nomdpto']}</option>";
+                      }
+                      ?>
+                  </select>
+              <label>Municipio:</label>
+                  <select name="municipio" id="municipio" required>
+                      <?php 
+                      $sql = "SELECT codmun, nommun FROM municipio";
+                      $result = mysqli_query($conexion, $sql);
 
-                while($row = $result->fetch_assoc()) {
-                    $selected = ($row['codloc'] == $persona['localidad']) ? 'selected' : '';
-                    echo "<option value='{$row['codloc']}' $selected>{$row['nomloc']}</option>";
-                }
-                ?>
-            </select>
+                      while($row = $result->fetch_assoc()) {
+                          $selected = ($row['codmun'] == $persona['municipio']) ? 'selected' : '';
+                          echo "<option value='{$row['codmun']}' $selected>{$row['nommun']}</option>";
+                      }
+                      ?>
+                  </select>
 
+              <label>Localidad:</label>
+                  <select name="localidad" id="localidad" required>
+                      <?php 
+                      $sql = "SELECT codloc, nomloc FROM localidades";
+                      $result = mysqli_query($conexion, $sql);
 
-        <label>Barrio:</label>
-        <input type="text" name="barrio" value="<?= htmlspecialchars($persona['barrio']) ?>" required><br>
+                      while($row = $result->fetch_assoc()) {
+                          $selected = ($row['codloc'] == $persona['localidad']) ? 'selected' : '';
+                          echo "<option value='{$row['codloc']}' $selected>{$row['nomloc']}</option>";
+                      }
+                      ?>
+                  </select>
 
-        <label>Calle:</label>
-        <input type="text" name="calle" value="<?= htmlspecialchars($persona['calle']) ?>" required><br>
+                <label>Barrio:</label>
+                <input type="text" name="barrio" value="<?= htmlspecialchars($persona['barrio']) ?>" required><br>
 
-        <label>Altura:</label>
-        <input type="text" name="altura" value="<?= htmlspecialchars($persona['altura']) ?>" required><br>
+                <label>Calle:</label>
+                <input type="text" name="calle" value="<?= htmlspecialchars($persona['calle']) ?>" required><br>
 
-        <label for="fechamod">Última Modificacion</label>
-        <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($persona['fechamod']) ?>" readonly><br>
+                <label>Altura:</label>
+                <input type="text" name="altura" value="<?= htmlspecialchars($persona['altura']) ?>" required><br>
 
-        <label for="usumod">Usuario que realizó la modificacion</label>
-        <input type="text" name="usumod" id="usumod" value="<?= htmlspecialchars($persona['usumod']) ?>" readonly><br>
+                <label for="fechamod">Última Modificacion</label>
+                <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($persona['fechamod']) ?>" readonly><br>
 
+                <label for="usumod">Usuario que realizó la modificacion</label>
+                <input type="text" name="usumod" id="usumod" value="<?= htmlspecialchars($persona['usumod']) ?>" readonly><br>
+            </section>
 
-        <button type="submit">Guardar cambios</button>
-        <a href="panelpersonas.php"><button type="button">Cancelar</button></a>
-    </form>
-    </section>
+          </div>
 
+          <div class="form-botones">
+            <button type="button" class="boton boton-cancelar" onclick="location.href='panelpersonas.php'">Cancelar</button>
+            <button type="submit" class="boton boton-guardar">Guardar cambios</button>
+          </div>
+
+      </form>
 
     <script>
         document.getElementById('nueva_imagen').addEventListener('change', function(event) {

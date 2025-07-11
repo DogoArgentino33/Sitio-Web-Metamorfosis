@@ -576,9 +576,11 @@ function GetDpto() {
         <a>Registrarse</a>
     </section>
     <br>
-    <h1 id="titulo-formulario">Registrar Persona</h1>
+    <h1 id="titulo-formulario" style="text-align:center;">Registrar Persona</h1>
 
-        <section>
+    <section id="wrapperregistro">
+
+        <section style="text-align:center;">
            <div class="contenedor-video">
             <video src="uploads/METAMORFOSIS VIDEO REGISTRAR PERSONA.mp4" controls width="480" poster="">
             Tu navegador no soporta la reproducción de video.
@@ -587,260 +589,262 @@ function GetDpto() {
             </div>
         </section>
 
-    <section id="wrapperregistro">
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="formregistro">
             <h2>Formulario Registrar Persona</h2>
-            <fieldset>
-                <legend>Datos personales</legend>
 
+            <div class="form-columns">
+                <fieldset>
+                    <legend>Datos personales</legend>
 
-                <!-- Nombre -->
-                <section class="input-box">
-                    <label for="nombre">Nombre(s):</label>
-                    <input id="nombre" name="nombre" type="text" class="solo-letras" required>
-                    <span class="error" style="color:red;"><?php echo $error_nombre; ?></span>
-                </section>
+                    <div class="columna-formulario">
+                        <!-- Nombre -->
+                        <section class="input-box">
+                            <label for="nombre">Nombre(s):</label>
+                            <input id="nombre" name="nombre" type="text" class="solo-letras" required>
+                            <span class="error" style="color:red;"><?php echo $error_nombre; ?></span>
+                        </section>
 
-                <!-- Apellido -->
-                <section class="input-box">
-                    <label for="apellido">Apellido(s):</label>
-                    <input id="apellido" name="apellido" type="text" class="solo-letras" required>
-                    <span class="error" style="color:red;"><?php echo $error_apellido; ?></span>
-                </section>
+                        <!-- Apellido -->
+                        <section class="input-box">
+                            <label for="apellido">Apellido(s):</label>
+                            <input id="apellido" name="apellido" type="text" class="solo-letras" required>
+                            <span class="error" style="color:red;"><?php echo $error_apellido; ?></span>
+                        </section>
 
-                <!-- DNI -->
-                <section class="input-box">
-                    <label for="DNI:">DNI:</label>
-                    <input id="dni" name="dni" type="number" min="3000000" required value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
-                    <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
-                </section>
+                        <!-- DNI -->
+                        <section class="input-box">
+                            <label for="DNI:">DNI:</label>
+                            <input id="dni" name="dni" type="number" min="3000000" required value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
+                            <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
+                        </section>
 
-                <!-- Fecha Nacimiento -->
-                <section class="input-box">
-                    <label for="fec-nac">Fecha de nacimiento:</label>
-                    <input id="fec-nac" name="fec-nac" type="date" required value="<?php echo isset($_POST['fec-nac']) ? htmlspecialchars($_POST['fec-nac']) : ''; ?>">
-                    <span class="error" style="color:red;"><?php echo $error_fecha_nac; ?></span>
-                </section>
-                             
-                <!-- Calle -->
-                <section class="input-box">
-                    <label for="calle">Calle:</label>
-                    <input id="calle" name="calle" type="text" required>
-                </section>
+                        <!-- Fecha Nacimiento -->
+                        <section class="input-box">
+                            <label for="fec-nac">Fecha de nacimiento:</label>
+                            <input id="fec-nac" name="fec-nac" type="date" required value="<?php echo isset($_POST['fec-nac']) ? htmlspecialchars($_POST['fec-nac']) : ''; ?>">
+                            <span class="error" style="color:red;"><?php echo $error_fecha_nac; ?></span>
+                        </section>
 
+                        <!-- Genero -->
+                         <section class="input-box">
+                            <label for="genero">Género:</label>
+                            <select class="input-box-genero" id="genero" name="genero" required>
+                                <option value="" disabled selected>-- Seleccionar Género --</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                                <option value="prefiero-no-decirlo">Prefiero no decirlo</option>
+                            </select>
+                        </section>
+                    </div>
 
-                <!-- Altura -->
-                <section class="input-box">
-                    <label for="altura">Altura:</label>
-                    <input id="altura" name="altura" type="text" required>
-                </section>
+                    <!-- Imagen de perfil -->
+                    <section class="input-box">
+                        <br>
+                        <label for="foto">Subir foto o usar cámara:</label><br>
+                        <input type="file" name="foto" id="foto" accept="image/*" capture="user" required>
+                        <span class="error"><?= $error_img ?></span><br>
+                        <img id="preview-img" class="preview" style="display:none;" /><br>
+                        <button type="button" id="cancelar-imagen" style="display:none;" class="btn" ><i class="bi bi-x-lg"></i> Cancelar Imagen</button><br>
+                        <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
+                        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
 
-                <!-- Barrio -->
-                <section class="input-box">
-                    <label for="barrio">Barrio:</label>
-                    <input id="barrio" name="barrio" type="text" required>
-                </section>
+                        
+                        <button type="button" onclick="iniciarCamara()"  class="btn">Activar cámara</button>
+                        <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
+                        <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none;" class="btn" ><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
 
-                <!-- Departamento -->
-                <section class="input-box">
-                    <label for="departamento">Departamento:</label>
-                    <select name="departamento" id="departamento" required>
-                        <option value="">Seleccionar</option>
-                    </select>
-                </section>
+            
+                        <script>
+                            const abrirCamaraBtn = document.getElementById("abrir-camara");
+                            const fotoInput = document.getElementById("foto");
+                            const previewImg = document.getElementById("preview-img");
+                            const cerrarBtn = document.getElementById("cerrar-camara");
+                            const cancelarImgBtn = document.getElementById("cancelar-imagen");
+                            let stream;
 
-                <!-- Municipio -->
-                <section class="input-box">
-                    <label for="municipio">Municipio:</label>
-                    <select name="municipio" id="municipio" required>
-                        <option value="">Seleccionar</option>
-                    </select>
-                </section>
+                            fotoInput.addEventListener("change", () => {
+                                const archivo = fotoInput.files[0];
+                                if (!archivo) return;
 
-                <!-- Localidad -->
-                <section class="input-box">
-                    <label for="localidad">Localidad:</label>
-                    <select name="localidad" id="localidad" required>
-                        <option value="">Seleccionar</option>
-                    </select>
-                </section>
-
-                <!-- Provincia -->
-                <section class="input-box">
-                    <label for="provincia">Provincia:</label>
-                    <select name="provincia" id="provincia" required>
-                        <?php 
-                        $sql = "SELECT codprov, nomprov FROM provincias";
-                        $result = mysqli_query($conexion, $sql);
-
-                        while($row = $result->fetch_assoc()) 
-                        { ?>
-                            <option value="<?php echo $row['codprov'];?>"><?php echo $row['nomprov'];?></option>
-                        <?php 
-                        }
-                        ?>
-                    </select>
-                </section>
-
-                <!-- Pais -->
-                <section class="input-box">
-                    <label for="pais">País:</label>
-                    <input id="pais" name="pais" type="text" class="solo-letras" required>
-                </section>
-
-                <!-- Div del mapa -->
-                <div id="map"></div>
-
-                <!-- lat -->
-                <label for="lat"></label>
-                <input type="number" id="lat" name="lat" readonly hidden><br>
-                <!-- lng -->
-                <label for="lng"></label>
-                <input type="number" id="lng" name="lng" readonly hidden><br>
-
-                <!-- Género -->
-                <section class="input-box-genero">
-                    <label>Género:</label>
-                    <br>
-                    <label><input type="radio" name="genero" value="masculino" required>Masculino</label><br>
-                    <label><input type="radio" name="genero" value="femenino">Femenino</label><br>
-                    <label><input type="radio" name="genero" value="prefiero-no-decirlo">Prefiero no decirlo</label>
-                </section>
-
-                <!-- Imagen de perfil -->
-                <section class="input-box">
-                    <br>
-                     <label for="foto">Subir foto o usar cámara:</label><br>
-                    <input type="file" name="foto" id="foto" accept="image/*" capture="user" required>
-                    <span class="error"><?= $error_img ?></span><br>
-                    <img id="preview-img" class="preview" style="display:none;" /><br>
-                    <button type="button" id="cancelar-imagen" style="display:none;" class="btn" ><i class="bi bi-x-lg"></i> Cancelar Imagen</button><br>
-                    <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
-                    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas><br>
-
-                    
-                    <button type="button" onclick="iniciarCamara()"  class="btn" style="background-color: #007bff;" >Activar cámara</button>
-                    <button type="button" id="abrir-camara" onclick="capturarFoto()" style="display:none; background-color: #007bff;" class="btn" ><i class="bi bi-camera"></i> Tomar Foto</button>
-                    <button type="button" id="cerrar-camara" onclick="cerrarCamara()" style="display:none;" class="btn" ><i class="bi bi-x-circle"></i> Cerrar Cámara</button><br>
-
-        
-                    <script>
-                    const abrirCamaraBtn = document.getElementById("abrir-camara");
-                    const fotoInput = document.getElementById("foto");
-                    const previewImg = document.getElementById("preview-img");
-                    const cerrarBtn = document.getElementById("cerrar-camara");
-                    const cancelarImgBtn = document.getElementById("cancelar-imagen");
-                    let stream;
-
-                    fotoInput.addEventListener("change", () => {
-                        const archivo = fotoInput.files[0];
-                        if (!archivo) return;
-
-                        if (archivo.size > 4 * 1024 * 1024) {
-                            alert("La imagen no debe superar los 4MB.");
-                            fotoInput.value = "";
-                            previewImg.style.display = "none";
-                            cancelarImgBtn.style.display = "none";
-                            return;
-                        }
-
-                        const lector = new FileReader();
-                        lector.onload = function(e) {
-                            previewImg.src = e.target.result;
-                            previewImg.style.display = "block";
-                            cancelarImgBtn.style.display = "inline";
-                        };
-                        lector.readAsDataURL(archivo);
-                    });
-
-                    function iniciarCamara() {
-                        const esMovil = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
-                        navigator.mediaDevices.getUserMedia({ video: true })
-                            .then(mediaStream => {
-                                stream = mediaStream;
-                                const video = document.getElementById("video");
-                                video.srcObject = stream;
-                                video.style.display = "block";
-                                video.style.border = "2px solidrgb(122, 0, 0)";
-                                video.style.borderRadius = "10px";
-                                video.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
-                                video.style.margin = "1vw auto";
-                                video.style.display = "block";
-
-                                if (esMovil) {
-                                    console.log("Usando cámara en dispositivo móvil");
-                                    // Podés ajustar resoluciones o UI específicas para móviles
-                                } else {
-                                    console.log("Usando cámara en PC");
-                                    // Opcional: mostrar instrucciones distintas
+                                if (archivo.size > 4 * 1024 * 1024) {
+                                    alert("La imagen no debe superar los 4MB.");
+                                    fotoInput.value = "";
+                                    previewImg.style.display = "none";
+                                    cancelarImgBtn.style.display = "none";
+                                    return;
                                 }
 
-                                cerrarBtn.style.display = "inline";
-                                abrirCamaraBtn.style.display = "inline";
-                            })
-                            .catch(() => alert("No se pudo acceder a la cámara."));
-                    }
+                                const lector = new FileReader();
+                                lector.onload = function(e) {
+                                    previewImg.src = e.target.result;
+                                    previewImg.style.display = "block";
+                                    cancelarImgBtn.style.display = "inline";
+                                };
+                                lector.readAsDataURL(archivo);
+                            });
 
-                    function capturarFoto() {
-                        const video = document.getElementById("video");
-                        const canvas = document.getElementById("canvas");
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            function iniciarCamara() {
+                                const esMovil = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+                                navigator.mediaDevices.getUserMedia({ video: true })
+                                    .then(mediaStream => {
+                                        stream = mediaStream;
+                                        const video = document.getElementById("video");
+                                        video.srcObject = stream;
+                                        video.style.display = "block";
+                                        video.style.border = "2px solidrgb(122, 0, 0)";
+                                        video.style.borderRadius = "10px";
+                                        video.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                                        video.style.margin = "1vw auto";
+                                        video.style.display = "block";
 
-                        canvas.toBlob(blob => {
-                            const archivo = new File([blob], "captura.jpg", { type: "image/jpeg" });
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(archivo);
-                            fotoInput.files = dataTransfer.files;
+                                        if (esMovil) {
+                                            console.log("Usando cámara en dispositivo móvil");
+                                            // Podés ajustar resoluciones o UI específicas para móviles
+                                        } else {
+                                            console.log("Usando cámara en PC");
+                                            // Opcional: mostrar instrucciones distintas
+                                        }
 
-                            const lector = new FileReader();
-                            lector.onload = function(e) {
-                                previewImg.src = e.target.result;
-                                previewImg.style.display = "block";
-                                previewImg.style.border = "3px solid rgb(122, 0, 0)";
-                                cancelarImgBtn.style.display = "inline";
-                            };
-                            lector.readAsDataURL(archivo);
-                        }, "image/jpeg", 0.95);
-                    }
+                                        cerrarBtn.style.display = "inline";
+                                        abrirCamaraBtn.style.display = "inline";
+                                    })
+                                    .catch(() => alert("No se pudo acceder a la cámara."));
+                            }
 
-                    function cerrarCamara() 
-                    {
-                        const video = document.getElementById("video");
-                        if (video && video.srcObject) {
-                            const tracks = video.srcObject.getTracks();
-                            tracks.forEach(track => track.stop());
-                            video.srcObject = null;
-                            video.style.display = "none";
-                        }
-                        if (typeof stream !== "undefined" && stream) {
-                            stream.getTracks().forEach(track => track.stop());
-                            stream = null;
-                        }
-                        abrirCamaraBtn.style.display = "none";
-                        cerrarBtn.style.display = "none";
-                    }
+                            function capturarFoto() {
+                                const video = document.getElementById("video");
+                                const canvas = document.getElementById("canvas");
+                                const ctx = canvas.getContext("2d");
+                                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Función para cancelar imagen seleccionada o capturada
-                    cancelarImgBtn.addEventListener("click", () => {
-                        fotoInput.value = "";
-                        previewImg.src = "";
-                        previewImg.style.display = "none";
-                        cancelarImgBtn.style.display = "none";
-                    });
+                                canvas.toBlob(blob => {
+                                    const archivo = new File([blob], "captura.jpg", { type: "image/jpeg" });
+                                    const dataTransfer = new DataTransfer();
+                                    dataTransfer.items.add(archivo);
+                                    fotoInput.files = dataTransfer.files;
 
-                    </script>
-                </section>
-                <input type="submit" value="Registrar Persona" class="btn" style="background-color: #007bff;">
-                <section class="register-link" >
-                    <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
-                </section>
-                
-            </fieldset>
+                                    const lector = new FileReader();
+                                    lector.onload = function(e) {
+                                        previewImg.src = e.target.result;
+                                        previewImg.style.display = "block";
+                                        previewImg.style.border = "3px solid rgb(122, 0, 0)";
+                                        cancelarImgBtn.style.display = "inline";
+                                    };
+                                    lector.readAsDataURL(archivo);
+                                }, "image/jpeg", 0.95);
+                            }
+
+                            function cerrarCamara() 
+                            {
+                                const video = document.getElementById("video");
+                                if (video && video.srcObject) {
+                                    const tracks = video.srcObject.getTracks();
+                                    tracks.forEach(track => track.stop());
+                                    video.srcObject = null;
+                                    video.style.display = "none";
+                                }
+                                if (typeof stream !== "undefined" && stream) {
+                                    stream.getTracks().forEach(track => track.stop());
+                                    stream = null;
+                                }
+                                abrirCamaraBtn.style.display = "none";
+                                cerrarBtn.style.display = "none";
+                            }
+
+                            // Función para cancelar imagen seleccionada o capturada
+                            cancelarImgBtn.addEventListener("click", () => {
+                                fotoInput.value = "";
+                                previewImg.src = "";
+                                previewImg.style.display = "none";
+                                cancelarImgBtn.style.display = "none";
+                            });
+
+                        </script>
+                    </section>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Datos de Domicilio</legend>
+
+                    <div class="columna-formulario">
+                        <!-- Provincia -->
+                        <section class="input-box">
+                            <label for="provincia">Provincia:</label>
+                            <select name="provincia" id="provincia" required>
+                                <?php 
+                                $sql = "SELECT codprov, nomprov FROM provincias";
+                                $result = mysqli_query($conexion, $sql);
+
+                                while($row = $result->fetch_assoc()) 
+                                { ?>
+                                    <option value="<?php echo $row['codprov'];?>"><?php echo $row['nomprov'];?></option>
+                                <?php 
+                                }
+                                ?>
+                            </select>
+                        </section>
+
+                        <!-- Departamento -->
+                        <section class="input-box">
+                            <label for="departamento">Departamento:</label>
+                            <select name="departamento" id="departamento" required>
+                                <option value="">Seleccionar</option>
+                            </select>
+                        </section>
+
+                        <!-- Municipio -->
+                        <section class="input-box">
+                            <label for="municipio">Municipio:</label>
+                            <select name="municipio" id="municipio" required>
+                                <option value="">Seleccionar</option>
+                            </select>
+                        </section>
+
+                        <!-- Localidad -->
+                        <section class="input-box">
+                            <label for="localidad">Localidad:</label>
+                            <select name="localidad" id="localidad" required>
+                                <option value="">Seleccionar</option>
+                            </select>
+                        </section>
+
+                        <!-- Barrio -->
+                        <section class="input-box">
+                            <label for="barrio">Barrio:</label>
+                            <input id="barrio" name="barrio" type="text" required>
+                        </section>
+
+                        <!-- Calle -->
+                        <section class="input-box">
+                            <label for="calle">Calle:</label>
+                            <input id="calle" name="calle" type="text" required>
+                        </section>
+
+                        <!-- Altura -->
+                        <section class="input-box">
+                            <label for="altura">Altura:</label>
+                            <input id="altura" name="altura" type="text" required>
+                        </section>
+                    </div>
+
+                     <!-- Div del mapa -->
+                    <div id="map"></div>
+
+                    <!-- lat -->
+                    <label for="lat"></label>
+                    <input type="number" id="lat" name="lat" readonly hidden><br>
+                    <!-- lng -->
+                    <label for="lng"></label>
+                    <input type="number" id="lng" name="lng" readonly hidden><br>
+                </fieldset>
+            </div>
+
+            <section class="register-link" >
+                <input type="submit" value="Registrar Persona" class="btn">
+                <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
+            </section>
         </form>
     </section>
-    <br>
-
     <?php include('footer.php');?>
 </body>
 </html>
