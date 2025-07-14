@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conexion->prepare("INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, rol, estadousu) VALUES (?, ?, ?, ?, ?, ?, 1)");
         $stmt->bind_param("sssssi", $nombre_usu, $ruta, $correo, $telefono, $pass_hash, $rol);
         if ($stmt->execute()) {
-            echo "<script>alert('Usuario registrado correctamente'); window.location.href='panelusuarios.php';</script>";
+            header("Location: panelusuarios.php?usuarioagregado=ok");
             exit;
         } else {
             $errores[] = "Error en la base de datos.";

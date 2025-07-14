@@ -284,52 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- Funcion SweetAlert: Agregar, modificar, Eliminar-->
-<script>
-document.addEventListener('DOMContentLoaded', () => 
-{
-  //1. Traemos lo que definimos en logout.php
-  const p = new URLSearchParams(location.search);
-
-  //2. Como lo definimos como "ok", procede a mostrar el mensaje
-  if (p.get('productoagregado') === 'ok') //Para producto agregado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Producto agregado con éxito',
-      showConfirmButton: false,
-      timer: 1500
-    });
-  //3. Al refrescar la página, no volverá a salir el mensaje
-    history.replaceState({}, '', location.pathname);
-  }
-  if (p.get('productomodificado') === 'ok') //Para producto modificado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Producto modificado con éxito',
-      showConfirmButton: false,
-      timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  } 
-  if (p.get('productoeliminado') == 'ok') //Para producto eliminado
-  {
-    Swal.fire({
-        position: 'top',
-        icon:  'success',
-        title: 'Producto eliminado con éxito',
-        showConfirmButton: false,
-        timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  }
-  
-
-});
-
-</script>
+usuariomodificado
 
 </html>

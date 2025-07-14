@@ -42,8 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-    if ($stmt->execute()) {
-        header("Location: panelusuarios.php?msg=Usuario actualizado");
+    if ($stmt->execute()) 
+    {
+        header("Location: panelusuarios.php?usuariomodificado=ok");
         exit;
     } else {
         echo "Error al actualizar el usuario.";

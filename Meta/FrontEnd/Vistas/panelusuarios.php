@@ -10,9 +10,11 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
     if ($stmt->execute()) {
         // Redirigir nuevamente a panelusuarios para evitar reenvíos y actualizar la tabla
-        header("Location: panelusuarios.php");
+        header("Location: panelusuarios.php?usuarioeliminado=ok");
         exit;
-    } else {
+    } 
+    else 
+    {
         echo "<script>alert('Error al eliminar el usuario');</script>";
     }
 }
@@ -234,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () =>
       .then(res => {
         if (res.isConfirmed) 
         {
-            Swal.fire("Se eliminó el usuario","","success"),
             window.location.href = url;
         }
       });
@@ -246,6 +247,54 @@ function openModalAgregar()
 {
     window.location.href = 'agregarusuario.php';
 }
+</script>
+
+<!-- Funcion SweetAlert: Agregar, modificar, Eliminar-->
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos en logout.php
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('usuarioagregado') === 'ok') //Para usuario agregado
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Usuario agregado con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+  //3. Al refrescar la página, no volverá a salir el mensaje
+    history.replaceState({}, '', location.pathname);
+  }
+  if (p.get('usuariomodificado') === 'ok') //Para usuario modificado
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Usuario modificado con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  } 
+  if (p.get('usuarioeliminado') == 'ok') //Para usuario eliminado
+  {
+    Swal.fire({
+        position: 'top',
+        icon:  'success',
+        title: 'Usuario eliminado con éxito',
+        showConfirmButton: false,
+        timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  }
+  
+
+});
+
 </script>
 
 
