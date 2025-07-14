@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($stmt->execute()) {
-        header("Location: panelpersonas.php?msg=Persona actualizada");
+        header("Location: panelpersonas.php?personamodificada=ok");
         exit;
     } else {
         echo "Error al actualizar la persona.";

@@ -16,7 +16,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
     if ($stmt2->execute()) {
         // Redirigir para evitar reenvíos y actualizar la tabla
-        header("Location: panelpersonas.php");
+        header("Location: panelpersonas.php?personaeliminada=ok");
         exit;
     } else {
         echo "<script>alert('Error al eliminar la persona');</script>";
@@ -201,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () =>
             .then(res => {
             if (res.isConfirmed) 
             {
-                Swal.fire("Se eliminó la persona","","success"),
                 window.location.href = url;
             }
       });
@@ -213,6 +212,39 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         window.location.href = 'agregarusuario.php';
     }
+</script>
+
+<!-- Funcion SweetAlert: modificar, Eliminar-->
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('personamodificada') === 'ok') //Para persona modificada
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Persona modificada con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  } 
+  if (p.get('personaeliminada') == 'ok') //Para persona eliminada
+  {
+    Swal.fire({
+        position: 'top',
+        icon:  'success',
+        title: 'Persona eliminada con éxito',
+        showConfirmButton: false,
+        timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  }
+});
 </script>
 
 </body>
