@@ -50,9 +50,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         <section class="container-table" id="user">
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Usuarios..." onkeyup="filtrarTabla('user')">
-                <div class="btn-add-container">
-                    <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus"></i></button>
-                </div>
             </section>
             <!-- Tabla -->
             <table>

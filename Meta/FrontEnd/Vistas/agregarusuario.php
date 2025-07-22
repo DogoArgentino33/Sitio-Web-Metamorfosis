@@ -1,6 +1,9 @@
 <?php
 include('auth.php');
 include('conexion.php');
+// Obtener id_persona desde GET (si viene)
+$id_persona = isset($_GET['id_persona']) ? intval($_GET['id_persona']) : null;
+
 
 $errores = [];
 function escapar($html) {
@@ -9,6 +12,7 @@ function escapar($html) {
 
 // Manejo del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_persona = isset($_POST['id_persona']) ? intval($_POST['id_persona']) : $id_persona;
     $nombre_usu = trim($_POST['nombre-usu']);
     $correo = trim($_POST['correo']);
     $telefono = preg_replace('/[^0-9]/', '', trim($_POST['telefono']));
@@ -60,8 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (count($errores) === 0) {
         $pass_hash = password_hash(strtolower($passusu), PASSWORD_DEFAULT);
-        $stmt = $conexion->prepare("INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, rol, estadousu) VALUES (?, ?, ?, ?, ?, ?, 1)");
-        $stmt->bind_param("sssssi", $nombre_usu, $ruta, $correo, $telefono, $pass_hash, $rol);
+        $stmt = $conexion->prepare("INSERT INTO usuario(nom_usu, img_perfil, correo, telefono, passusu, rol, estadousu, id_persona) VALUES (?, ?, ?, ?, ?, ?, 1, ?)");
+        $stmt->bind_param("sssssii", $nombre_usu, $ruta, $correo, $telefono, $pass_hash, $rol, $id_persona);
+
         if ($stmt->execute()) {
             header("Location: panelusuarios.php?usuarioagregado=ok");
             exit;
@@ -157,6 +162,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php foreach ($errores as $error) echo "<li>$error</li>"; ?>
                 </ul>
             </div>
+        <?php endif; ?>
+            
+        <?php if ($id_persona): ?>
+            <input type="hidden" name="id_persona" value="<?= $id_persona ?>">
         <?php endif; ?>
 
         <button type="submit" class="boton">Registrar</button>

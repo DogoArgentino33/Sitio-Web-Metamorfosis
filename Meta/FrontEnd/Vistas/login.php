@@ -95,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
                 </section>
 
                 <section class="register-link">
-                    <p>¿No tenés una cuenta? <a href="../Vistas/registrarsepersona.php">Registrar Persona</a> o <a href="../Vistas/registrarseusuario.php">Registrar Usuario</a></p>
+                    <p>¿No tenés una cuenta? <a href="../Vistas/registrarsepersona.php">Registrar Persona</a></p>
                 </section>          
 
                 <?php if (!empty($mensaje)) : ?>
