@@ -82,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // 3. Subida de nueva imagen si existe
 // 3. Subida de nueva imagen si existe
-if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
+// 3. Subida de nueva imagen si existe
+if (isset($_FILES['imagenes']) && !empty(array_filter($_FILES['imagenes']['name']))) {
     $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
     $directorio_subida = 'uploads/producto/';
 
@@ -125,6 +126,7 @@ if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         }
     }
 }
+
 
 
 
