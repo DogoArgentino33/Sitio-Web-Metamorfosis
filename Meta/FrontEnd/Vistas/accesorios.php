@@ -82,7 +82,7 @@ $totalPaginas = ceil($totalAccesorios / $accesoriosPorPagina);
     {
         while ($producto = $result->fetch_assoc()) 
         { ?>
-            <a href="detallesdisfraz.php" class="asection" style="text-decoration: none;">
+            <a href="detallesdisfraz.php?id=<?= $producto['id'] ?>&tipo=<?= $producto['tipo'] ?>" class="asection" style="text-decoration: none;">
                 <section class="card-costume">
                     <?php if (!empty($producto['imagenes'])): ?>
                         <img src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?>" alt="Imagen" width="250" height="300" style="object-fit: cover; border-radius: 3%;">

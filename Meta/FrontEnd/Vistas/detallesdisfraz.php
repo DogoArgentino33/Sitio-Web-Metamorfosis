@@ -1,6 +1,49 @@
 <?php
 session_start();
 include('conexion.php'); // Ajusta la ruta si es necesario
+
+$id = $_GET['id'] ?? null;
+$tipo = $_GET['tipo'] ?? null;
+
+// Validaciones opcionales:
+if (!$id || !$tipo) {
+    // Redirigir o mostrar error si faltan datos
+}
+
+$datos = null;
+
+if ($id && $tipo) {
+    $stmt = $conexion->prepare("
+        SELECT 
+            p.id,
+            p.nombre,
+            p.tipo,
+            p.unidades_disponibles,
+            p.precio,
+            p.fechamod,
+            p.usumod,
+            GROUP_CONCAT(DISTINCT c.nombre_cat SEPARATOR ', ') AS categorias,
+            GROUP_CONCAT(DISTINCT t.talla SEPARATOR ', ') AS tallas,
+            GROUP_CONCAT(DISTINCT tm.nombre_tema SEPARATOR ', ') AS tematicas,
+            (SELECT ip.img FROM img_producto ip WHERE ip.id_producto = p.id LIMIT 1) AS imagenes
+        FROM producto p
+        LEFT JOIN producto_categoria pc ON pc.id_producto = p.id
+        LEFT JOIN categoria c ON c.id = pc.id_categoria
+        LEFT JOIN producto_talla pt ON pt.id_producto = p.id
+        LEFT JOIN talla t ON t.id = pt.id_talla
+        LEFT JOIN producto_tematica ptem ON ptem.id_producto = p.id
+        LEFT JOIN tematica tm ON tm.id = ptem.id_tematica
+        WHERE p.id = ? AND p.tipo = ?
+        GROUP BY p.id
+    ");
+    $stmt->bind_param("ii", $id, $tipo);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+    $datos = $resultado->fetch_assoc();
+    $stmt->close();
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,24 +69,40 @@ include('conexion.php'); // Ajusta la ruta si es necesario
     <main>
         <section class="nav-route">
             <a href="index.php">Inicio / </a>
-            <a href="disfraces.php">Disfraces / </a>
-            <a>Detalles del Disfraz</a>
+            <?php if ($tipo == 1): ?>
+                <a href="disfraces.php">Disfraces / </a>
+            <?php elseif ($tipo == 2): ?>
+                <a href="accesorios.php">Accesorios / </a>
+            <?php endif; ?>
+            <?php if ($tipo == 1): ?>
+                <a href="disfraces.php">Detalles del Disfraz / </a>
+            <?php elseif ($tipo == 2): ?>
+                <a href="accesorios.php">Detalles del Accesorio / </a>
+            <?php endif; ?>
         </section>
         <h2 style="text-align: center; color: black;">Informacion del Disfraz</h2>
 
         <section class="cards-container-costume" id="costume-Container">
-            <section class="card-costume">
-                <img src="../img/Disfraces/niños/historico/niño/pirata_1_niños.jpeg" class="category-image">
-                <h4>Pirata</h4>
-                <p>Tematica: historia</p>
-                <p>Categoria: niño</p>
-                <p>Talle: S</p>
-                <p>Precio: $2000</p>
-                <p>Disponible : Disponible</p>
-                <p>Unidades Disponibles: 3</p>
-                <button type="button" class="btn" onclick="openModal('Pirata')">Alquilar</button>
-            </section>
+            <?php if ($datos): ?>
+                <section class="card-costume">
+                    <img src="uploads/producto/<?= htmlspecialchars($datos['imagenes']) ?>" class="category-image" width="250" height="300" style="object-fit: cover; border-radius: 3%;">
+                    <h4><?= htmlspecialchars($datos['nombre']) ?></h4>
+                    <p>Temática: <?= htmlspecialchars($datos['tematicas']) ?></p>
+                    <p>Categoría: <?= htmlspecialchars($datos['categorias']) ?></p>
+                    <?php if ($tipo == 1): ?>
+                        <p>Talles: <?= htmlspecialchars($datos['tallas']) ?></p>
+                    <?php endif; ?>
+                    <p>Precio: $<?= htmlspecialchars($datos['precio']) ?></p>
+                    <p>Disponible: <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>
+                    <p>Unidades Disponibles: <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>
+                    <button type="button" class="btn" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
+                </section>
+            <?php else: ?>
+                <p>No se encontró información del producto.</p>
+            <?php endif; ?>
         </section>
+
+
     </main>
 
     <section id="rentalModal" class="modal">
@@ -123,9 +182,19 @@ include('conexion.php'); // Ajusta la ruta si es necesario
                 return;
             }
 
+            const card = document.querySelector('.card-costume');
+            const theme = card.querySelector('p:nth-of-type(1)').innerText.replace('Temática: ', '');
+            const category = card.querySelector('p:nth-of-type(2)').innerText.replace('Categoría: ', '');
+            const stock = card.querySelector('p:nth-of-type(<?= $tipo == 1 ? 5 : 4 ?>)').innerText.replace('Unidades Disponibles: ', '');
+
             document.getElementById('rentalModal').style.display = 'block';
             document.getElementById('costume').value = costumeName;
+            document.getElementById('theme').value = theme;
+            document.getElementById('category').value = category;
+            document.getElementById('stock').value = stock;
         }
+
+
 
 
 
