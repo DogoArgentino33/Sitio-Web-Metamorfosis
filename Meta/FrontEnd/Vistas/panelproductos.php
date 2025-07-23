@@ -90,6 +90,17 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 </thead>
                 <tbody>
                 <?php
+                    $por_pagina = 10;
+                    $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+                    $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
+
+                    $total_sql = "SELECT COUNT(DISTINCT p.id) AS total FROM producto p";
+                    $total_stmt = $conexion->prepare($total_sql);
+                    $total_stmt->execute();
+                    $total_resultado = $total_stmt->get_result()->fetch_assoc();
+                    $total_registros = $total_resultado['total'];
+                    $total_paginas = ceil($total_registros / $por_pagina);
+
                     $sql = "
                         SELECT 
                             p.id,
@@ -111,10 +122,12 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         LEFT JOIN producto_tematica ptem ON ptem.id_producto = p.id
                         LEFT JOIN tematica tm ON tm.id = ptem.id_tematica
                         GROUP BY p.id
-                        ORDER BY p.id;
+                        ORDER BY p.id
+                        LIMIT ?, ?;
                         ";
 
-                   $stmt = $conexion->prepare($sql);
+                    $stmt = $conexion->prepare($sql);
+                    $stmt->bind_param("ii", $inicio, $por_pagina);
 
                     if (!$stmt) {
                         die("Error en prepare: " . $conexion->error);
@@ -178,12 +191,19 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
     <section>
         <ul class="pagination">
-            <li><a href="#">&laquo; </a></li>
-            <li class="active"><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">...</a></li>  
-            <li><a href="#"> &raquo;</a></li>
+            <?php if ($pagina > 1): ?>
+                <li><a href="?pagina=<?= $pagina - 1 ?>">&laquo;</a></li>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                <li <?= ($i == $pagina) ? 'class="active"' : '' ?>>
+                    <a href="?pagina=<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if ($pagina < $total_paginas): ?>
+                <li><a href="?pagina=<?= $pagina + 1 ?>">&raquo;</a></li>
+            <?php endif; ?>
         </ul>
     </section>
 

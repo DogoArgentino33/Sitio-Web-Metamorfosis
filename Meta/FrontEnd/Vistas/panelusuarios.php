@@ -68,7 +68,18 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                 </thead>
                 <tbody>
                 <?php
-                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario ORDER BY id");
+                    $por_pagina = 10; // cantidad de registros por página
+                    $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+                    $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
+
+                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM usuario");
+                    $total_stmt->execute();
+                    $total_resultado = $total_stmt->get_result()->fetch_assoc();
+                    $total_registros = $total_resultado['total'];
+                    $total_paginas = ceil($total_registros / $por_pagina);
+
+                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario ORDER BY id LIMIT ?, ?");
+                    $stmt->bind_param("ii", $inicio, $por_pagina);
                     $stmt->execute(); 
                     $result = $stmt->get_result();
     
@@ -160,12 +171,19 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
     <section>
         <ul class="pagination">
-            <li><a href="#">&laquo; </a></li>
-            <li class="active"><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">...</a></li>  
-            <li><a href="#"> &raquo;</a></li>
+            <?php if($pagina > 1): ?>
+                <li><a href="?pagina=<?= $pagina - 1 ?>">&laquo;</a></li>
+            <?php endif; ?>
+
+            <?php for($i = 1; $i <= $total_paginas; $i++): ?>
+                <li <?= ($i == $pagina) ? 'class="active"' : '' ?>>
+                    <a href="?pagina=<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if($pagina < $total_paginas): ?>
+                <li><a href="?pagina=<?= $pagina + 1 ?>">&raquo;</a></li>
+            <?php endif; ?>
         </ul>
     </section>
 
