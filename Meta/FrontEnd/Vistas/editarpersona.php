@@ -1,65 +1,16 @@
-<?php include('auth.php'); include('conexion.php');
+<?php 
+include('auth.php'); 
+include('conexion.php');
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) { echo "ID de persona no válido."; exit;}
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) { 
+    echo "ID de persona no válido."; 
+    exit;
+}
 
 $id = intval($_GET['id']);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_GET['id']; // o $_POST['id'], según cómo lo llames
-    $sql_persona = "SELECT * FROM persona WHERE id = $id";
-    $result_persona = mysqli_query($conexion, $sql_persona);
-    $persona = mysqli_fetch_assoc($result_persona);
-    $nombre = $_POST['nombre'] ?? $persona['nombre'];
-    $apellido = $_POST['apellido'] ?? $persona['apellido'];
-    $dni = $_POST['dni'] ?? $persona['dni'];
-    $fec_nac = $_POST['fec_nac'] ?? $persona['fec_nac'];
-    $pais = $_POST['pais'];
-    $provincia = $_POST['provincia'];
-    $genero = $_POST['genero'] ?? $persona['genero'];
-    $calle = $_POST['calle'];
-    $altura = intval($_POST['altura']);
-    $barrio = $_POST['barrio'];
-    $departamento = $_POST['departamento'];
-    $municipio = $_POST['municipio'];
-    $localidad = $_POST['localidad'];
-    $fechamod = date('Y-m-d H:i:s');
-    $usumod = $_SESSION['nom_usu'] ?? 'sistema';
-
-    // Manejo de imagen
-    if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
-        $tmp_name = $_FILES['nueva_imagen']['tmp_name'];
-        $nombre_archivo = basename($_FILES['nueva_imagen']['name']);
-        $destino = 'uploads/persona/' . uniqid() . '_' . $nombre_archivo;
-
-        if (move_uploaded_file($tmp_name, $destino)) {
-            $stmt = $conexion->prepare("UPDATE persona SET pais=?, provincia=?, img=?, calle=?, altura=?, barrio=?, departamento=?, municipio=?, localidad=?, fechamod=?, usumod=? WHERE id=?");
-            $stmt->bind_param("ssssissssssi", 
-                $pais, $provincia, $destino, $calle, $altura, 
-                $barrio, $departamento, $municipio, $localidad, 
-                $fechamod, $usumod, $id);
-        } else {
-            echo "Error al subir la imagen.";
-            exit;
-        }
-    } else {
-            $stmt = $conexion->prepare("UPDATE persona SET pais=?, provincia=?, img=?, calle=?, altura=?, barrio=?, departamento=?, municipio=?, localidad=?, fechamod=?, usumod=? WHERE id=?");
-            $stmt->bind_param("ssssissssssi", 
-                $pais, $provincia, $destino, $calle, $altura, 
-                $barrio, $departamento, $municipio, $localidad, 
-                $fechamod, $usumod, $id);
-    }
-
-    if ($stmt->execute()) {
-        header("Location: panelpersonas.php?personamodificada=ok");
-        exit;
-    } else {
-        echo "Error al actualizar la persona.";
-    }
-}
-
-
+// Obtener datos actuales de la persona
 $stmt = $conexion->prepare("SELECT * FROM persona WHERE id = ?");
-
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -70,8 +21,113 @@ if ($resultado->num_rows === 0) {
 }
 
 $persona = $resultado->fetch_assoc();
-$ruta_imagen = $persona['img']; // imagen actual
+$ruta_imagen_actual = $persona['img']; // Ruta actual de la imagen
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre       = $_POST['nombre'] ?? $persona['nombre'];
+    $apellido     = $_POST['apellido'] ?? $persona['apellido'];
+    $dni          = $_POST['dni'] ?? $persona['dni'];
+    $fec_nac      = $_POST['fec_nac'] ?? $persona['fec_nac'];
+    $pais         = $_POST['pais'];
+    $provincia    = $_POST['provincia'];
+    $genero       = $_POST['genero'] ?? $persona['genero'];
+    $calle        = $_POST['calle'];
+    $altura       = intval($_POST['altura']);
+    $barrio       = $_POST['barrio'];
+    $departamento = $_POST['departamento'];
+    $municipio    = $_POST['municipio'];
+    $localidad    = $_POST['localidad'];
+    $fechamod     = date('Y-m-d H:i:s');
+    $usumod       = $_SESSION['nom_usu'] ?? 'sistema';
+
+    $errores = [];
+    $ruta_nueva_img = $ruta_imagen_actual;
+
+    // Procesar imagen si se sube una nueva
+    if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
+        $foto = $_FILES['nueva_imagen'];
+        $permitidos = ['image/jpeg', 'image/png'];
+        $tam_max = 4 * 1024 * 1024; // 4MB
+
+        if (!in_array($foto['type'], $permitidos)) {
+            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
+        } elseif ($foto['size'] > $tam_max) {
+            $errores[] = "La imagen no debe superar los 4MB.";
+        } else {
+            $tmp_name = $foto['tmp_name'];
+            list($ancho_orig, $alto_orig) = getimagesize($tmp_name);
+            $ancho_max = 1280;
+            $alto_max = 1280;
+
+            // Redimensionamiento proporcional
+            $ratio_orig = $ancho_orig / $alto_orig;
+            $ratio_dest = $ancho_max / $alto_max;
+
+            if ($ratio_orig > $ratio_dest) {
+                $ancho_final = $ancho_max;
+                $alto_final = intval($ancho_max / $ratio_orig);
+            } else {
+                $alto_final = $alto_max;
+                $ancho_final = intval($alto_max * $ratio_orig);
+            }
+
+            // Crear imagen blanca base
+            $imagen_final = imagecreatetruecolor($ancho_max, $alto_max);
+            $blanco = imagecolorallocate($imagen_final, 255, 255, 255);
+            imagefill($imagen_final, 0, 0, $blanco);
+
+            // Cargar imagen original
+            $origen = null;
+            if ($foto['type'] === 'image/jpeg') {
+                $origen = imagecreatefromjpeg($tmp_name);
+            } elseif ($foto['type'] === 'image/png') {
+                $origen = imagecreatefrompng($tmp_name);
+            }
+
+            if ($origen) {
+                $x = intval(($ancho_max - $ancho_final) / 2);
+                $y = intval(($alto_max - $alto_final) / 2);
+
+                imagecopyresampled($imagen_final, $origen, $x, $y, 0, 0, $ancho_final, $alto_final, $ancho_orig, $alto_orig);
+
+                $nombre_img = uniqid('persona_') . '.jpg';
+                $ruta_destino = 'uploads/persona/' . $nombre_img;
+
+                if (imagejpeg($imagen_final, $ruta_destino, 90)) {
+                    $ruta_nueva_img = $ruta_destino;
+                } else {
+                    $errores[] = "No se pudo guardar la imagen procesada.";
+                }
+
+                imagedestroy($origen);
+                imagedestroy($imagen_final);
+            } else {
+                $errores[] = "Error al procesar la imagen.";
+            }
+        }
+    }
+
+    // Si no hay errores, actualizar la base
+    if (empty($errores)) {
+        $stmt = $conexion->prepare("UPDATE persona SET pais=?, provincia=?, img=?, calle=?, altura=?, barrio=?, departamento=?, municipio=?, localidad=?, fechamod=?, usumod=? WHERE id=?");
+        $stmt->bind_param("ssssissssssi", 
+            $pais, $provincia, $ruta_nueva_img, $calle, $altura, 
+            $barrio, $departamento, $municipio, $localidad, 
+            $fechamod, $usumod, $id
+        );
+
+        if ($stmt->execute()) {
+            header("Location: panelpersonas.php?personamodificada=ok");
+            exit;
+        } else {
+            echo "Error al actualizar la persona.";
+        }
+    } else {
+        foreach ($errores as $error) {
+            echo "<p style='color:red;'>$error</p>";
+        }
+    }
+}
 ?>
 
 <!-- Función del mapa actualizado -->
