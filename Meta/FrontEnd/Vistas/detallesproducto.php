@@ -44,7 +44,6 @@ if ($id && $tipo) {
     $stmt->close();
 }
 
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -53,13 +52,14 @@ if ($id && $tipo) {
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../Estilos/index.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="../Estilos/detallesproducto.css">
     <link rel="stylesheet" href="../Estilos/modales.css">
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    
+
     <script>
         const usuarioLogueado = <?= isset($_SESSION['id']) ? 'true' : 'false' ?>;
     </script>
@@ -68,6 +68,7 @@ if ($id && $tipo) {
 <body>
     <?php include('cabecera.php'); ?>
     <main>
+        <!-- NAV -->
         <section class="nav-route">
             <a href="index.php">Inicio / </a>
             <?php if ($tipo == 1): ?>
@@ -82,25 +83,37 @@ if ($id && $tipo) {
             <?php endif; ?>
         </section>
 
+        <!-- Determinando el tipo del producto -->
         <?php if ($tipo == 1): ?>
             <h2 style="text-align: center; color: black;">Informacion del Disfraz</h2>
         <?php elseif ($tipo == 2): ?>
             <h2 style="text-align: center; color: black;">Informacion del Accesorio</h2>
         <?php endif; ?>
 
-        <section class="cards-container-costume" id="costume-Container">
+        <!-- Contenedor -->
+        <section class="contenedor-producto">
             <?php if ($datos): ?>
                 <section class="card-costume">
-                    <img src="uploads/producto/<?= htmlspecialchars($datos['imagenes']) ?>" class="category-image" width="250" height="300" style="object-fit: cover; border-radius: 3%;">
-                    <h4><?= htmlspecialchars($datos['nombre']) ?></h4>
-                    <p>Temática: <?= htmlspecialchars($datos['tematicas']) ?></p>
-                    <p>Categoría: <?= htmlspecialchars($datos['categorias']) ?></p>
+                    <img src="uploads/producto/<?= htmlspecialchars($datos['imagenes']) ?>">
+
+                    <!-- texto -->
+
+                    <h4><?= htmlspecialchars($datos['nombre']) ?></h4>                                      <!-- Nombre  -->
+
+                    <p> <strong> Temática:</strong> <?= htmlspecialchars($datos['tematicas']) ?></p>        <!-- Tematica -->
+                    
+                    <p> <strong> Categoría:</strong> <?= htmlspecialchars($datos['categorias']) ?></p>      <!-- Categoria  -->
+                    
                     <?php if ($tipo == 1): ?>
-                        <p>Talles: <?= htmlspecialchars($datos['tallas']) ?></p>
+                        <p> <strong> Talles:</strong> <?= htmlspecialchars($datos['tallas']) ?></p>         <!-- Talles  -->
                     <?php endif; ?>
-                    <p>Precio: $<?= htmlspecialchars($datos['precio']) ?></p>
-                    <p>Disponible: <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>
-                    <p>Unidades Disponibles: <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>
+
+                    <p> <strong> Precio:</strong> $<?= htmlspecialchars($datos['precio']) ?></p>                               <!--  Precio -->
+
+                    <p> <strong> Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>   <!--  Disponibilidad -->
+
+                    <p> <strong>Unidades Disponibles:</strong> <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>    <!--  Unidades -->
+
                     <button type="button" class="btn" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
                 </section>
             <?php else: ?>
