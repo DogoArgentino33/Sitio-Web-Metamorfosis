@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    
+
     // Validación y procesamiento de imagen
     if ($img_perfil && $img_perfil['error'] === 0) {
         $permitidos = ['image/jpeg', 'image/png'];

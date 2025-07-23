@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     }
 
     $max_imagenes = 5;
+    $tipos_permitidos = ['image/jpeg', 'image/png'];
 
     if (empty($_FILES['imagenes']['name'][0])) {
         $errores[] = 'Debe subir al menos una imagen del producto.';
@@ -67,6 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         $errores[] = "Solo se permite un máximo de $max_imagenes imágenes.";
     }
 
+    // Validar imágenes antes de continuar
+    foreach ($_FILES['imagenes']['tmp_name'] as $key => $tmp_name) {
+        $nombre_original = $_FILES['imagenes']['name'][$key];
+        $tipo_archivo = $_FILES['imagenes']['type'][$key];
+        $tamano = $_FILES['imagenes']['size'][$key];
+        $error = $_FILES['imagenes']['error'][$key];
+
+        if ($error !== UPLOAD_ERR_OK) {
+            $errores[] = "Error en la subida de la imagen $nombre_original.";
+        } elseif (!in_array($tipo_archivo, $tipos_permitidos)) {
+            $errores[] = "Tipo de archivo no permitido para la imagen $nombre_original. Solo se permiten JPG y PNG.";
+        } elseif ($tamano > 4 * 1024 * 1024) {
+            $errores[] = "La imagen $nombre_original supera los 4MB.";
+        }
+    }
 
     if (count($errores) === 0) 
     {
@@ -94,43 +110,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             $stmtTema->execute();
 
             // 5. Insertar Imagenes
-            if (!empty($_FILES['imagenes']['name'][0])) {
-                $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
-                $directorio_subida = 'uploads/producto/'; 
+             $directorio_subida = 'uploads/producto/';
+            if (!is_dir($directorio_subida)) {
+                mkdir($directorio_subida, 0755, true);
+            }
 
-                // Asegúrate de que la carpeta exista
-                if (!is_dir($directorio_subida)) {
-                    mkdir($directorio_subida, 0755, true);
+            foreach ($_FILES['imagenes']['tmp_name'] as $key => $tmp_name) {
+                $tipo_archivo = $_FILES['imagenes']['type'][$key];
+
+                list($ancho_orig, $alto_orig) = getimagesize($tmp_name);
+                $ancho_max = 1280;
+                $alto_max = 1280;
+
+                // Calcular proporciones
+                $ratio_orig = $ancho_orig / $alto_orig;
+                $ratio_destino = $ancho_max / $alto_max;
+
+                if ($ratio_orig > $ratio_destino) {
+                    $ancho_redim = $ancho_max;
+                    $alto_redim = intval($ancho_max / $ratio_orig);
+                } else {
+                    $alto_redim = $alto_max;
+                    $ancho_redim = intval($alto_max * $ratio_orig);
                 }
 
-                foreach ($_FILES['imagenes']['tmp_name'] as $key => $tmp_name) {
-                    $nombre_original = $_FILES['imagenes']['name'][$key];
-                    $tipo_archivo = $_FILES['imagenes']['type'][$key];
-                    $error = $_FILES['imagenes']['error'][$key];
-                    $tamano = $_FILES['imagenes']['size'][$key];
+                // Crear lienzo en blanco
+                $imagen_final = imagecreatetruecolor($ancho_max, $alto_max);
+                $blanco = imagecolorallocate($imagen_final, 255, 255, 255);
+                imagefill($imagen_final, 0, 0, $blanco);
 
-                    if ($error === UPLOAD_ERR_OK) {
-                        if (in_array($tipo_archivo, $tipos_permitidos)) {
-                            // Crear un nombre único para evitar sobreescritura
-                            $extension = pathinfo($nombre_original, PATHINFO_EXTENSION);
-                            $nombre_nuevo = uniqid('img_') . '.' . $extension;
-                            $ruta_destino = $directorio_subida . $nombre_nuevo;
+                // Crear imagen fuente
+                $origen = null;
+                if ($tipo_archivo === 'image/jpeg') {
+                    $origen = imagecreatefromjpeg($tmp_name);
+                } elseif ($tipo_archivo === 'image/png') {
+                    $origen = imagecreatefrompng($tmp_name);
+                }
 
-                            if (move_uploaded_file($tmp_name, $ruta_destino)) {
-                                // Insertar en la tabla img_producto
-                                $tipo_producto = intval($tipo); // 1 o 2 ya lo tienes
-                                $stmtImg = $conexion->prepare("INSERT INTO img_producto (tipo, img, id_producto) VALUES (?, ?, ?)");
-                                $stmtImg->bind_param("isi", $tipo_producto, $nombre_nuevo, $id_producto);
-                                $stmtImg->execute();
-                            } else {
-                                $errores[] = "Error al mover la imagen $nombre_original.";
-                            }
-                        } else {
-                            $errores[] = "Tipo de archivo no permitido para la imagen $nombre_original.";
-                        }
+                if ($origen) {
+                    $pos_x = intval(($ancho_max - $ancho_redim) / 2);
+                    $pos_y = intval(($alto_max - $alto_redim) / 2);
+
+                    imagecopyresampled(
+                        $imagen_final,
+                        $origen,
+                        $pos_x, $pos_y, 0, 0,
+                        $ancho_redim, $alto_redim,
+                        $ancho_orig, $alto_orig
+                    );
+
+                    $nombre_nuevo = uniqid('img_') . '.jpg';
+                    $ruta_destino = $directorio_subida . $nombre_nuevo;
+
+                    if (imagejpeg($imagen_final, $ruta_destino, 90)) {
+                        $tipo_producto = intval($tipo);
+                        $stmtImg = $conexion->prepare("INSERT INTO img_producto (tipo, img, id_producto) VALUES (?, ?, ?)");
+                        $stmtImg->bind_param("isi", $tipo_producto, $nombre_nuevo, $id_producto);
+                        $stmtImg->execute();
                     } else {
-                        $errores[] = "Error en la subida de la imagen $nombre_original.";
+                        $errores[] = "No se pudo guardar la imagen $nombre_nuevo.";
                     }
+
+                    imagedestroy($origen);
+                    imagedestroy($imagen_final);
+                } else {
+                    $errores[] = "Error al procesar la imagen.";
                 }
             }
 
@@ -145,7 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     }
 }
 ?>
-
 
 <!-- Inicio del html -->
 <!DOCTYPE html>
