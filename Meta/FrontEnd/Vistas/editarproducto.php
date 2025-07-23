@@ -2,20 +2,14 @@
 include('auth.php');
 include('conexion.php');
 
-// Verificar ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     echo "ID de producto no válido.";
     exit;
 }
 
 $id_producto = intval($_GET['id']);
-
-// Obtener datos actuales del producto
-$sql = "SELECT p.*, 
-               pc.id_categoria, 
-               pt.id_talla, 
-               ptm.id_tematica 
-        FROM producto p 
+$sql = "SELECT p.*, pc.id_categoria, pt.id_talla, ptm.id_tematica
+        FROM producto p
         LEFT JOIN producto_categoria pc ON p.id = pc.id_producto
         LEFT JOIN producto_talla pt ON p.id = pt.id_producto
         LEFT JOIN producto_tematica ptm ON p.id = ptm.id_producto
@@ -31,11 +25,10 @@ if ($result->num_rows === 0) {
 }
 
 $producto = $result->fetch_assoc();
-
-// Listados para selects
+// Selects...
 $resultado_categorias = $conexion->query("SELECT id, nombre_cat FROM categoria");
-$resultado_tallas = $conexion->query("SELECT id, talla FROM talla");
-$resultado_tematica = $conexion->query("SELECT id, nombre_tema FROM tematica");
+$resultado_tallas     = $conexion->query("SELECT id, talla FROM talla");
+$resultado_tematica   = $conexion->query("SELECT id, nombre_tema FROM tematica");
 
 $errores = [];
 
@@ -51,91 +44,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_talla     = intval($_POST['talla']);
     $id_tematica  = intval($_POST['tematica']);
 
-    // Validaciones
-    if ($nombre === '' || strlen($nombre) < 3) {
-        $errores[] = 'Nombre inválido.';
-    }
-    if (!in_array($tipo, [1, 2])) {
-        $errores[] = 'Tipo inválido.';
-    }
-    if ($unidades < 0) {
-        $errores[] = 'Unidades no válidas.';
-    }
-    if ($precio < 0) {
-        $errores[] = 'Precio no válido.';
-    }
+    // Validaciones básicas
+    if ($nombre === '' || strlen($nombre) < 3) { $errores[] = 'Nombre inválido.'; }
+    if (!in_array($tipo, [1,2]))            { $errores[] = 'Tipo inválido.'; }
+    if ($unidades < 0)                       { $errores[] = 'Unidades no válidas.'; }
+    if ($precio < 0)                         { $errores[] = 'Precio no válido.'; }
 
-    if (count($errores) === 0) {
-        // 1. Actualizar producto
-        $stmt = $conexion->prepare("UPDATE producto SET nombre = ?, tipo = ?, unidades_disponibles = ?, precio = ?, fechamod = ?, usumod = ? WHERE id = ?");
-        $stmt->bind_param("siidssi", $nombre, $tipo, $unidades, $precio, $fechamod, $usumod, $id_producto);
-        $stmt->execute();
+    // Imagenes
+    $permitidos = ['image/jpeg','image/png'];
+    $tam_max = 4 * 1024 * 1024;
+    $imgs = $_FILES['imagenes'] ?? null;
+    $subirImgs = ($imgs && !empty(array_filter($imgs['name'])));
 
-        // 2. Actualizar relaciones
-        $conexion->query("DELETE FROM producto_categoria WHERE id_producto = $id_producto");
-        $conexion->query("DELETE FROM producto_talla WHERE id_producto = $id_producto");
-        $conexion->query("DELETE FROM producto_tematica WHERE id_producto = $id_producto");
+    if ($subirImgs) {
+        foreach ($imgs['tmp_name'] as $i => $tmp) {
+            $name = $imgs['name'][$i];
+            $type = $imgs['type'][$i];
+            $err  = $imgs['error'][$i];
+            $size = $imgs['size'][$i];
 
-        $conexion->query("INSERT INTO producto_categoria (id_producto, id_categoria) VALUES ($id_producto, $id_categoria)");
-        $conexion->query("INSERT INTO producto_talla (id_producto, id_talla) VALUES ($id_producto, $id_talla)");
-        $conexion->query("INSERT INTO producto_tematica (id_producto, id_tematica) VALUES ($id_producto, $id_tematica)");
-
-        // 3. Subida de nueva imagen si existe
-// 3. Subida de nueva imagen si existe
-// 3. Subida de nueva imagen si existe
-if (isset($_FILES['imagenes']) && !empty(array_filter($_FILES['imagenes']['name']))) {
-    $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
-    $directorio_subida = 'uploads/producto/';
-
-    if (!is_dir($directorio_subida)) {
-        mkdir($directorio_subida, 0755, true);
-    }
-
-    // Eliminar imágenes anteriores
-    $query_imagen = $conexion->query("SELECT img FROM img_producto WHERE id_producto = $id_producto");
-    while ($img = $query_imagen->fetch_assoc()) {
-        $ruta_imagen = $directorio_subida . $img['img'];
-        if (file_exists($ruta_imagen)) {
-            unlink($ruta_imagen);
-        }
-    }
-
-    // Borrar registros de la base
-    $conexion->query("DELETE FROM img_producto WHERE id_producto = $id_producto");
-
-    // Subir nuevas imágenes
-    foreach ($_FILES['imagenes']['tmp_name'] as $key => $tmp_name) {
-        $nombre_original = $_FILES['imagenes']['name'][$key];
-        $tipo_archivo = $_FILES['imagenes']['type'][$key];
-
-        if (in_array($tipo_archivo, $tipos_permitidos)) {
-            $extension = pathinfo($nombre_original, PATHINFO_EXTENSION);
-            $nombre_nuevo = uniqid('img_') . '.' . $extension;
-            $ruta_destino = $directorio_subida . $nombre_nuevo;
-
-            if (move_uploaded_file($tmp_name, $ruta_destino)) {
-                $tipo_producto = intval($tipo);
-                $stmtImg = $conexion->prepare("INSERT INTO img_producto (tipo, img, id_producto) VALUES (?, ?, ?)");
-                $stmtImg->bind_param("isi", $tipo_producto, $nombre_nuevo, $id_producto);
-                $stmtImg->execute();
-            } else {
-                $errores[] = "Error al subir $nombre_original.";
+            if ($err !== UPLOAD_ERR_OK) {
+                $errores[] = "Error al subir '$name'.";
+            } elseif (!in_array($type, $permitidos)) {
+                $errores[] = "Formato no permitido: '$name'.";
+            } elseif ($size > $tam_max) {
+                $errores[] = "La imagen '$name' supera los 4MB.";
             }
-        } else {
-            $errores[] = "Tipo de archivo no permitido: $nombre_original.";
         }
     }
-}
 
+    if (empty($errores)) {
+        // 1. Actualizar producto
+        $stmtUp = $conexion->prepare("UPDATE producto SET nombre=?,tipo=?,unidades_disponibles=?,precio=?,fechamod=?,usumod=? WHERE id=?");
+        $stmtUp->bind_param("siidssi", $nombre, $tipo, $unidades, $precio, $fechamod, $usumod, $id_producto);
+        $stmtUp->execute();
 
+        // 2. Relaciones
+        $conexion->query("DELETE FROM producto_categoria WHERE id_producto=$id_producto");
+        $conexion->query("DELETE FROM producto_talla WHERE id_producto=$id_producto");
+        $conexion->query("DELETE FROM producto_tematica WHERE id_producto=$id_producto");
+        $conexion->query("INSERT INTO producto_categoria VALUES($id_producto,$id_categoria)");
+        $conexion->query("INSERT INTO producto_talla VALUES($id_producto,$id_talla)");
+        $conexion->query("INSERT INTO producto_tematica VALUES($id_producto,$id_tematica)");
 
+        // 3. Subir nuevas imágenes
+        if ($subirImgs) {
+            $dir = 'uploads/producto/';
+            if (!is_dir($dir)) mkdir($dir,0755,true);
 
-        // 4. Confirmación
+            // Borrar anteriores
+            $qold = $conexion->query("SELECT img FROM img_producto WHERE id_producto=$id_producto");
+            while ($r = $qold->fetch_assoc()) {
+                $f = $dir . $r['img'];
+                if (file_exists($f)) unlink($f);
+            }
+            $conexion->query("DELETE FROM img_producto WHERE id_producto=$id_producto");
+
+            // Procesar nuevas
+            foreach ($imgs['tmp_name'] as $i => $tmp_name) {
+                $orig = $imgs['name'][$i];
+                $type = $imgs['type'][$i];
+                list($ow,$oh) = getimagesize($tmp_name);
+
+                // Proporcional
+                $mw=1280; $mh=1280;
+                $rorig = $ow/$oh; $rdest = $mw/$mh;
+                if ($rorig > $rdest) {
+                    $nw = $mw; $nh=intval($mw/$rorig);
+                } else {
+                    $nh = $mh; $nw=intval($mh*$rorig);
+                }
+
+                // Nuevo lienzo
+                $img_n = imagecreatetruecolor($mw,$mh);
+                $white = imagecolorallocate($img_n,255,255,255);
+                imagefill($img_n,0,0,$white);
+
+                // Cargar
+                $src = ($type==='image/png')?imagecreatefrompng($tmp_name):imagecreatefromjpeg($tmp_name);
+
+                // Resample y centrar
+                $x = intval(($mw-$nw)/2);
+                $y = intval(($mh-$nh)/2);
+                imagecopyresampled($img_n,$src,$x,$y,0,0,$nw,$nh,$ow,$oh);
+
+                $new = uniqid('img_').'.jpg';
+                $dest = $dir.$new;
+                imagejpeg($img_n,$dest,90);
+                imagedestroy($src);
+                imagedestroy($img_n);
+
+                // Insertar en BD
+                $stmtI = $conexion->prepare("INSERT INTO img_producto(tipo,img,id_producto) VALUES(?,?,?)");
+                $stmtI->bind_param("isi", $tipo, $new, $id_producto);
+                $stmtI->execute();
+            }
+        }
+
+        // 4. Redirigir
         header("Location: panelproductos.php?productomodificado=ok");
         exit;
+    } else {
+        foreach ($errores as $e) echo "<p style='color:red;'>$e</p>";
     }
 }
-
 ?>
 
 
