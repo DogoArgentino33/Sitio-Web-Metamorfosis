@@ -105,22 +105,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validación y procesamiento de imagen
     // Validación imagen
-    if ($foto && $foto['error'] === 0) {
+    if ($img_perfil && $img_perfil['error'] === 0) {
         $permitidos = ['image/jpeg', 'image/png'];
-        if (!in_array($foto['type'], $permitidos)) {
+        if (!in_array($img_perfil['type'], $permitidos)) {
             $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
-        } elseif ($foto['size'] > 4 * 1024 * 1024) {
+        } elseif ($img_perfil['size'] > 4 * 1024 * 1024) {
             $errores[] = "La imagen no debe superar los 4MB.";
         } else {
             // Redimensionar si es necesario
-            $origen_temp = $foto['tmp_name'];
+            $origen_temp = $img_perfil['tmp_name'];
             list($ancho, $alto) = getimagesize($origen_temp);
             $ancho_nuevo = 1280;
             $alto_nuevo = 1280;
 
             $origen = null;
-            if ($foto['type'] == 'image/jpeg') $origen = imagecreatefromjpeg($origen_temp);
-            elseif ($foto['type'] == 'image/png') $origen = imagecreatefrompng($origen_temp);
+            if ($img_perfil['type'] == 'image/jpeg') $origen = imagecreatefromjpeg($origen_temp);
+            elseif ($img_perfil['type'] == 'image/png') $origen = imagecreatefrompng($origen_temp);
 
             if ($origen) {
                 $imagen_final = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
