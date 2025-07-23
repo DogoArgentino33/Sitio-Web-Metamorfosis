@@ -96,39 +96,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Validación y procesamiento de imagen
-    // Validación imagen
-    if ($foto && $foto['error'] === 0) {
+    if ($foto && $foto['error'] === UPLOAD_ERR_OK) {
         $permitidos = ['image/jpeg', 'image/png'];
-        if (!in_array($foto['type'], $permitidos)) {
+        $tipoImagen = mime_content_type($foto['tmp_name']);
+
+        if (!in_array($tipoImagen, $permitidos)) {
             $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
         } elseif ($foto['size'] > 4 * 1024 * 1024) {
             $errores[] = "La imagen no debe superar los 4MB.";
         } else {
-            // Redimensionar si es necesario
-            $origen_temp = $foto['tmp_name'];
-            list($ancho, $alto) = getimagesize($origen_temp);
-            $ancho_nuevo = 1280;
-            $alto_nuevo = 1280;
+            // Obtener dimensiones originales
+            list($ancho, $alto) = getimagesize($foto['tmp_name']);
 
-            $origen = null;
-            if ($foto['type'] == 'image/jpeg') $origen = imagecreatefromjpeg($origen_temp);
-            elseif ($foto['type'] == 'image/png') $origen = imagecreatefrompng($origen_temp);
+            // Definir dimensiones máximas
+            $maxWidth = 1280;
+            $maxHeight = 1280;
+
+            // Mantener proporción al redimensionar
+            $ratio = min($maxWidth / $ancho, $maxHeight / $alto, 1);
+            $anchoNuevo = (int)($ancho * $ratio);
+            $altoNuevo = (int)($alto * $ratio);
+
+            // Crear imagen original según tipo
+            switch ($tipoImagen) {
+                case 'image/jpeg':
+                    $origen = imagecreatefromjpeg($foto['tmp_name']);
+                    break;
+                case 'image/png':
+                    $origen = imagecreatefrompng($foto['tmp_name']);
+                    break;
+                default:
+                    $origen = null;
+                    break;
+            }
 
             if ($origen) {
-                $imagen_final = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
-                $blanco = imagecolorallocate($imagen_final, 255, 255, 255);
-                imagefill($imagen_final, 0, 0, $blanco);
-                imagecopyresampled($imagen_final, $origen, 0, 0, 0, 0, $ancho_nuevo, $alto_nuevo, $ancho, $alto);
+                // Crear lienzo blanco y redimensionar con fondo blanco
+                $imagenFinal = imagecreatetruecolor($anchoNuevo, $altoNuevo);
+                $blanco = imagecolorallocate($imagenFinal, 255, 255, 255);
+                imagefill($imagenFinal, 0, 0, $blanco);
 
-                $nombre_archivo = uniqid() . ".jpg";
-                $ruta = "uploads/persona/" . $nombre_archivo;
+                imagecopyresampled($imagenFinal, $origen, 0, 0, 0, 0, $anchoNuevo, $altoNuevo, $ancho, $alto);
 
-                if (!imagejpeg($imagen_final, $ruta, 90)) {
+                // Generar nombre único y guardar como JPEG
+                $nombreArchivo = uniqid('img_', true) . '.jpg';
+                $ruta = "uploads/persona/" . $nombreArchivo;
+
+                if (!imagejpeg($imagenFinal, $ruta, 90)) {
                     $errores[] = "No se pudo guardar la imagen.";
                 }
 
                 imagedestroy($origen);
-                imagedestroy($imagen_final);
+                imagedestroy($imagenFinal);
             } else {
                 $errores[] = "Error al procesar la imagen.";
             }
@@ -136,12 +155,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $errores[] = "Debe subir o tomar una imagen.";
     }
-    
+
+    // Extraer error específico relacionado con imagen
     foreach ($errores as $error) {
-        if (strpos($error, 'imagen') !== false || strpos($error, 'formato') !== false) {
+        if (stripos($error, 'imagen') !== false || stripos($error, 'formato') !== false) {
             $error_img = $error;
         }
     }
+
 
     if (count($errores) === 0) {
         // Escapar campos
