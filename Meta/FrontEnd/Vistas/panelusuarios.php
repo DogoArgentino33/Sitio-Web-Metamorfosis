@@ -30,7 +30,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/panelusuario.css">
+    <link rel="stylesheet" href="../Estilos/panelgeneral.css">
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -133,14 +133,14 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                                 }
                             }
                         ?>
-                        <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="add-panel" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
-                        <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="add-panel" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
+                        <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
+                        <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
                 
                         <td>
                         
                         <?php if($usuario['estadousu'] == true): ?>
                             <!-- ESTO DE ABAJO TIENE UN ONCLICK QUE LLEVA A MODAL -->
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar" class="add-panel"><i class="bi bi-trash"></i></a>
+                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                 </a>
 
                         <?php else: ?>

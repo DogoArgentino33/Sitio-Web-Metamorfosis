@@ -51,7 +51,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/panelproducto.css">
+    <link rel="stylesheet" href="../Estilos/panelgeneral.css">
      <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -69,7 +69,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Productos..." onkeyup="filtrarTabla('product')">
                 <div class="btn-add-container">
-                    <button class="add-panel" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
+                    <button class="btn-agregar" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
                 </div>
             </section>
             <table>
@@ -167,10 +167,10 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                                 <td><?= htmlspecialchars($producto['unidades_disponibles']) ?></td>
                                 <td><?= htmlspecialchars($producto['precio']) ?></td>
 
-                                <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Ver"><i class="bi bi-eye"></i></button></a></td>
-                                <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="add-panel" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
+                                <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="ver-btn" title="Ver"><i class="bi bi-eye"></i></button></a></td>
+                                <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="editar-btn" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
                                 <td>
-                                    <a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" id="btn-eliminar" class="add-panel"><i class="bi bi-trash"></i></a>
+                                    <a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                                 </td>
                                 
                             </tr>
@@ -304,6 +304,53 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-usuariomodificado
+<!-- Funcion SweetAlert: Agregar, modificar, Eliminar-->
+<script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('productoagregado') === 'ok') //Para agregado
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Producto agregado con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+  //3. Al refrescar la página, no volverá a salir el mensaje
+    history.replaceState({}, '', location.pathname);
+  }
+  if (p.get('productomodificado') === 'ok') //Para modificado
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'Producto modificado con éxito',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  } 
+  if (p.get('productoeliminado') == 'ok') //Para eliminado
+  {
+    Swal.fire({
+        position: 'top',
+        icon:  'success',
+        title: 'Producto eliminado con éxito',
+        showConfirmButton: false,
+        timer: 1500
+    });
+    history.replaceState({},'', location.pathname);
+  }
+  
+
+});
+
+</script>
+
 
 </html>

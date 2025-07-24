@@ -63,8 +63,47 @@ h1 {
     font-size: 16px;
 }
 
-/* Botón de acción */
-.add-panel {
+/* Botónes de accion */
+
+/* Ver */
+td > a > .ver-btn
+{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+td > a > .ver-btn:hover
+{
+    background-color: #0064cf;
+}
+
+/* Editar */
+td > a > .editar-btn
+{
+    background-color: #16a128;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+td > a > .editar-btn:hover
+{
+    background-color: #0e6b1a;
+}
+
+/* Eliminar */
+#btn-eliminar {
     background-color: #d12e3b;
     color: white;
     border: none;
@@ -75,8 +114,26 @@ h1 {
     transition: background-color 0.3s ease;
 }
 
-.add-panel:hover {
+#btn-eliminar:hover {
     background-color: #a1222d;
+}
+
+/* Agregar */
+.btn-agregar
+{
+    background-color: #16a128;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-agregar:hover
+{
+    background-color: #0e6b1a;
 }
 
 /* Tabla */
@@ -99,16 +156,27 @@ th {
     color: #471e1a;
 }
 
-/* Imagen de producto */
+/* Imagen */
 td img {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 50%;
     border: 2px solid #d12e3b;
 }
 
-/* Mensaje si no hay productos */
+/* Enlace de activar */
+a[href*="tipo=4"] {
+    color: #28a745;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a[href*="tipo=4"]:hover {
+    text-decoration: underline;
+}
+
+/* Mensaje de no usuarios */
 table td[colspan] {
     text-align: center;
     padding: 30px 0;
@@ -146,4 +214,21 @@ table td[colspan] {
     background-color: #d12e3b;
     color: white;
     font-weight: bold;
+}
+
+/* Botón "Activar" si está desactivado */
+a[href*="tipo=4"] {
+    display: inline-block;
+    background-color: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+a[href*="tipo=4"]:hover {
+    background-color: #1e7e34;
 }
