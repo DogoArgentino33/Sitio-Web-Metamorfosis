@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!in_array($img_perfil['type'], $permitidos)) {
             $errores[] = "Formato de imagen no permitido.";
         } else {
-            $nombre_img = uniqid() . ".jpg";
+            $nombre_img = uniqid('usuario_') . ".jpg";
             $ruta = "uploads/usuario/" . $nombre_img;
             move_uploaded_file($img_perfil['tmp_name'], $ruta);
         }

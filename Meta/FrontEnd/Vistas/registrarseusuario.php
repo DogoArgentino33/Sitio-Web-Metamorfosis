@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $alto_original
                 );
 
-                $nombre_img = uniqid() . ".jpg";
+                $nombre_img = uniqid('usuario_') . ".jpg";
                 $directorio_destino = "uploads/usuario/";
                 $ruta_completa = $directorio_destino . $nombre_img;
 

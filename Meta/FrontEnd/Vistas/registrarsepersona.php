@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 imagefill($imagen_final, 0, 0, $blanco);
                 imagecopyresampled($imagen_final, $origen, 0, 0, 0, 0, $ancho_nuevo, $alto_nuevo, $ancho, $alto);
 
-                $nombre_archivo = uniqid() . ".jpg";
+                $nombre_archivo = uniqid('persona_') . ".jpg";
                 $ruta = "uploads/persona/" . $nombre_archivo;
 
                 if (!imagejpeg($imagen_final, $ruta, 90)) {

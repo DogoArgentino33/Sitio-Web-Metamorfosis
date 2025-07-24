@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                         $ancho_orig, $alto_orig
                     );
 
-                    $nombre_nuevo = uniqid('img_') . '.jpg';
+                    $nombre_nuevo = uniqid('producto_') . '.jpg';
                     $ruta_destino = $directorio_subida . $nombre_nuevo;
 
                     if (imagejpeg($imagen_final, $ruta_destino, 90)) {

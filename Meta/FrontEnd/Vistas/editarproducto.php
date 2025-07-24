@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $y = intval(($mh-$nh)/2);
                 imagecopyresampled($img_n,$src,$x,$y,0,0,$nw,$nh,$ow,$oh);
 
-                $new = uniqid('img_').'.jpg';
+                $new = uniqid('producto_').'.jpg';
                 $dest = $dir.$new;
                 imagejpeg($img_n,$dest,90);
                 imagedestroy($src);
