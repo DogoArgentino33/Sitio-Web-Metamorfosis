@@ -44,6 +44,21 @@ if ($id && $tipo) {
     $stmt->close();
 }
 
+$imagenes = [];
+
+if ($datos) {
+    $stmtImgs = $conexion->prepare("SELECT img FROM img_producto WHERE id_producto = ?");
+    $stmtImgs->bind_param("i", $datos['id']);
+    $stmtImgs->execute();
+    $resImgs = $stmtImgs->get_result();
+
+    while ($row = $resImgs->fetch_assoc()) {
+        $imagenes[] = $row['img'];
+    }
+
+    $stmtImgs->close();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,7 +70,7 @@ if ($id && $tipo) {
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- CSS -->
-    <link rel="stylesheet" href="../Estilos/detallesproducto.css">
+    <link rel="stylesheet" href="../Estilos/infoProducto.css">
     <link rel="stylesheet" href="../Estilos/modales.css">
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -90,37 +105,56 @@ if ($id && $tipo) {
             <h2 style="text-align: center; color: black;">Informacion del Accesorio</h2>
         <?php endif; ?>
 
-        <!-- Contenedor -->
+       <!-- Contenedor -->
         <section class="contenedor-producto">
             <?php if ($datos): ?>
-                <section class="card-costume">
-                    <img src="uploads/producto/<?= htmlspecialchars($datos['imagenes']) ?>">
+            <section class="product-layout">
+                
+                <!-- Galería de imágenes -->
+                <section class="slider">
+                    <?php if (!empty($imagenes)): ?>
+                        <div class="slides">
+                            <?php foreach ($imagenes as $index => $img): ?>
+                                <div class="slide <?= $index === 0 ? 'active' : '' ?>">
+                                    <img src="uploads/producto/<?= htmlspecialchars($img) ?>" alt="Imagen <?= $index + 1 ?>">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
 
-                    <!-- texto -->
+                        <?php if (count($imagenes) > 1): ?>
+                            <div class="slider-controls">
+                                <button class="control-button" id="botonSliderPrev"><i class="bi bi-arrow-left-circle"></i></button>
+                                <button class="control-button" id="botonSliderNext"><i class="bi bi-arrow-right-circle"></i></button>
+                            </div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <p>Este producto no tiene imágenes.</p>
+                    <?php endif; ?>
+                </section>
 
-                    <h4><?= htmlspecialchars($datos['nombre']) ?></h4>                                      <!-- Nombre  -->
+                <!-- Información del producto -->
+                <section class="product-info">
+                    <h2><?= htmlspecialchars($datos['nombre']) ?></h2>
 
-                    <p> <strong> Temática:</strong> <?= htmlspecialchars($datos['tematicas']) ?></p>        <!-- Tematica -->
-                    
-                    <p> <strong> Categoría:</strong> <?= htmlspecialchars($datos['categorias']) ?></p>      <!-- Categoria  -->
-                    
+                    <p><strong>Temática:</strong> <?= htmlspecialchars($datos['tematicas']) ?></p>
+                    <p><strong>Categoría:</strong> <?= htmlspecialchars($datos['categorias']) ?></p>
+
                     <?php if ($tipo == 1): ?>
-                        <p> <strong> Talles:</strong> <?= htmlspecialchars($datos['tallas']) ?></p>         <!-- Talles  -->
+                        <p><strong>Talles:</strong> <?= htmlspecialchars($datos['tallas']) ?></p>
                     <?php endif; ?>
 
-                    <p> <strong> Precio:</strong> $<?= htmlspecialchars($datos['precio']) ?></p>                               <!--  Precio -->
-
-                    <p> <strong> Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>   <!--  Disponibilidad -->
-
-                    <p> <strong>Unidades Disponibles:</strong> <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>    <!--  Unidades -->
+                    <p><strong>Precio:</strong> $<?= htmlspecialchars($datos['precio']) ?></p>
+                    <p><strong>Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>
+                    <p><strong>Unidades Disponibles:</strong> <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>
 
                     <button type="button" class="btn" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
                 </section>
+
+            </section>
             <?php else: ?>
                 <p>No se encontró información del producto.</p>
             <?php endif; ?>
         </section>
-
 
     </main>
 
@@ -207,7 +241,7 @@ if ($id && $tipo) {
                 return;
             }
 
-            const card = document.querySelector('.card-costume');
+            const card = document.querySelector('.product-info');
             const theme = card.querySelector('p:nth-of-type(1)').innerText.replace('Temática: ', '');
             const category = card.querySelector('p:nth-of-type(2)').innerText.replace('Categoría: ', '');
             const stock = card.querySelector('p:nth-of-type(<?= $tipo == 1 ? 5 : 4 ?>)').innerText.replace('Unidades Disponibles: ', '');
@@ -251,6 +285,54 @@ if ($id && $tipo) {
                 cardDetails.style.display = 'none';
             }
         }
+    </script>
+
+   <script>
+       document.addEventListener('DOMContentLoaded', () => 
+        {
+            let currentSlide = 0;
+            const slides = document.querySelector('.slides');
+            const intervalMs   = 5000; //Esto equivale a 5 segunfos
+            let timerId        = null;
+            movimiento();  //Iniciamos el proceso
+
+            // Iniciamos los botones  //
+            document.getElementById('botonSliderPrev').addEventListener('click', () => 
+            {
+                CambioSlide(-1);
+                ReiniciarMov();
+            });
+
+            document.getElementById('botonSliderNext').addEventListener('click', () => 
+            {
+                CambioSlide(1);
+                ReiniciarMov();
+            });
+
+            // Agregamos el cambio de imagen //
+            function CambioSlide(direction = 1) 
+            { 
+                const totalSlides = document.querySelectorAll('.slide').length;
+                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+
+            // Agregamos movimiento //
+            function movimiento() 
+            {
+                if (timerId) 
+                {
+                    return;
+                }                        
+                    timerId = setInterval(() => CambioSlide(1), intervalMs);
+            }
+
+            function pararmovimiento() 
+            {
+                clearInterval(timerId);
+                timerId = null;
+            }
+        });
     </script>
     
 </body>
