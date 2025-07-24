@@ -40,24 +40,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </section>
         <h1><a href="panelusuarios.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Asignar Persona a Usuario</h1>
 
-        <form method="POST" style="max-width: 600px; margin: auto; padding: 2rem; background-color: #f9f9f9; border-radius: 10px;">
-            <label for="id_persona">Persona sin usuario:</label><br>
-            <select name="id_persona" id="id_persona" required>
-                <option value="">-- Seleccionar persona --</option>
-                <?php
-                $personas = $conexion->query("SELECT p.id, p.nombre, p.apellido 
-                                              FROM persona p 
-                                              LEFT JOIN usuario u ON p.id = u.id_persona 
-                                              WHERE u.id_persona IS NULL");
-                while ($p = $personas->fetch_assoc()) {
-                    echo "<option value='{$p['id']}'>{$p['nombre']} {$p['apellido']}</option>";
-                }
-                ?>
-            </select>
-            <br><br>
-            <button type="button" class="btn" onclick="verPersona()">Ver Persona</button>
-            <button type="button" class="btn" onclick="crearUsuario()">Crear Usuario</button>
-        </form>
+        <section class="cards-container">
+  
+                <form method="POST" style="max-width: 600px; margin: auto; padding: 2rem; background-color: #f9f9f9; border-radius: 10px;">
+                    <label for="id_persona">Persona sin usuario:</label><br>
+                    <select name="id_persona" id="id_persona" required>
+                        <option value="">-- Seleccionar persona --</option>
+                        <?php
+                        $personas = $conexion->query("SELECT p.id, p.nombre, p.apellido 
+                                                    FROM persona p 
+                                                    LEFT JOIN usuario u ON p.id = u.id_persona 
+                                                    WHERE u.id_persona IS NULL");
+                        while ($p = $personas->fetch_assoc()) {
+                            echo "<option value='{$p['id']}'>{$p['nombre']} {$p['apellido']}</option>";
+                        }
+                        ?>
+                    </select>
+                    <br><br>
+                    <button type="button" class="btn" onclick="verPersona()">Ver Persona</button>
+                    <button type="button" class="btn" onclick="crearUsuario()">Crear Usuario</button>
+                </form>
+
+        </section>
+
+
     </main>
 
     <script>
