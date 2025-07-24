@@ -25,7 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Asignar Persona a Usuario</title>
+    <title>Asignar Usuario a Persona</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/panelusuario.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -36,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section class="nav-route">
             <a href="index.php">Inicio / </a>
             <a href="gerente.php">Gerente /</a>
-            <a>Asignar Persona</a>
+            <a href="asignarusuario.php">Asignar Usuario</a>
         </section>
-        <h1><a href="panelusuarios.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Asignar Persona a Usuario</h1>
+        <h1><a href="gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Asignar Usuario a Persona</h1>
 
         <section class="cards-container">
   
@@ -87,5 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     </script>
+    
+<?php include('footer.php');?>
 </body>
 </html>
