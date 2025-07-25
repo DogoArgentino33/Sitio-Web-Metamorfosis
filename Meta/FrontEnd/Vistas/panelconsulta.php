@@ -1,24 +1,4 @@
-<?php include('auth.php'); include('conexion.php');
-
-//Operación de eliminar usuario
-if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
-    $idEliminar = intval($_GET['id']);
-    
-    // Preparar y ejecutar la eliminación
-    $stmt = $conexion->prepare("DELETE FROM usuario WHERE id = ?");
-    $stmt->bind_param("i", $idEliminar);
-
-    if ($stmt->execute()) {
-        // Redirigir nuevamente a panelusuarios para evitar reenvíos y actualizar la tabla
-        header("Location: panelusuarios.php?usuarioeliminado=ok");
-        exit;
-    } 
-    else 
-    {
-        echo "<script>alert('Error al eliminar el usuario');</script>";
-    }
-}
-?>
+<?php include('auth.php'); include('conexion.php'); ?>
 
 <!-- Cuerpo de la página -->
 <!DOCTYPE html>
@@ -31,8 +11,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/panelgeneral.css">
-    <!-- Script de SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <!-- Cuerpo de la página -->
@@ -49,7 +27,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         
         <section class="container-table" id="user">
             <section class="nav-table">
-                <input type="text" id="search-panel" placeholder="Buscar Usuarios..." onkeyup="filtrarTabla('user')">
+                <input type="text" id="search-panel" placeholder="Buscar consultas..." onkeyup="filtrarTabla('user')">
             </section>
             <!-- Tabla -->
             <table>
@@ -58,9 +36,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>NOMBRE</th>
                         <th>APELLIDO</th>
                         <th>CORREO</th>
-                        <th>TELÉFONO</th>
-                        <th>VER</th>
-                        <th>ELIMINAR</th>
+                        <th>VER CONSULTA</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,93 +45,43 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
                     $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
 
-                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM usuario");
+                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM consulta");
                     $total_stmt->execute();
                     $total_resultado = $total_stmt->get_result()->fetch_assoc();
                     $total_registros = $total_resultado['total'];
                     $total_paginas = ceil($total_registros / $por_pagina);
 
-                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario ORDER BY id LIMIT ?, ?");
+                    $stmt = $conexion->prepare("SELECT id, nombre, apellido, correo FROM consulta ORDER BY id LIMIT ?, ?");
                     $stmt->bind_param("ii", $inicio, $por_pagina);
                     $stmt->execute(); 
                     $result = $stmt->get_result();
     
                 if($result->num_rows > 0) {
-                    while($usuario = $result->fetch_assoc()) 
+                    while($consulta = $result->fetch_assoc()) 
                     {
                         ?>
 
                         <tr>
-                        <td>
-                            <img src="<?= htmlspecialchars($usuario['img_perfil']) ?>" alt="Perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
-                        </td>
-
-                        <td><?= htmlspecialchars($usuario['nom_usu']) ?></td>
+                        <td><?= htmlspecialchars($consulta['nombre']) ?></td>
+                        <td><?= htmlspecialchars($consulta['apellido']) ?></td>
+                        <td><?= htmlspecialchars($consulta['correo']) ?></td>
                         
-                        <td><?= htmlspecialchars($usuario['correo']) ?></td>
-                        <td><?= htmlspecialchars($usuario['telefono']) ?></td>
-                        
-                        <!-- Determinando Roles de usuario -->
-                        <?php 
-                            if($usuario['rol'] == 0){
-                                ?><td><?= htmlspecialchars('Usuario') ?></td>
-                            <?php
-                            }
-                            else{
-                                if($usuario['rol'] == 1){
-                                    ?><td><?= htmlspecialchars('Gerente') ?></td>
-                                <?php
-                                }
-                            }
-                            if($usuario['rol'] == 2){
-                                ?><td><?= htmlspecialchars('Empleado') ?></td>
-                            <?php
-                            }
-                            else{
-                                if($usuario['rol'] == 4){
-                                    ?><td><?= htmlspecialchars('Administrador') ?></td>
-                                <?php
-                                }
-                            }
-                        ?>
-                        <?php 
-                            if($usuario['estadousu'] == 2){
-                                ?><td><?= htmlspecialchars('Activo') ?></td>
-                            <?php
-                            }
-                            else{
-                                if($usuario['estadousu'] == 1){
-                                    ?><td><?= htmlspecialchars('Inactivo') ?></td>
-                                <?php
-                                }
-                            }
-                        ?>
-                        <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
-                        <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
-                
-                        <td>
-                        
-                        <?php if($usuario['estadousu'] == true): ?>
-                            <!-- ESTO DE ABAJO TIENE UN ONCLICK QUE LLEVA A MODAL -->
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
-                </a>
-
-                        <?php else: ?>
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
-                        <?php endif; ?>
-                        
-                        </td>				
+                        <!-- boton ver -->
+                    
+                        <td><a href="verconsulta.php?id=<?= $consulta['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>		
                     
                         </tr>
                     <?php
                     }
                     
-                    } else {
+                    } 
+                    else 
+                    {
                     ?>
                     
                     <tr>
                     
-                    <td colspan="7">No hay usuarios registrados</td>
+                    <td colspan="7">No hay consultas</td>
                     </tr>
                     <?php
                     }
@@ -221,94 +147,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             }
         }
     </script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => 
-{
-   //1.Llamamos y definimos la variable
-  document.querySelectorAll('#btn-eliminar').forEach(link => 
-  {
-    //2.Le asignamos el evento
-    link.addEventListener('click', evt => 
-    {
-      evt.preventDefault();
-      const url = link.href;
-
-      //3.Agregamos sweetalert
-      Swal.fire
-      ({
-        title: 'Advertencia',
-        text: 'Está seguro de eliminar el usuario?',
-        icon: 'warning',
-        showDenyButton: true,
-        confirmButtonText: 'Si',
-        denyButtonText: 'No',
-      })
-      .then(res => {
-        if (res.isConfirmed) 
-        {
-            window.location.href = url;
-        }
-      });
-    });
-  });
-});
-
-function openModalAgregar() 
-{
-    window.location.href = 'agregarusuario.php';
-}
-</script>
-
-<!-- Funcion SweetAlert: Agregar, modificar, Eliminar-->
-<script>
-document.addEventListener('DOMContentLoaded', () => 
-{
-  //1. Traemos lo que definimos
-  const p = new URLSearchParams(location.search);
-
-  //2. Como lo definimos como "ok", procede a mostrar el mensaje
-  if (p.get('usuarioagregado') === 'ok') //Para usuario agregado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Usuario agregado con éxito',
-      showConfirmButton: false,
-      timer: 1500
-    });
-  //3. Al refrescar la página, no volverá a salir el mensaje
-    history.replaceState({}, '', location.pathname);
-  }
-  if (p.get('usuariomodificado') === 'ok') //Para usuario modificado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Usuario modificado con éxito',
-      showConfirmButton: false,
-      timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  } 
-  if (p.get('usuarioeliminado') == 'ok') //Para usuario eliminado
-  {
-    Swal.fire({
-        position: 'top',
-        icon:  'success',
-        title: 'Usuario eliminado con éxito',
-        showConfirmButton: false,
-        timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  }
-  
-
-});
-
-</script>
-
 
 </body>
 </html>
