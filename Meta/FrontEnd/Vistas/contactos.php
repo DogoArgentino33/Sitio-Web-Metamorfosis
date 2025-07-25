@@ -1,3 +1,211 @@
+<?php include('conexion.php'); 
+session_start();
+
+
+function escapar($html) 
+{
+    return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+}
+
+$errores = [];
+$error_nombre = '';
+$error_apellido = '';
+$error_correo = '';
+$error_consulta = '';
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') 
+{
+    //Sanitizando
+    $nombre    = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $apellido  = mysqli_real_escape_string($conexion, trim($_POST['apellido']));
+    $correo    = mysqli_real_escape_string($conexion, trim($_POST['correo']));
+    $consulta  = mysqli_real_escape_string($conexion, trim($_POST['consulta']));
+
+    //Validando
+    //Nombre
+    if ($nombre === '') 
+    {
+        $errores[] = 'El nombre es obligatorio.';
+    } 
+    elseif (!preg_match('/^[A-Za-z0-9]+$/', $nombre)) 
+    {
+        $errores[] = 'El nombre solo puede contener letras y números, sin espacios ni símbolos.';
+    }
+
+    //Acumulando errores nombre
+    foreach ($errores as $error) 
+    {
+        if (strpos($error, 'nombre') !== false) 
+        {
+            $error_nombre = $error;
+        }
+    }
+
+    //Apellido
+    if ($apellido === '') 
+    {
+        $errores[] = 'El apellido es obligatorio.';
+    } 
+    elseif (!preg_match('/^[A-Za-z0-9]+$/', $apellido)) 
+    {
+        $errores[] = 'El apellido solo puede contener letras y números, sin espacios ni símbolos.';
+    }
+
+    //Acumulando errores apellido
+    foreach ($errores as $error) 
+    {
+        if (strpos($error, 'apellido') !== false) 
+        {
+            $error_apellido = $error;
+        }
+    }
+
+    //Correo
+    if ($correo === '') 
+    {
+        $errores[] = 'El correo electrónico es obligatorio.';
+    } 
+    elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) 
+    {
+        $errores[] = "El correo electrónico ingresado no es válido.";
+    }
+
+    //Acumulando errores correo
+    foreach ($errores as $error) 
+    {
+        if (strpos($error, 'correo') !== false) 
+        {
+            $error_correo = $error;
+        }
+    }
+
+
+    //Verificando si error es igual a 0, TRUE -> preparando para insert
+    if (count($errores) === 0) 
+    {
+        //Escapar campos
+        $nombre       = mysqli_real_escape_string($conexion, $nombre);
+        $apellido     = mysqli_real_escape_string($conexion, $apellido);
+        $correo       = mysqli_real_escape_string($conexion, $correo);
+        $consulta     = mysqli_real_escape_string($conexion, $consulta);
+
+
+        // Preparando la consulta
+        $stmt = $conexion->prepare("INSERT INTO consulta (nombre, apellido, correo, consulta) VALUES (?, ?, ?, ?)");
+
+        $stmt->bind_param("ssss", $nombre, $apellido, $correo, $consulta);
+
+        // Ejecutar y verificar si se realizó
+        if ($stmt->execute()) 
+        {
+            header("Location: contactos.php?envioconsulta=ok");
+            exit;
+        } 
+        else 
+        {
+            $errores[] = "Error al enviar la consulta: " . $stmt->error;
+        }
+        
+        $stmt->close();
+    }
+
+}
+?>
+
+<!-- Funcion de validacion -->
+ <script>
+    document.addEventListener("DOMContentLoaded", () => 
+    {
+        const validaciones = 
+        {
+            'nombre': 
+            {
+                regex: /^[A-Za-z0-9]{3,20}$/,
+                mensaje: 'El nombre debe tener entre 3 y 20 caracteres. Solo letras y números, sin espacios ni símbolos.'
+            },
+            'apellido': 
+            {
+                regex: /^[A-Za-z0-9]{3,20}$/,
+                mensaje: 'El apellido debe tener entre 3 y 20 caracteres. Solo letras y números, sin espacios ni símbolos.'
+            },
+            'correo': 
+            {
+                regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                mensaje: 'Debe ser un correo electrónico válido.'
+            }
+        };
+
+        // Recorre los campos definidos y aplica validación en tiempo real
+        for (const id in validaciones) 
+        {
+            const input = document.getElementById(id);
+
+            if (input) 
+            {
+                const barra = document.createElement('div');
+                barra.classList.add('barra-validacion');
+
+                const mensaje = document.createElement('div');
+                mensaje.classList.add('mensaje-validacion');
+
+                input.insertAdjacentElement('afterend', barra);
+                barra.insertAdjacentElement('afterend', mensaje);
+
+                input.addEventListener('input', () => 
+                {
+                    const valor = input.value.trim();
+                    const { regex, mensaje: textoMensaje } = validaciones[id];
+
+                    if (regex.test(valor)) 
+                    {
+                        barra.className = 'barra-validacion valido';
+                        mensaje.className = 'mensaje-validacion valido';
+                        mensaje.textContent = 'Dato válido.';
+                    } 
+                    else 
+                    {
+                        barra.className = 'barra-validacion invalido';
+                        mensaje.className = 'mensaje-validacion invalido';
+                        mensaje.textContent = textoMensaje;
+                    }
+                });
+            }
+        }
+
+
+
+
+
+
+    })
+ </script>
+
+<!-- SweetAlert: Consulta enviada -->
+ <script>
+document.addEventListener('DOMContentLoaded', () => 
+{
+  //1. Traemos lo que definimos
+  const p = new URLSearchParams(location.search);
+
+  //2. Como lo definimos como "ok", procede a mostrar el mensaje
+  if (p.get('envioconsulta') === 'ok') 
+  {
+    Swal.fire({
+      position: 'top',
+      icon: 'success',
+      title: 'La consulta fue enviada',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
+  //3. Al refrescar la página, no volverá a salir el mensaje
+    history.replaceState({}, '', location.pathname);
+  }
+});
+</script>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,6 +216,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
     <link rel="stylesheet" href="../Estilos/contactos.css">
+    <!-- Script de SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
    <?php include('cabecera.php'); ?>
@@ -17,26 +227,40 @@
             <a href="index.php">Inicio / </a>
             <a>Contactos</a>
         </section>
+
         <h2 class="main-h2">Contáctanos</h2>
         
+        <!-- FORMULARIO -->
         <section class="wrapper">
-            <form action="#" method="post" id="employee">
+            <form action="contactos.php" method="post" enctype="multipart/form-data" id="formconsulta">
                 <fieldset>
                     <legend>Deja aquí tus consultas y responderemos lo antes posible</legend>
+
                     <h4>Datos personales</h4>
+
                     <section class="input-box">
-                        <input type="text" placeholder="Nombre" required>
+                        <label for="nombre">Nombre: </label>
+                        <input id="nombre" name="nombre" type="text" class="solo-letras" required value="<?php echo isset($_POST['nombre']) ? escapar($_POST['nombre']) : ''; ?>">
+                        <span class="error" style="color:red;"><?php echo $error_nombre; ?></span>
                     </section>
+
                     <section class="input-box">
-                        <input type="text" placeholder="Apellido" required>
+                        <label for="apellido">Apellido: </label>
+                        <input id="apellido" name="apellido" type="text" class="solo-letras" required value="<?php echo isset($_POST['apellido']) ? escapar($_POST['apellido']) : ''; ?>">
+                        <span class="error" style="color:red;"><?php echo $error_apellido; ?></span>
                     </section>
+
                     <section class="input-box">
-                        <input type="email" placeholder="Correo Electrónico" required>
+                        <label for="correo">Correo Electrónico: </label>
+                        <input id="correo" name="correo" type="email" required value="<?php echo isset($_POST['correo']) ? escapar($_POST['correo']) : ''; ?>">
+                        <span class="error" style="color:red;"><?php echo $error_correo; ?></span>
                     </section>
+
                     <section class="input-box">
-                        <label for="id-consulta" class="floating-placeholder">Deja tu consulta:</label>
-                        <input type="text" id="id-consulta" required>
+                        <label for="consulta" class="floating-placeholder">Deja tu consulta:</label>
+                        <input type="text" id="consulta" name="consulta" max="500" required value="<?php echo isset($_POST['consulta']) ? escapar($_POST['consulta']) : ''; ?>">
                     </section>
+
                     <button type="submit" class="btn">Enviar</button>
                 </fieldset>
             </form>
