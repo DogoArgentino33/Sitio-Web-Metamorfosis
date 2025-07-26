@@ -65,7 +65,21 @@ while ($row = $query_imagenes->fetch_assoc()) {
             <p><strong>Fecha de Modificación:</strong> <?= htmlspecialchars($producto['fechamod']) ?></p>
             <p><strong>Modificado por:</strong> <?= htmlspecialchars($producto['usumod']) ?></p>
             <br>
-            <a href="panelproductos.php"><button type="button" class="boton">Volver al panel</button></a>
+
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                <!-- Para gerente -->
+                <a href="panelproductos.php"><button type="button" class="boton">Volver al panel</button></a>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 2): ?>
+                <!-- Para empleado -->
+                <a href="panelproductosempleado.php"><button type="button" class="boton">Volver al panel</button></a>
+            <?php endif; ?>
+
+            
+            
+        
+        
         </div>
     </section>
 

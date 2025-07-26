@@ -1,5 +1,6 @@
 <?php include('auth.php'); ?>
 
+<!-- Cuerpo de la página -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,10 +22,9 @@
         <h1 style="text-align: center;">Panel Administrador de Metamorfosis - Empleado</h1>
         <br>
         <section class="table-container">
-            <a href="../Vistas/paneldisfracesempleado.php" class="nav-tablas-administrador" title="Disfraces"><i class="bi bi-balloon"></i>Disfraces</a>
-            <a href="../Vistas/panelaccesoriosempleado.php" class="nav-tablas-administrador" title="Accesorios"><i class="bi bi-eyeglasses"></i>Accesorios</a>
+            <a href="../Vistas/panelproductosempleado.php" class="nav-tablas-administrador" title="Productos"><i class="bi bi-balloon"></i>Productos</a>
             <a href="../Vistas/panelalquileresempleado.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-calendar"></i>Alquileres</a>
-            <a href="../Vistas/panelconsulta.php"             class="nav-tablas-administrador" title="Consultas"><i class="bi bi-file-earmark-text"></i>Consultas</a>
+            <a href="../Vistas/panelconsulta.php"            class="nav-tablas-administrador" title="Consultas"><i class="bi bi-file-earmark-text"></i>Consultas</a>
         </section>
     </main>
 
