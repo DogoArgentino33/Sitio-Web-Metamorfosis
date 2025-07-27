@@ -58,19 +58,47 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 <body>
     <?php include('cabecera.php'); ?>
     <main>
-        <section class="nav-route">
-            <a href="index.php">Inicio / </a>
-            <a href="gerente.php">Gerente /</a>
-            <a>Panel de Productos</a>
-        </section>
-        <h1><a href="../Vistas/gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Productos</h1>
-        
+
+            <!-- Barra de navegacion -->
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                <!-- Para gerente -->
+                <section class="nav-route">
+                <a href="index.php">Inicio / </a>
+                <a href="gerente.php">Gerente /</a>
+                <a>Panel de Productos</a>
+                </section>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 2): ?>
+                <!-- Para empleado -->
+                <section class="nav-route">
+                <a href="index.php">Inicio / </a>
+                <a href="empleado.php">Empleado /</a>
+                <a>Panel de Productos</a>
+            </section>
+            <?php endif; ?>
+
+            <!-- Regresando a paneles generales -->
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                <!-- Para gerente -->
+                <h1><a href="../Vistas/gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Productos</h1>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 2): ?>
+                <!-- Para empleado -->
+               <h1><a href="../Vistas/empleado.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel de Productos</h1>
+            <?php endif; ?>
+
         <section class="container-table" id="product">
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Productos..." onkeyup="filtrarTabla('product')">
+                
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                 <div class="btn-add-container">
                     <button class="btn-agregar" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
                 </div>
+            <?php endif;?>
+
             </section>
             <table>
                 <thead>
@@ -84,8 +112,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>UNIDADES DISPONIBLES</th>
                         <th>PRECIO</th>
                         <th>VER</th>
-                        <th>MODIFICAR</th>
-                        <th>ELIMINAR</th>
+                        
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                        <!-- Para gerente -->
+                         <th>MODIFICAR</th>
+                         <th>ELIMINAR</th>
+                        <?php endif; ?>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -168,11 +201,15 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                                 <td><?= htmlspecialchars($producto['precio']) ?></td>
 
                                 <td><a href="verproducto.php?id=<?= $producto['id'] ?>"><button class="ver-btn" title="Ver"><i class="bi bi-eye"></i></button></a></td>
+                                
+                                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                                <!-- Para gerente -->
                                 <td><a href="editarproducto.php?id=<?= $producto['id'] ?>"><button class="editar-btn" title="Editar"><i class="bi bi-pencil-square"></i></button></a></td>
                                 <td>
                                     <a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                                 </td>
-                                
+                                <?php endif; ?>
+                                    
                             </tr>
                             <?php
                         }

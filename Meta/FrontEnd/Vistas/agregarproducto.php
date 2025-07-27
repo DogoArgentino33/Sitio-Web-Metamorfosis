@@ -1,5 +1,13 @@
 <?php include('auth.php'); include('conexion.php');
 
+//Verificando si la cuenta no es rol gerente
+if (isset($_SESSION['rol']) and $_SESSION['rol'] != 1) 
+{
+    header("Location: index.php"); 
+    exit;
+}
+
+
 // Tematica
 $resultado_tematica = $conexion->query("SELECT id, nombre_tema FROM tematica");
 

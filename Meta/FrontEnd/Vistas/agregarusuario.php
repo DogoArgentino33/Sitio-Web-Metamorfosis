@@ -1,6 +1,12 @@
-<?php
-include('auth.php');
-include('conexion.php');
+<?php include('auth.php'); include('conexion.php');
+
+//Verificando si la cuenta no es rol gerente
+if (isset($_SESSION['rol']) and $_SESSION['rol'] != 1) 
+{
+    header("Location: index.php"); 
+    exit;
+}
+
 // Obtener id_persona desde GET (si viene)
 $id_persona = isset($_GET['id_persona']) ? intval($_GET['id_persona']) : null;
 

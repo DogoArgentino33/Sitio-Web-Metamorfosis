@@ -1,8 +1,15 @@
-<?php
-include('auth.php');
-include('conexion.php');
+<?php include('auth.php'); include('conexion.php');
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+//Verificando si la cuenta no es rol gerente o empleado
+if (isset($_SESSION['rol']) and $_SESSION['rol'] == 0)
+{
+    header("Location: index.php"); 
+    exit;
+}
+
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) 
+{
     echo "ID de producto no válido.";
     exit;
 }
@@ -66,20 +73,8 @@ while ($row = $query_imagenes->fetch_assoc()) {
             <p><strong>Modificado por:</strong> <?= htmlspecialchars($producto['usumod']) ?></p>
             <br>
 
-            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
-                <!-- Para gerente -->
-                <a href="panelproductos.php"><button type="button" class="boton">Volver al panel</button></a>
-            <?php endif; ?>
+            <a href="panelproductos.php"><button type="button" class="boton">Volver al panel</button></a>
 
-            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 2): ?>
-                <!-- Para empleado -->
-                <a href="panelproductosempleado.php"><button type="button" class="boton">Volver al panel</button></a>
-            <?php endif; ?>
-
-            
-            
-        
-        
         </div>
     </section>
 

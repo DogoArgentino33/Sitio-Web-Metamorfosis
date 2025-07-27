@@ -1,4 +1,13 @@
-<?php include('auth.php'); include('conexion.php'); ?>
+<?php include('auth.php'); include('conexion.php'); 
+
+//Verificando si la cuenta no es rol empleado
+if (isset($_SESSION['rol']) and $_SESSION['rol'] != 2) 
+{
+    header("Location: index.php"); 
+    exit;
+}
+
+?>
 
 <!-- Cuerpo de la página -->
 <!DOCTYPE html>

@@ -1,6 +1,4 @@
-<?php
-include('auth.php');
-include('conexion.php');
+<?php include('auth.php'); include('conexion.php');
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

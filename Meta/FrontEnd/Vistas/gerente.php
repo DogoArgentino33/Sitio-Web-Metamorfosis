@@ -1,4 +1,12 @@
-<?php include('auth.php'); ?>
+<?php include('auth.php'); 
+
+//Verificando si la cuenta no es rol gerente
+if (isset($_SESSION['rol']) and $_SESSION['rol'] != 1) 
+{
+    header("Location: index.php"); 
+    exit;
+}
+?>
 
 <!-- Cuerpo de la página -->
 <!DOCTYPE html>
