@@ -576,7 +576,7 @@ function GetDpto() {
         <a>Registrarse</a>
     </section>
     <br>
-    <h1 id="titulo-formulario" style="text-align:center;">Registrar Persona</h1>
+    <h1 id="titulo-formulario" style="text-align:center;">Registrarse</h1>
 
     <section id="wrapperregistro">
 
@@ -585,12 +585,12 @@ function GetDpto() {
             <video src="uploads/METAMORFOSIS VIDEO REGISTRAR PERSONA.mp4" controls width="480" poster="">
             Tu navegador no soporta la reproducción de video.
             </video>
-            <p class="titulo-video">Video instructivo: Cómo registrar una persona</p>
+            <p class="titulo-video">Video instructivo: Cómo Registrarse</p>
             </div>
         </section>
 
         <form action="registrarsepersona.php" method="post" enctype="multipart/form-data" id="formregistro">
-            <h2>Formulario Registrar Persona</h2>
+            <h2>Formulario para Registrarse</h2>
 
             <div class="form-columns">
                 <fieldset>
@@ -845,7 +845,7 @@ function GetDpto() {
             </div>
 
             <section class="register-link" >
-                <input type="submit" value="Registrar Persona" class="btn">
+                <input type="submit" value="Registrarse" class="btn">
                 <p><a href="../Vistas/index.php">Volver a Pagina principal</a></p>
             </section>
         </form>
