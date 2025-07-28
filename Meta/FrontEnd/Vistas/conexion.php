@@ -3,7 +3,7 @@
 #Cambiar el puerto a otro para que el error no salga
 $dbhost="localhost";
 $dbusuario="root";
-$dbpassword= "rojas.u33"; #1234
+$dbpassword= ""; #1234
 $db="metamorfosis";
 $conexion = new mysqli ($dbhost,$dbusuario,$dbpassword,$db);
 
