@@ -1,6 +1,4 @@
-<?php
-include('auth.php');
-include('conexion.php'); // Ajusta la ruta si es necesario
+<?php include('auth.php'); include('conexion.php'); // Ajusta la ruta si es necesario
 
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);

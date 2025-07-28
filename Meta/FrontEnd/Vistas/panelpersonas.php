@@ -106,23 +106,29 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td><?= htmlspecialchars($persona['apellido']) ?></td>
                         <td><?= htmlspecialchars($persona['dni']) ?></td>
                         <td><?= htmlspecialchars($persona['genero']) ?></td>
-                    
+
                         <td><a href="verpersona.php?id=<?= $persona['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
-                        <td><a href="editarpersona.php?id=<?= $persona['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
-                
-
-                        <td>
                         
-                        <?php if($usuario['estadousu'] == true): ?>
-                        <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
-                </a>
-
-                        <?php else: ?>
-                        <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=4">Activar</a>
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                                <!-- Para gerente -->
+                                <td><a href="editarpersona.php?id=<?= $persona['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
+                
+                                <td>
+                                
+                                <?php if($usuario['estadousu'] == true): ?>
+                                
+                                    <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
+                                </a>
+                                
+                                <?php else: ?>
+                                
+                                    <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=4">Activar</a>
+                                
+                                <?php endif; ?>
+                                </td>	
+                                
                         <?php endif; ?>
                         
-                        </td>				
-                    
                         </tr>
                     <?php
                     }
