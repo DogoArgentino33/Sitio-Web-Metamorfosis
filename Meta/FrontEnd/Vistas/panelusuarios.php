@@ -68,8 +68,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>ROL</th>
                         <th>ESTADO</th>
                         <th>VER</th>
-                        <th>MODIFICAR</th>
-                        <th>ELIMINAR</th>
+
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                        <!-- Para gerente -->
+                         <th>MODIFICAR</th>
+                         <th>ELIMINAR</th>
+                        <?php endif; ?>
+                       
                     </tr>
                 </thead>
                 <tbody>

@@ -56,11 +56,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         <section class="container-table" id="user">
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Personas..." onkeyup="filtrarTabla('user')">
+                
+                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                 <div class="btn-add-container">
-                    <button class="btn-agregar" id="agregarpersona" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>
-                    
-                    
+                    <button class="btn-agregar" id="agregarpersona" title="Agregar" onclick="openModalAgregar()"><i class="bi bi-person-plus-fill"></i></button>    
                 </div>
+                <?php endif;?>
+                
             </section>
             <table>
                 <thead>
@@ -71,8 +73,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>DNI</th>
                          <th>GENERO</th>
                         <th>VER</th>
-                        <th>MODIFICAR</th>
-                        <th>ELIMINAR</th>
+                        
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                        <!-- Para gerente -->
+                         <th>MODIFICAR</th>
+                         <th>ELIMINAR</th>
+                        <?php endif; ?>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +114,10 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td><?= htmlspecialchars($persona['dni']) ?></td>
                         <td><?= htmlspecialchars($persona['genero']) ?></td>
 
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                        <!-- Para gerente -->
                         <td><a href="verpersona.php?id=<?= $persona['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
+                        <?php endif; ?>
                         
                         <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                                 <!-- Para gerente -->
