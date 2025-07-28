@@ -85,7 +85,12 @@ $totalPaginas = ceil($totalAccesorios / $accesoriosPorPagina);
             <a href="detallesproducto.php?id=<?= $producto['id'] ?>&tipo=<?= $producto['tipo'] ?>" class="asection" style="text-decoration: none;">
                 <section class="card-costume">
                     <?php if (!empty($producto['imagenes'])): ?>
-                        <img src="uploads/producto/<?= htmlspecialchars($producto['imagenes']) ?>" alt="Imagen" width="250" height="300" style="object-fit: cover; border-radius: 3%;">
+                        <?php
+                            $imagen = $producto['imagenes'];
+                            $imagen = explode(',', $imagen)[0]; // solo la primera imagen
+                        ?>
+
+                        <img src="uploads/producto/<?= htmlspecialchars(trim($imagen)) ?>" alt="Imagen" width="250" height="300" style="object-fit: cover; border-radius: 3%;">
                     <?php else: ?>
                         <span>Sin imagen</span>
                     <?php endif; ?>

@@ -114,19 +114,14 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td><?= htmlspecialchars($persona['dni']) ?></td>
                         <td><?= htmlspecialchars($persona['genero']) ?></td>
 
-                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
-                        <!-- Para gerente -->
                         <td><a href="verpersona.php?id=<?= $persona['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
-                        <?php endif; ?>
                         
                         <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                                 <!-- Para gerente -->
                                 <td><a href="editarpersona.php?id=<?= $persona['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
                 
                                 <td>
-                                
                                 <?php if($usuario['estadousu'] == true): ?>
-                                
                                     <a href="panelpersonas.php?id=<?= $persona['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                                 </a>
                                 
@@ -154,7 +149,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     }
                         ?>
 
-                </tbody>
+                </tbody>
             </table>
         </section>
     </main>

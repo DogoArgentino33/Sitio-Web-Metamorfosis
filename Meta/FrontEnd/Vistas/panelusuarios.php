@@ -145,21 +145,24 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                             }
                         ?>
                         <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
-                        <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
-                
-                        <td>
                         
-                        <?php if($usuario['estadousu'] == true): ?>
-                            <!-- ESTO DE ABAJO TIENE UN ONCLICK QUE LLEVA A MODAL -->
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
-                </a>
+                        
+                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                        <!-- Para gerente -->
+                            <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
+                         
+                            <td>
+                            <?php if($usuario['estadousu'] == true): ?>
+                                <!-- ESTO DE ABAJO TIENE UN ONCLICK QUE LLEVA A MODAL -->
+                            <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
+                            </a>
 
-                        <?php else: ?>
-                        <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
+                            <?php else: ?>
+                            <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
+                            <?php endif; ?>
+                            </td>
                         <?php endif; ?>
                         
-                        </td>				
-                    
                         </tr>
                     <?php
                     }
@@ -175,7 +178,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     }
                         ?>
 
-                </tbody>
+                </tbody>
             </table>
         </section>
     </main>

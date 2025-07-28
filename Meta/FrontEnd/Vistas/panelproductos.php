@@ -58,7 +58,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     <main>
 
             <!-- Barra de navegacion -->
-            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1 || $_SESSION['rol'] == 4): ?>
                 <!-- Para gerente -->
                 <section class="nav-route">
                 <a href="index.php">Inicio / </a>
@@ -77,8 +77,8 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <?php endif; ?>
 
             <!-- Regresando a paneles generales -->
-            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
-                <!-- Para gerente -->
+            <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1 || $_SESSION['rol'] == 4): ?>
+                <!-- Para gerente y administrador -->
                 <h1><a href="../Vistas/gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Productos</h1>
             <?php endif; ?>
 
