@@ -9,8 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <section class="logo-container">
         <h1>Metamorfosis</h1>
 
-        <form action="resultadosbusqueda.php" class="formcentrado">
-        <input type="text" id="Idinputtextbuscar" placeholder="Buscar">
+        <form action="resultadosbusqueda.php" method="get" class="formcentrado">
+            <input type="text" name="busqueda" id="Idinputtextbuscar" placeholder="Buscar" required>
         </form>
 
         <section class="container-login-cart">
