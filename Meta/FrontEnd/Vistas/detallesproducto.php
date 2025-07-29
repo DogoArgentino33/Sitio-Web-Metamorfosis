@@ -147,7 +147,7 @@ if ($datos) {
                     <p><strong>Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>
                     <p><strong>Unidades Disponibles:</strong> <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>
 
-                    <button type="button" class="btn" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
+                    <button type="button" class="btn" id="btn-alquilar" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
                 </section>
 
             </section>
@@ -235,13 +235,8 @@ if ($datos) {
 
     <script>
         function openModal(costumeName) {
-            if (!usuarioLogueado) {
-                alert("Debés iniciar sesión para alquilar un disfraz.");
-                window.location.href = "login.php";
-                return;
-            }
-
-            const card = document.querySelector('.product-info');
+            if (usuarioLogueado) {
+                const card = document.querySelector('.product-info');
             const theme = card.querySelector('p:nth-of-type(1)').innerText.replace('Temática: ', '');
             const category = card.querySelector('p:nth-of-type(2)').innerText.replace('Categoría: ', '');
             const stock = card.querySelector('p:nth-of-type(<?= $tipo == 1 ? 5 : 4 ?>)').innerText.replace('Unidades Disponibles: ', '');
@@ -272,6 +267,10 @@ if ($datos) {
             alert('Formulario enviado');
             closeModal(); // Cierra el modal después de enviar
         }
+                return;
+            }
+
+            
     </script>
     
     <script>
@@ -335,5 +334,30 @@ if ($datos) {
         });
     </script>
     
+    <script>
+        if (!usuarioLogueado) {
+            document.querySelectorAll('#btn-alquilar').forEach(link => {
+                link.addEventListener('click', evt => {
+                    evt.preventDefault();
+
+                    Swal.fire({
+                        title: 'Advertencia',
+                        text: 'Necesitas estar registrado para alquilar un disfraz.',
+                        icon: 'warning',
+                        confirmButtonText: 'Registrarme.',
+                        showDenyButton: true,
+                        denyButtonText: 'Quizá más tarde.'
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            window.location.href = 'registrarseusuario.php';
+                        }
+                        // Si elige "Quizá más tarde", simplemente no hacemos nada
+                    });
+                });
+            });
+            
+        }
+    </script>
+
 </body>
 </html>
