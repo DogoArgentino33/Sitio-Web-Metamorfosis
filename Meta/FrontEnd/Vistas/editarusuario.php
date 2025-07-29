@@ -170,19 +170,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label>Rol:</label>
         <select name="rol" required>
-            <option value="4" <?= $usuario['rol'] === 'admin' ? 'selected' : '' ?>>Administrador</option>
-            <option value="1" <?= $usuario['rol'] === 'gerente' ? 'selected' : '' ?>>Gerente</option>
-            <option value="2" <?= $usuario['rol'] === 'empleado' ? 'selected' : '' ?>>Empleado</option>
-            <option value="0" <?= $usuario['rol'] === 'usuario' ? 'selected' : '' ?>>Usuario</option>
-            <!-- Agregá más roles si tenés -->
+            <option value="4" <?= $usuario['rol'] == 4 ? 'selected' : '' ?>>Administrador</option>
+            <option value="1" <?= $usuario['rol'] == 1 ? 'selected' : '' ?>>Gerente</option>
+            <option value="2" <?= $usuario['rol'] == 2 ? 'selected' : '' ?>>Empleado</option>
+            <option value="0" <?= $usuario['rol'] == 0 ? 'selected' : '' ?>>Usuario</option>
         </select><br>
 
-        <label for="estadousu">Estado del Usuario</label>
-        <select name="estadousu" id="estadousu" required>
-            <option value="2" <?= $usuario['estadousu'] == 2 ? 'selected' : '' ?>>Activo</option>
-            <option value="1" <?= $usuario['estadousu'] == 1 ? 'selected' : '' ?>>Inactivo</option>
-        </select>
 
+        <label for="estadousu">Estado del Usuario</label>
+        <?php
+        if ($usuario['estadousu'] == 2) {
+            echo '<input type="text" name="estadousu" id="estadousu" value="Activo" readonly>';
+        } else {
+            echo '<input type="text" name="estadousu" id="estadousu" value="Inactivo" readonly>';
+        }?>
+        <br>
+        
 
         <label for="fechamod">Última Modificacion</label>
         <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($usuario['fechamod']) ?>" readonly><br>
