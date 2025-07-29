@@ -342,7 +342,7 @@ if ($datos) {
 
                     Swal.fire({
                         title: 'Advertencia',
-                        text: 'Necesitas estar registrado para alquilar un disfraz.',
+                        text: 'Necesitas estar registrado para alquilar este producto.',
                         icon: 'warning',
                         confirmButtonText: 'Registrarme.',
                         showDenyButton: true,
