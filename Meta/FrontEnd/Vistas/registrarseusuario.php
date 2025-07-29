@@ -15,8 +15,34 @@ $error_telefono = '';
 $error_contraseña = '';
 $error_contraseña_repetida = '';
 $error_img = '';
+$mensaje_dni_duplicado = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validación de existencia del DNI en la tabla persona
+    $sql = "SELECT id FROM persona WHERE dni = ?";
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        die("Error en la consulta de DNI: " . $conexion->error);
+    }
+
+    $stmt->bind_param("s", $dni);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows === 0) {
+        // Si no existe, redirigir al formulario de registrarsepersona
+        $_SESSION['mensaje_dni'] = "El DNI ingresado no existe. Debe registrarse con sus datos personales antes de crear un usuario.";
+        header("Location: registrarsepersona.php");
+        exit;
+    } else {
+        $stmt->bind_result($id_persona_encontrado);
+        $stmt->fetch();
+        $_SESSION['id_persona'] = $id_persona_encontrado;
+    }
+
+    $stmt->close();
+    
     // Sanitizar entradas
     $nombre_usu = mysqli_real_escape_string($conexion, trim($_POST['nombre-usu']));
     $correo     = mysqli_real_escape_string($conexion, trim($_POST['correo']));
@@ -177,6 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $passusu1    = mysqli_real_escape_string($conexion, $passusu1);
         $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
 
+        $dni         = mysqli_real_escape_string($conexion, $dni);
+
     if (!isset($passusu) || empty(trim($passusu))) {
     $errores[] = "La contraseña no puede estar vacía.";
     } else {
@@ -189,9 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 VALUES (?, ?, ?, ?, ?, ?, 0)");
 
     // Convertir el id_persona a NULL si no existe en la sesión
-    $id_persona = isset($_SESSION['id_persona']) && !empty($_SESSION['id_persona']) 
-                ? intval($_SESSION['id_persona']) 
-                : null;
+    $id_persona = $id_persona_encontrado;
 
     // Enlazar parámetros (la 'i' acepta null correctamente si se usó con 'bind_param')
     $stmt->bind_param("sssssi", $nombre_usu, $ruta_imagen, $correo, $telefono, $passusu_hash, $id_persona);
@@ -443,6 +469,18 @@ document.addEventListener('DOMContentLoaded', () =>
 
         <form action="registrarseusuario.php" method="post" enctype="multipart/form-data" id="formregistro">
             <h2>Formulario Registrar Usuario</h2>
+            <fieldset>
+                <legend>Datos de verificacion</legend>
+
+                <section class="input-box">
+                    <label for="DNI:">DNI:</label>
+                    <input id="dni" name="dni" type="number" min="3000000" required value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
+                    <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
+                    <br>
+                    <p>¿No tenes tus datos personales registrados? <a href="../Vistas/registrarsepersona.php">hazlo ahora</a></p>
+                </section>
+            </fieldset>
+
             <fieldset>
                 <legend>Datos de usuario</legend>
 

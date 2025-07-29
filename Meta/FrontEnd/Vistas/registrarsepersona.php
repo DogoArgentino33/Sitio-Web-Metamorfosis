@@ -1,5 +1,21 @@
 <?php session_start(); include('conexion.php'); 
 
+if (isset($_SESSION['mensaje_dni'])) {
+    $mensaje = $_SESSION['mensaje_dni'];
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'DNI no encontrado',
+                text: '".addslashes($mensaje)."',
+                confirmButtonText: 'Ir al formulario',
+                confirmButtonColor: '#3085d6'
+            });
+        });
+    </script>";
+    unset($_SESSION['mensaje_dni']);
+}
+
 //Función escapar
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
