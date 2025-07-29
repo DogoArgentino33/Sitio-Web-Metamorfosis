@@ -157,8 +157,6 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                             <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                             </a>
 
-                            <?php else: ?>
-                            <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=4">Activar</a>
                             <?php endif; ?>
                             </td>
                         <?php endif; ?>

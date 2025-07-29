@@ -177,19 +177,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Agregá más roles si tenés -->
         </select><br>
 
-        <label for="estadosusu">Estado del Usuario</label>
-        <input type="text" name="estadousu" id="estadousu" value="<?php 
-                            if($usuario['estadousu'] == 2){
-                                ?><?= htmlspecialchars('Activo') ?>
-                            <?php
-                            }
-                            else{
-                                if($usuario['estadousu'] == 1){
-                                    ?><?= htmlspecialchars('Inactivo') ?>
-                                <?php
-                                }
-                            }
-                        ?>" readonly>
+        <label for="estadousu">Estado del Usuario</label>
+        <select name="estadousu" id="estadousu" required>
+            <option value="2" <?= $usuario['estadousu'] == 2 ? 'selected' : '' ?>>Activo</option>
+            <option value="1" <?= $usuario['estadousu'] == 1 ? 'selected' : '' ?>>Inactivo</option>
+        </select>
+
 
         <label for="fechamod">Última Modificacion</label>
         <input type="text" name="fechamod" id="fechamod" value="<?= htmlspecialchars($usuario['fechamod']) ?>" readonly><br>
