@@ -1,8 +1,6 @@
 <?php
 session_start();
-
-
-include('conexion.php'); 
+include('conexion.php');
 
 function escapar($html) {
     return htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
@@ -15,223 +13,182 @@ $error_telefono = '';
 $error_contraseña = '';
 $error_contraseña_repetida = '';
 $error_img = '';
+
 $mensaje_dni_duplicado = '';
+$mostrar_datos_usuario = false;
+$id_persona = null;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validación de existencia del DNI en la tabla persona
-    $sql = "SELECT id FROM persona WHERE dni = ?";
-    $stmt = $conexion->prepare($sql);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (!$stmt) {
-        die("Error en la consulta de DNI: " . $conexion->error);
-    }
+    // ----------- VERIFICACIÓN DE DNI ------------------
+    if (isset($_POST['verificar_dni'])) {
+    $dni = trim($_POST['dni']);
 
-    $stmt->bind_param("s", $dni);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows === 0) {
-        // Si no existe, redirigir al formulario de registrarsepersona
-        $_SESSION['mensaje_dni'] = "El DNI ingresado no existe. Debe registrarse con sus datos personales antes de crear un usuario.";
-        header("Location: registrarsepersona.php");
-        exit;
-    } else {
-        $stmt->bind_result($id_persona_encontrado);
-        $stmt->fetch();
-        $_SESSION['id_persona'] = $id_persona_encontrado;
-    }
-
-    $stmt->close();
-    
-    // Sanitizar entradas
-    $nombre_usu = mysqli_real_escape_string($conexion, trim($_POST['nombre-usu']));
-    $correo     = mysqli_real_escape_string($conexion, trim($_POST['correo']));
-    $telefono   = preg_replace('/[^0-9]/', '', mysqli_real_escape_string($conexion, trim($_POST['telefono'])));
-    $passusu    = trim($_POST['passusu']);
-    $passusu1   = trim($_POST['passusu1']);
-    $img_perfil = $_FILES['img-perfil'];
-
-    // Validaciones básicas
-    if ($nombre_usu === '') {
-        echo "entrando en validaciones basicas";
-        $errores[] = 'El nombre de usuario es obligatorio.';
-    } elseif (!preg_match('/^[A-Za-z0-9]+$/', $nombre_usu)) {
-        $errores[] = 'El nombre de usuario solo puede contener letras y números, sin espacios ni símbolos.';
-    }
-
-    foreach ($errores as $error) {
-    if (strpos($error, 'usuario') !== false) {
-            $error_nombre_usu = $error;
-        }
-    }
-
-     //validamos correo
-    if ($correo === '') {
-        echo "entrando en validaciones de correo 1";
-        $errores[] = 'El correo electrónico es obligatorio.';
-    } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        $errores[] = "El correo electrónico no es válido.";
-    }
-
-    foreach ($errores as $error) {
-        if (strpos($error, 'correo') !== false) {
-            $error_correo = $error;
-        }
-    }
-
-    // Verificar si ya existe el correo solo si el formato es válido
-    if (filter_var($correo, FILTER_VALIDATE_EMAIL)) 
-    {
-        echo "entrando en validaciones de correo 2";
-        $sql = "SELECT correo FROM usuario WHERE correo = '$correo'";
+        // 1. Verificar si el DNI existe en persona
+        $sql = "SELECT id FROM persona WHERE dni = '$dni'";
         $result = mysqli_query($conexion, $sql);
+
         if ($result && mysqli_num_rows($result) > 0) {
-            $errores[] = "Ya existe un usuario registrado con ese correo.";
-        }
-    }
+            $fila = mysqli_fetch_assoc($result);
+            $id_persona = $fila['id'];
+            $_SESSION['id_persona'] = $id_persona;
 
-    foreach ($errores as $error) {
-        if (strpos($error, 'correo') !== false || strpos($error, 'Correo') !== false) {
-            $error_correo = $error;
-        }
-    }
+            // 2. Verificar si ese id_persona está en la tabla usuario
+            $sql_usuario = "SELECT id FROM usuario WHERE id_persona = $id_persona";
+            $result_usuario = mysqli_query($conexion, $sql_usuario);
 
-
-    //validamos telefono
-    if ($telefono === '') {
-        echo "entrando en validaciones de telefono";
-        $errores[] = "El número de teléfono es obligatorio.";
-    } elseif (!preg_match('/^[0-9]{1,10}$/', $telefono)) {
-        $errores[] = "El teléfono debe contener solo números y un máximo de 10 dígitos.";
-    }
-
-    foreach ($errores as $error) {
-        if (strpos($error, 'teléfono') !== false || strpos($error, 'Teléfono') !== false) {
-            $error_telefono = $error;
-        }
-    }
-
-    //validamos contraseñas
-    if ($passusu === '' || $passusu1 === '') {
-        echo "entrando en validaciones de contraseñas";
-        $errores[] = "Ambos campos de contraseña son obligatorios.";
-    } elseif (!preg_match('/^[A-Za-z0-9]{6,}$/', $passusu)) {
-        $errores[] = "La contraseña debe tener al menos 6 caracteres y solo puede contener letras y números, sin espacios ni símbolos.";
-    } elseif ($passusu !== $passusu1) {
-        $errores[] = "Las contraseñas no coinciden.";
-    }
-
-    foreach ($errores as $error) {
-        if (strpos($error, 'coinciden') !== false) {
-            $error_contraseña_repetida = $error;
-        } elseif (strpos($error, 'contraseña') !== false) {
-            $error_contraseña = $error;
-        }
-    }
-
-
-    // Validación y procesamiento de imagen
-    if ($img_perfil && $img_perfil['error'] === 0) {
-        $permitidos = ['image/jpeg', 'image/png'];
-        
-        if (!in_array($img_perfil['type'], $permitidos)) {
-            $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
-        } elseif ($img_perfil['size'] > 4 * 1024 * 1024) {
-            $errores[] = "La imagen no debe superar los 4MB.";
-        } else {
-            $origen_temp = $img_perfil['tmp_name'];
-            list($ancho_original, $alto_original) = getimagesize($origen_temp);
-            $ancho_nuevo = 1280;
-            $alto_nuevo = 1280;
-
-            // Crear imagen desde el archivo original según tipo MIME
-            $origen = null;
-            if ($img_perfil['type'] == 'image/jpeg') {
-                $origen = imagecreatefromjpeg($origen_temp);
-            } elseif ($img_perfil['type'] == 'image/png') {
-                $origen = imagecreatefrompng($origen_temp);
+            if ($result_usuario && mysqli_num_rows($result_usuario) > 0) {
+                // Ya está vinculado con un usuario → NO PERMITIR
+                $mensaje_dni_duplicado = "Ya existe un usuario registrado con ese DNI. Intente nuevamente.";
+                $mostrar_datos_usuario = false;
+            } else {
+                // Está registrado como persona, pero aún no tiene usuario → PERMITIR
+                $mostrar_datos_usuario = true;
             }
+        } else {
+            // No existe como persona → redirigir
+            $_SESSION['mensaje_dni'] = "El DNI ingresado no existe. Debes registrarte con tus datos personales antes de crear un usuario.";
+            header("Location: registrarsepersona.php");
+            exit;
+        }
+    }
 
-            if ($origen) {
-                $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
-                $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
-                imagefill($imagen_redimensionada, 0, 0, $blanco);
-                imagecopyresampled(
-                    $imagen_redimensionada,
-                    $origen,
-                    0, 0, 0, 0,
-                    $ancho_nuevo,
-                    $alto_nuevo,
-                    $ancho_original,
-                    $alto_original
-                );
+    // ----------- REGISTRO DE USUARIO ------------------
+    elseif (isset($_POST['registrar_usuario'])) {
+        // Recuperar id_persona desde sesión
+        $id_persona = $_SESSION['id_persona'] ?? null;
 
-                $nombre_img = uniqid('usuario_') . ".jpg";
-                $directorio_destino = "uploads/usuario/";
-                $ruta_completa = $directorio_destino . $nombre_img;
+        if (!$id_persona) {
+            $errores[] = "No se pudo asociar el usuario con una persona válida.";
+        }
 
-                if (!imagejpeg($imagen_redimensionada, $ruta_completa, 90)) {
-                    $errores[] = "No se pudo guardar la imagen.";
-                } else {
-                    $ruta_imagen = $ruta_completa;
+        // Sanitizar entradas
+        $nombre_usu = mysqli_real_escape_string($conexion, trim($_POST['nombre-usu']));
+        $correo     = mysqli_real_escape_string($conexion, trim($_POST['correo']));
+        $telefono   = preg_replace('/[^0-9]/', '', mysqli_real_escape_string($conexion, trim($_POST['telefono'])));
+        $passusu    = trim($_POST['passusu']);
+        $passusu1   = trim($_POST['passusu1']);
+        $img_perfil = $_FILES['img-perfil'];
+
+        // --- Validaciones básicas ---
+        if ($nombre_usu === '') {
+            $errores[] = 'El nombre de usuario es obligatorio.';
+        } elseif (!preg_match('/^[A-Za-z0-9]+$/', $nombre_usu)) {
+            $errores[] = 'El nombre de usuario solo puede contener letras y números, sin espacios ni símbolos.';
+        }
+
+        if ($correo === '') {
+            $errores[] = 'El correo electrónico es obligatorio.';
+        } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            $errores[] = "El correo electrónico no es válido.";
+        } else {
+            $sql = "SELECT correo FROM usuario WHERE correo = '$correo'";
+            $result = mysqli_query($conexion, $sql);
+            if ($result && mysqli_num_rows($result) > 0) {
+                $errores[] = "Ya existe un usuario registrado con ese correo.";
+            }
+        }
+
+        if ($telefono === '') {
+            $errores[] = "El número de teléfono es obligatorio.";
+        } elseif (!preg_match('/^[0-9]{1,10}$/', $telefono)) {
+            $errores[] = "El teléfono debe contener solo números y un máximo de 10 dígitos.";
+        }
+
+        if ($passusu === '' || $passusu1 === '') {
+            $errores[] = "Ambos campos de contraseña son obligatorios.";
+        } elseif (!preg_match('/^[A-Za-z0-9]{6,}$/', $passusu)) {
+            $errores[] = "La contraseña debe tener al menos 6 caracteres y solo puede contener letras y números.";
+        } elseif ($passusu !== $passusu1) {
+            $errores[] = "Las contraseñas no coinciden.";
+        }
+
+        // Imagen de perfil
+        $ruta_imagen = '';
+        if ($img_perfil && $img_perfil['error'] === 0) {
+            $permitidos = ['image/jpeg', 'image/png'];
+
+            if (!in_array($img_perfil['type'], $permitidos)) {
+                $errores[] = "El formato de imagen no es válido. Solo se permiten JPG y PNG.";
+            } elseif ($img_perfil['size'] > 4 * 1024 * 1024) {
+                $errores[] = "La imagen no debe superar los 4MB.";
+            } else {
+                $origen_temp = $img_perfil['tmp_name'];
+                list($ancho_original, $alto_original) = getimagesize($origen_temp);
+
+                $ancho_nuevo = 1280;
+                $alto_nuevo = 1280;
+
+                $origen = null;
+                if ($img_perfil['type'] == 'image/jpeg') {
+                    $origen = imagecreatefromjpeg($origen_temp);
+                } elseif ($img_perfil['type'] == 'image/png') {
+                    $origen = imagecreatefrompng($origen_temp);
                 }
 
-                imagedestroy($origen);
-                imagedestroy($imagen_redimensionada);
+                if ($origen) {
+                    $imagen_redimensionada = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
+                    $blanco = imagecolorallocate($imagen_redimensionada, 255, 255, 255);
+                    imagefill($imagen_redimensionada, 0, 0, $blanco);
+                    imagecopyresampled(
+                        $imagen_redimensionada,
+                        $origen,
+                        0, 0, 0, 0,
+                        $ancho_nuevo,
+                        $alto_nuevo,
+                        $ancho_original,
+                        $alto_original
+                    );
+
+                    $nombre_img = uniqid('usuario_') . ".jpg";
+                    $directorio_destino = "uploads/usuario/";
+                    $ruta_completa = $directorio_destino . $nombre_img;
+
+                    if (!imagejpeg($imagen_redimensionada, $ruta_completa, 90)) {
+                        $errores[] = "No se pudo guardar la imagen.";
+                    } else {
+                        $ruta_imagen = $ruta_completa;
+                    }
+
+                    imagedestroy($origen);
+                    imagedestroy($imagen_redimensionada);
+                } else {
+                    $errores[] = "Error al procesar la imagen.";
+                }
+            }
+        } else {
+            $errores[] = "Debe subir una imagen.";
+        }
+
+        // Asignar mensajes de error por campo
+        foreach ($errores as $error) {
+            if (strpos($error, 'usuario') !== false) $error_nombre_usu = $error;
+            if (strpos($error, 'correo') !== false) $error_correo = $error;
+            if (strpos($error, 'teléfono') !== false || strpos($error, 'Teléfono') !== false) $error_telefono = $error;
+            if (strpos($error, 'contraseña') !== false && strpos($error, 'coinciden') === false) $error_contraseña = $error;
+            if (strpos($error, 'coinciden') !== false) $error_contraseña_repetida = $error;
+            if (strpos($error, 'imagen') !== false || strpos($error, 'formato') !== false) $error_img = $error;
+        }
+
+        // Si no hay errores, registrar
+        if (count($errores) === 0) {
+            $passusu_hash = password_hash(strtolower(trim($passusu)), PASSWORD_DEFAULT);
+
+            $stmt = $conexion->prepare("INSERT INTO usuario (nom_usu, img_perfil, correo, telefono, passusu, id_persona, rol) 
+                                        VALUES (?, ?, ?, ?, ?, ?, 0)");
+
+            $stmt->bind_param("sssssi", $nombre_usu, $ruta_imagen, $correo, $telefono, $passusu_hash, $id_persona);
+
+            if ($stmt->execute()) {
+                $_SESSION['id_persona'] = $conexion->insert_id;
+                header("Location: login.php?registrouser=ok");
+                exit;
             } else {
-                $errores[] = "Error al procesar la imagen.";
+                $errores[] = "Error al registrar usuario: " . $stmt->error;
             }
         }
-    } else {
-        $errores[] = "Debe subir o tomar una imagen.";
     }
-
-    foreach ($errores as $error) {
-        if (strpos($error, 'imagen') !== false || strpos($error, 'formato') !== false) {
-            $error_img = $error;
-        }
-    }
-
-
-    if (count($errores) === 0) {
-
-        //Escapar campos
-        $nombre_usu  = mysqli_real_escape_string($conexion, $nombre_usu);
-        $correo      = mysqli_real_escape_string($conexion, $correo);
-        $telefono    = mysqli_real_escape_string($conexion, $telefono);
-        $passusu     = mysqli_real_escape_string($conexion, $passusu);
-        $passusu1    = mysqli_real_escape_string($conexion, $passusu1);
-        $ruta_imagen = mysqli_real_escape_string($conexion, $ruta_imagen);
-
-        $dni         = mysqli_real_escape_string($conexion, $dni);
-
-    if (!isset($passusu) || empty(trim($passusu))) {
-    $errores[] = "La contraseña no puede estar vacía.";
-    } else {
-        $passusu_hash = password_hash(strtolower(trim($passusu)), PASSWORD_DEFAULT);
-    }
-
-
-    // Preparar la consulta
-    $stmt = $conexion->prepare("INSERT INTO usuario (nom_usu, img_perfil, correo, telefono, passusu, id_persona, rol) 
-                                VALUES (?, ?, ?, ?, ?, ?, 0)");
-
-    // Convertir el id_persona a NULL si no existe en la sesión
-    $id_persona = $id_persona_encontrado;
-
-    // Enlazar parámetros (la 'i' acepta null correctamente si se usó con 'bind_param')
-    $stmt->bind_param("sssssi", $nombre_usu, $ruta_imagen, $correo, $telefono, $passusu_hash, $id_persona);
-
-    // Ejecutar y verificar
-    if ($stmt->execute()) {
-        $_SESSION['id_persona'] = $conexion->insert_id;
-        header("Location: login.php?registrouser=ok");
-        exit;
-    } else {
-        $errores[] = "Error al registrar usuario: " . $stmt->error;
-    }
-        }
-    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -467,21 +424,27 @@ document.addEventListener('DOMContentLoaded', () =>
 
     <section class="wrapperregistro" id="wrapperregistro">
 
-        <form action="registrarseusuario.php" method="post" enctype="multipart/form-data" id="formregistro">
-            <h2>Formulario Registrar Usuario</h2>
-            <fieldset>
-                <legend>Datos de verificacion</legend>
+        <h2>Formulario Registrar Usuario</h2>
 
+        <!-- Formulario SOLO para verificar DNI -->
+        <form action="registrarseusuario.php" method="post">
+            <fieldset>
+                <legend>Datos de verificación</legend>
                 <section class="input-box">
-                    <label for="DNI:">DNI:</label>
-                    <input id="dni" name="dni" type="number" min="3000000" required value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
+                    <label for="dni">DNI:</label>
+                    <input id="dni" name="dni" type="number" min="3000000" required
+                        value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
                     <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
-                    <br>
-                    <p>¿No tenes tus datos personales registrados? <a href="../Vistas/registrarsepersona.php">hazlo ahora</a></p>
+                    <br><br>
+                    <input type="submit" name="verificar_dni" value="Verificar DNI" class="btn">
+                    <p><a href="../Vistas/registrarsepersona.php">¿No tenés tus datos personales registrados?</a></p>
                 </section>
             </fieldset>
+        </form>
 
-            <fieldset>
+        <form action="registrarseusuario.php" method="post" enctype="multipart/form-data" id="formregistro">
+            
+            <fieldset id="fieldset-usuario" style="display: <?php echo $mostrar_datos_usuario ? 'block' : 'none'; ?>;">
                 <legend>Datos de usuario</legend>
 
                 <section class="input-box">
@@ -520,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () =>
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
                 
-                <input type="submit" value="Registrar Usuario" class="btn">
+                <input type="submit" name="registrar_usuario" value="Registrar Usuario" class="btn">
                 <p><a href="../Vistas/registrarsepersona.php">Volver a Registrar persona</a></p>
             </fieldset>
         </form>
