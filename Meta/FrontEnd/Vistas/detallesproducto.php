@@ -1,12 +1,11 @@
-<?php
-session_start();
-include('conexion.php'); // Ajusta la ruta si es necesario
+<?php session_start(); include('conexion.php'); 
 
 $id = $_GET['id'] ?? null;
 $tipo = $_GET['tipo'] ?? null;
 
 // Validaciones opcionales:
-if (!$id || !$tipo) {
+if (!$id || !$tipo) 
+{
     // Redirigir o mostrar error si faltan datos
 }
 
@@ -252,16 +251,19 @@ if ($datos) {
             document.getElementById('rentalModal').style.display = 'none';
         }
     
-        // Cierra el modal si se hace clic fuera del contenido del modal
-        window.onclick = function(event) {
+        // Cierra el modal si se hace click fuera del modal
+        window.onclick = function(event) 
+        {
             const modal = document.getElementById('rentalModal');
-            if (event.target === modal) {
+            if (event.target === modal) 
+                {
                 closeModal();
-            }
+                }
         }
     
         // Manejar el envío del formulario
-        document.getElementById('rentalForm').onsubmit = function(event) {
+        document.getElementById('rentalForm').onsubmit = function(event) 
+        {
             event.preventDefault();
             // Aquí puedes agregar la lógica para enviar el formulario
             alert('Formulario enviado');
