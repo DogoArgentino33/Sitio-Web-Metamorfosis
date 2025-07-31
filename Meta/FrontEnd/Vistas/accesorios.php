@@ -99,7 +99,14 @@ $totalPaginas = ceil($totalAccesorios / $accesoriosPorPagina);
                     <p>Tematica: <?= htmlspecialchars($producto['tematicas']) ?></p>
                     <p>Categoria: <?= htmlspecialchars($producto['categorias']) ?></p>
                     <p>Precio: <?= htmlspecialchars($producto['precio']) ?></p>
-                    <label class="btn" disponible="hoy"> Disponible hoy</label>
+                   
+                    <!-- Verificando unidades -->
+                    <?php if ($producto['unidades_disponibles'] == 0):?>
+                        <label class="btn" disponible="futuro">Agotado </label>
+                    <?php elseif ($producto['unidades_disponibles'] > 0):?>
+                        <a href="detallesproducto.php?id=<?= $producto['id'] ?>&tipo=<?= $producto['tipo'] ?>" class="asection" style="text-decoration: none;"> <label class="btn" disponible="hoy"> Disponible hoy</label> </a>
+                    <?php endif;?>
+                    
                 </section>
             </a>
         <?php

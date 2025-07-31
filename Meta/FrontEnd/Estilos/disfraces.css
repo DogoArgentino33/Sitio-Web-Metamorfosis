@@ -132,7 +132,8 @@ h2 {
 }
 
 /* Botón para disfraces no disponibles aún */
-.card-costume label.btn[disponible="futuro"] {
+.card-costume label.btn[disponible="futuro"] 
+{
     background-color: #888;
     cursor: not-allowed;
 }
