@@ -186,15 +186,14 @@ if ($datos) {
                 <h2>Datos del Alquiler</h2>
 
                 <!-- Desde y hasta -->
-                <label for="desde">Fecha Desde...</label>
-                <input type="date" id="desde" name="desde" required value="<?= escapar($_POST['desde'] ?? '') ?>">
-    
-                <label for="hasta">Fecha Hasta...</label>
-                <input type="date" id="hasta" name="hasta" required value="<?= escapar($_POST['hasta'] ?? '') ?>">
+                <label for="date-from">Fecha Desde...</label>
+                <input type="date" id="date-from" name="date-from" required>
 
+                <label for="date-to">Fecha Hasta...</label>
+                <input type="date" id="date-to" name="date-to" required>
 
-                <label for="cantidad">Cantidad de unidades a Alquilar...</label>
-                <input type="number" id="cantidad" name="cantidad" min="1" required value="<?= escapar($_POST['cantidad'] ?? '') ?>">
+                <label for="amount">Cantidad de unidades a Alquilar...</label>
+                <input type="number" id="amount" name="amount" min="1" required>
     
                 <h2>Métodos de Pago</h2>
                 <section class="payment-methods">
