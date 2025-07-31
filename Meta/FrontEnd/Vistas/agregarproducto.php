@@ -272,13 +272,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
         <!-- Unidades -->
         <p><label for="unidades">Unidades Disponibles:</label>
-        <input id="unidades" type="number" name="unidades" class="boton" min="0"
-            value="<?= escapar($_POST['unidades'] ?? '') ?>"></p>
+        <input id="unidades" type="number" name="unidades" class="boton" min="0" value="<?= escapar($_POST['unidades'] ?? '') ?>"></p>
 
         <!-- Precio -->
         <p><label for="precio">Precio:</label>
-        <input id="precio" type="number" name="precio" class="boton" step="0.01" min="0"
-            value="<?= escapar($_POST['precio'] ?? '') ?>"></p>
+        <input id="precio" type="number" name="precio" class="boton" step="0.01" min="0" value="<?= escapar($_POST['precio'] ?? '') ?>"></p>
 
         <!-- Imagenes -->
         <p>

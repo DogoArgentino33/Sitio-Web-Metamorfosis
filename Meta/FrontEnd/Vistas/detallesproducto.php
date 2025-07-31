@@ -11,7 +11,8 @@ if (!$id || !$tipo)
 
 $datos = null;
 
-if ($id && $tipo) {
+if ($id && $tipo) 
+{
     $stmt = $conexion->prepare("
         SELECT 
             p.id,
@@ -181,15 +182,19 @@ if ($datos) {
                 <label for="stock">Cantidad Disponible:</label>
                 <input type="text" id="stock" name="stock" readonly disabled>
     
+                <!-- Datos del aquiler: no son readonly -->
                 <h2>Datos del Alquiler</h2>
-                <label for="date-from">Fecha Desde...</label>
-                <input type="date" id="date-from" name="date-from" required>
-    
-                <label for="date-to">Fecha Hasta...</label>
-                <input type="date" id="date-to" name="date-to" required>
 
-                <label for="amount">Cantidad de unidades a Alquilar...</label>
-                <input type="number" id="amount" name="amount" min="1" required>
+                <!-- Desde y hasta -->
+                <label for="desde">Fecha Desde...</label>
+                <input type="date" id="desde" name="desde" required value="<?= escapar($_POST['desde'] ?? '') ?>">
+    
+                <label for="hasta">Fecha Hasta...</label>
+                <input type="date" id="hasta" name="hasta" required value="<?= escapar($_POST['hasta'] ?? '') ?>">
+
+
+                <label for="cantidad">Cantidad de unidades a Alquilar...</label>
+                <input type="number" id="cantidad" name="cantidad" min="1" required value="<?= escapar($_POST['cantidad'] ?? '') ?>">
     
                 <h2>Métodos de Pago</h2>
                 <section class="payment-methods">
@@ -276,15 +281,19 @@ if ($datos) {
     </script>
     
     <script>
-        function togglePaymentFields() {
+        function togglePaymentFields() 
+        {
             const creditDebit = document.querySelector('input[name="payment"]:checked').value;
             const cardDetails = document.getElementById('cardDetails');
         
-            if (creditDebit === 'credito' || creditDebit === 'debito') {
-                cardDetails.style.display = 'block';
-            } else {
-                cardDetails.style.display = 'none';
-            }
+            if (creditDebit === 'credito' || creditDebit === 'debito') 
+                {
+                    cardDetails.style.display = 'block';
+                } 
+            else 
+                {
+                    cardDetails.style.display = 'none';
+                }
         }
     </script>
 
