@@ -72,13 +72,14 @@ $consulta = $resultado->fetch_assoc();
     <section class="modal-exportar-card" onclick="event.stopPropagation();">
         <section class="modal-exportar-content">
             <h2>Responder Consulta</h2>
-            <form id="formExportar" action="exportarusuario.php" method="POST" novalidate>
-
-                <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
-                    <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
-                    <button type="submit" class="boton-exportar">Responder</button>
-                </nav>
-            </form>
+                <form id="formExportar" action="responderconsulta.php" method="POST" novalidate>
+                    <input type="hidden" name="correo" value="<?= htmlspecialchars($consulta['correo']) ?>">
+                    <textarea name="mensaje" placeholder="Escribe tu respuesta aquí..." required></textarea>
+                    <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
+                        <button type="button" class="boton" onclick="cerrarModalExportar()">Cancelar</button>
+                        <button type="submit" class="boton-exportar">Responder</button>
+                    </nav>
+                </form>
         </section>
     </section>
 </section>
