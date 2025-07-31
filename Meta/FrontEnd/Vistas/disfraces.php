@@ -92,6 +92,10 @@ $totalPaginas = ceil($totalDisfraces / $disfracesPorPagina);
     {
         while ($producto = $result->fetch_assoc()) 
         { ?>
+                <?php if ($producto['unidades_disponibles'] > 0):?>
+                <a href="detallesproducto.php?id=<?= $producto['id'] ?>&tipo=<?= $producto['tipo'] ?>" class="asection" style="text-decoration: none;">
+                <?php endif;?>
+
                 <section class="card-costume">
                     <?php if (!empty($producto['imagenes'])): ?>
                         <?php
