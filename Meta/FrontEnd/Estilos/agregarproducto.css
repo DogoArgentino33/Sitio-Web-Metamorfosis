@@ -131,3 +131,16 @@ select.boton.invalido {
     box-shadow: 0 0 3px #f44336;
 }
 
+/* Boton cancelar */
+.btn-cancelar-imagen
+{
+    margin-top: 5px;
+    padding: 6px 12px;
+    background-color: #d12e3b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}

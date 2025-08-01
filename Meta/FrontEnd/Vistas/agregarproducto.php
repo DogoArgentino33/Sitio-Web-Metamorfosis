@@ -285,6 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </p>
         <!-- Contenedor para la vista previa -->
         <div id="preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+        <div id="mensaje-error" style="color: red;"></div>
 
 
         <!-- Mostrar errores -->
@@ -422,35 +423,68 @@ document.querySelector('form').addEventListener('submit', function(e) {
 </script>
 
 <script>
-document.getElementById('imagenes').addEventListener('change', function () {
-    const preview = document.getElementById('preview');
-    preview.innerHTML = ''; // Limpia previas anteriores
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('imagenes').addEventListener('change', function () {
+        // Llamando img, preview y contenedor de error
+        const inputImg = document.getElementById("imagenes");
+        const preview = document.getElementById("preview");
+        const mensajeError = document.getElementById("mensaje-error");
 
-    const archivos = this.files;
+        // Limpiando preview
+        preview.innerHTML = '';
+        mensajeError.textContent = '';
 
-    if (archivos.length === 0) return;
+        // Llamando las imágenes
+        const archivos = this.files;
 
-    for (let i = 0; i < archivos.length; i++) {
-        const archivo = archivos[i];
+        if (archivos.length === 0) return;
 
-        if (!archivo.type.startsWith('image/')) continue;
+        for (let i = 0; i < archivos.length; i++) {
+            const archivo = archivos[i];
+            if (!archivo.type.startsWith('image/')) continue;
 
-        const lector = new FileReader();
+            const lector = new FileReader();
 
-        lector.onload = function (e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.width = '120px';
-            img.style.height = '120px';
-            img.style.objectFit = 'cover';
-            img.style.border = '1px solid #ccc';
-            img.style.borderRadius = '8px';
-            img.title = archivo.name;
-            preview.appendChild(img);
+            // Mostrando las imágenes
+            lector.onload = function (e) {
+                // Creando área de las imágenes
+                const contenedor = document.createElement("div");
+                contenedor.style.display = "flex";
+                contenedor.style.flexDirection = "column";
+                contenedor.style.alignItems = "center";
+
+                // Asignando estilos a la imagen
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = '120px';
+                img.style.height = '120px';
+                img.style.objectFit = 'cover';
+                img.style.border = '1px solid #ccc';
+                img.style.borderRadius = '8px';
+                img.title = archivo.name;
+
+                // Creando botón cancelar
+                const btnCancelar = document.createElement("button");
+                btnCancelar.classList.add("btn-cancelar-imagen");
+                btnCancelar.textContent = "Cancelar imagen";
+                btnCancelar.type = "button";
+
+                // Función de cancelar
+                btnCancelar.onclick = function () {
+                    contenedor.remove();
+                    if (preview.children.length === 0) {
+                        inputImg.value = '';
+                    }
+                };
+
+                contenedor.appendChild(img);
+                contenedor.appendChild(btnCancelar);
+                preview.appendChild(contenedor);
+            };
+
+            lector.readAsDataURL(archivo);
         }
-
-        lector.readAsDataURL(archivo);
-    }
+    });
 });
 </script>
 
