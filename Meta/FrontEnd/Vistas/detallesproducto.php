@@ -60,6 +60,8 @@ if ($datos) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
+
+    $errores = [];
     
     // Obtener datos del formulario
     $id_usuario = $_SESSION['id'];
@@ -72,9 +74,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     $fechamod = date('Y-m-d H:i:s'); // Fecha completa
     $usumod = $id_usuario;
 
-    // Validaciones básicas
+    // Validación general
     if (!$id_producto || !$desde || !$hasta || $cantidad <= 0 || !$metodo_pago || $total <= 0) {
-        die("Datos inválidos o incompletos.");
+        $errores[] = "Completa todos los campos obligatorios.";
+    }
+
+    // Validación de fechas
+    if ($desde > $hasta) {
+        $errores[] = "La fecha de inicio no puede ser posterior a la fecha de fin.";
+    }
+
+    $desdeDate = strtotime($desde);
+    $hastaDate = strtotime($hasta);
+
+    if ($hastaDate <= $desdeDate) {
+        $errores[] = "Debe haber al menos un día completo entre la fecha de inicio y de fin del alquiler.";
+    }
+
+    $desdeDate = new DateTime($desde);
+    $hastaDate = new DateTime($hasta);
+    $intervalo = $desdeDate->diff($hastaDate);
+
+    if ($intervalo->days < 1) {
+        die("Debe haber al menos un día completo de alquiler.");
     }
 
     // Obtener ID del método de pago desde la base de datos
@@ -86,24 +108,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     if ($row = $result->fetch_assoc()) {
         $id_metodopago = (int)$row['id'];  // Convertir a entero
     } else {
-        die("Método de pago inválido o no disponible.");
+        $errores[] = "Método de pago inválido o no disponible.";
     }
 
     $stmt->close();
 
     // Validación para métodos que requieren tarjeta
     if ($id_metodopago === 3 || $id_metodopago === 4) {
-        if (empty($_POST['cardNumber']) || empty($_POST['cardExpiry']) || empty($_POST['cardCVV'])) {
-            die("Debes completar los datos de tarjeta para este método de pago.");
+
+        $cardNumber = $_POST['cardNumber'] ?? '';
+        $cardExpiry = $_POST['cardExpiry'] ?? '';
+        $cardCVV = $_POST['cardCVV'] ?? '';
+
+        if (empty($cardNumber) || empty($cardExpiry) || empty($cardCVV)) {
+            $errores[] = "Todos los campos de tarjeta son obligatorios.";
         }
 
-        // Validaciones adicionales para los datos de tarjeta
-        if (!preg_match('/^\d{16}$/', $_POST['cardNumber'])) {
-            die("Número de tarjeta inválido.");
+        if (!preg_match('/^\d{16}$/', $cardNumber)) {
+            $errores[] = "Número de tarjeta inválido (16 dígitos requeridos).";
         }
-        if (!preg_match('/^\d{3}$/', $_POST['cardCVV'])) {
-            die("CVV inválido.");
+
+        if (!preg_match('/^\d{3}$/', $cardCVV)) {
+            $errores[] = "CVV inválido (3 dígitos requeridos).";
         }
+
+        // Validación de fecha de expiración
+        $hoy = date('Y-m');
+        if ($cardExpiry < $hoy) {
+            $errores[] = "La tarjeta ya está vencida.";
+        }
+    }
+
+    // SI HAY ERRORES, MOSTRARLOS
+    if (!empty($errores)) {
+        $_SESSION['errores_alquiler'] = $errores;
+        header("Location: detallesproducto.php?id=$id_producto&tipo=$tipo&error=1");
+        exit;
     }
 
     // Insertar en tabla alquiler
@@ -142,6 +182,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     <script>
         const usuarioLogueado = <?= isset($_SESSION['id']) ? 'true' : 'false' ?>;
     </script>
+
+    <style>
+        .barra-validacion {
+            height: 5px;
+            margin-top: 3px;
+            transition: background-color 0.3s ease;
+        }
+
+        .barra-validacion.valido {
+            background-color: #4caf50;
+        }
+
+        .barra-validacion.invalido {
+            background-color: #f44336;
+        }
+
+        .mensaje-validacion {
+            font-size: 0.85em;
+            margin-top: 2px;
+        }
+
+        .mensaje-validacion.valido {
+            color: #4caf50;
+        }
+
+        .mensaje-validacion.invalido {
+            color: #f44336;
+        }
+    </style>
 
 </head>
 <body>
@@ -222,6 +291,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
     </main>
 
+    <?php if (isset($_SESSION['errores_alquiler'])): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errores en el formulario',
+                    html: `<?= implode('<br>', array_map('addslashes', $_SESSION['errores_alquiler'])) ?>`,
+                    confirmButtonText: 'Volver a corregir'
+                });
+            });
+        </script>
+        <?php unset($_SESSION['errores_alquiler']); ?>
+    <?php endif; ?>
+
     <section id="rentalModal" class="modal">
         <section class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -254,12 +337,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 <!-- Desde y hasta -->
                 <label for="desde">Fecha Desde...</label>
                 <input type="date" id="desde" name="desde" required min="<?= $hoy ?>">
+                <div class="barra-validacion" id="barra-desde"></div>
+                <div class="mensaje-validacion" id="mensaje-desde"></div>
 
                 <label for="hasta">Fecha Hasta...</label>
                 <input type="date" id="hasta" name="hasta" required>
+                <div class="barra-validacion" id="barra-hasta"></div>
+                <div class="mensaje-validacion" id="mensaje-hasta"></div>
 
                 <label for="cantidad">Cantidad de unidades a Alquilar...</label>
                 <input type="number" id="cantidad" name="cantidad" min="1" required>
+                <div class="barra-validacion" id="barra-cantidad"></div>
+                <div class="mensaje-validacion" id="mensaje-cantidad"></div>
     
                 <h2>Métodos de Pago</h2>
                 <?php
@@ -284,12 +373,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                             <h3>Detalles de la Tarjeta</h3>
                             <label for="cardNumber">Número de Tarjeta:</label><br>
                             <input type="text" id="cardNumber" name="cardNumber" maxlength="16"><br>
+                            <div class="barra-validacion" id="barra-cardNumber"></div>
+                            <div class="mensaje-validacion" id="mensaje-cardNumber"></div>
 
                             <label for="cardExpiry">Fecha de Expiración:</label><br>
                             <input type="month" id="cardExpiry" name="cardExpiry"><br>
+                            <div class="barra-validacion" id="barra-cardExpiry"></div>
+                            <div class="mensaje-validacion" id="mensaje-cardExpiry"></div>
 
                             <label for="cardCVV">CVV:</label><br>
                             <input type="text" id="cardCVV" name="cardCVV" maxlength="3"><br>
+                            <div class="barra-validacion" id="barra-cardCVV"></div>
+                            <div class="mensaje-validacion" id="mensaje-cardCVV"></div>
                         </section>
                         <br>
                     <?php endwhile; ?>
@@ -427,6 +522,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         });
     </script>
     <?php endif; ?>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const campos = {
+                desde: {
+                    validate: () => {
+                        const desde = new Date(document.getElementById("desde").value);
+                        const hasta = new Date(document.getElementById("hasta").value);
+                        if (isNaN(desde.getTime())) return [false, "Debes seleccionar una fecha."];
+                        if (hasta && desde > hasta) return [false, "La fecha 'Desde' no puede ser posterior a 'Hasta'."];
+                        return [true, "Fecha válida."];
+                    }
+                },
+                hasta: {
+                    validate: () => {
+                        const desde = new Date(document.getElementById("desde").value);
+                        const hasta = new Date(document.getElementById("hasta").value);
+                        if (isNaN(hasta.getTime())) return [false, "Debes seleccionar una fecha."];
+                        if (desde && hasta < desde) return [false, "La fecha 'Hasta' no puede ser anterior a 'Desde'."];
+                        
+                        // Nueva condición:
+                        const diferenciaEnMs = hasta - desde;
+                        const unDia = 24 * 60 * 60 * 1000;
+                        if (diferenciaEnMs < unDia) return [false, "Debe haber al menos 1 día de diferencia."];
+
+                        return [true, "Fecha válida."];
+                    }
+                },
+                cantidad: {
+                    validate: () => {
+                        const cantidad = parseInt(document.getElementById("cantidad").value);
+                        const stock = parseInt(document.getElementById("stock").value);
+                        if (isNaN(cantidad) || cantidad < 1) return [false, "Debe ser al menos 1 unidad."];
+                        if (cantidad > stock) return [false, `No hay suficiente stock. Máximo: ${stock}`];
+                        return [true, "Cantidad válida."];
+                    }
+                },
+                cardNumber: {
+                    validate: () => {
+                        const input = document.getElementById("cardNumber");
+                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
+                        const valor = input.value.trim();
+                        if (!requerido) return [true, ""];
+                        if (!/^\d{16}$/.test(valor)) return [false, "Debe contener 16 dígitos numéricos."];
+                        return [true, "Número válido."];
+                    }
+                },
+                cardCVV: {
+                    validate: () => {
+                        const input = document.getElementById("cardCVV");
+                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
+                        const valor = input.value.trim();
+                        if (!requerido) return [true, ""];
+                        if (!/^\d{3}$/.test(valor)) return [false, "Debe contener 3 dígitos numéricos."];
+                        return [true, "CVV válido."];
+                    }
+                },
+                cardExpiry: {
+                    validate: () => {
+                        const input = document.getElementById("cardExpiry");
+                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
+                        const valor = input.value;
+                        if (!requerido) return [true, ""];
+                        const hoy = new Date().toISOString().slice(0, 7);
+                        if (valor < hoy) return [false, "La tarjeta está vencida."];
+                        return [true, "Fecha válida."];
+                    }
+                }
+            };
+
+            function aplicarEstilos(idCampo, valido, mensajeTexto) {
+                const input = document.getElementById(idCampo);
+                if (!input) return;
+
+                let barra = input.nextElementSibling;
+                let mensaje = barra?.nextElementSibling;
+
+                if (!barra || !barra.classList.contains("barra-validacion")) {
+                    barra = document.createElement("div");
+                    barra.classList.add("barra-validacion");
+                    input.insertAdjacentElement("afterend", barra);
+                    mensaje = document.createElement("div");
+                    mensaje.classList.add("mensaje-validacion");
+                    barra.insertAdjacentElement("afterend", mensaje);
+                }
+
+                barra.className = "barra-validacion " + (valido ? "valido" : "invalido");
+                mensaje.className = "mensaje-validacion " + (valido ? "valido" : "invalido");
+                mensaje.textContent = mensajeTexto;
+            }
+
+            for (let id in campos) {
+                const input = document.getElementById(id);
+                if (!input) continue;
+
+                input.addEventListener("input", () => {
+                    const [valido, mensaje] = campos[id].validate();
+                    aplicarEstilos(id, valido, mensaje);
+                });
+            }
+
+            // Validar todo antes de enviar
+            document.getElementById("rentalForm").addEventListener("submit", (e) => {
+                let todoValido = true;
+                for (let id in campos) {
+                    const [valido, mensaje] = campos[id].validate();
+                    aplicarEstilos(id, valido, mensaje);
+                    if (!valido) todoValido = false;
+                }
+                if (!todoValido) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Formulario incompleto o inválido',
+                        text: 'Por favor, revisá los campos marcados antes de continuar.'
+                    });
+                }
+            });
+        });
+    </script>
+
 
 </body>
 </html>

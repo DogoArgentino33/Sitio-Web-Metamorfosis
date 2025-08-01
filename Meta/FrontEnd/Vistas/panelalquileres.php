@@ -1,52 +1,34 @@
-<?php include('auth.php'); include('conexion.php'); // Ajusta la ruta si es necesario
+<?php 
+    include('auth.php'); 
+    include('conexion.php'); 
 
-//Verificando si la cuenta no es rol gerente o empleado
-if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 2 && $_SESSION['rol'] != 4 )
-{
-    header("Location: index.php"); 
-    exit;
-}
-
-if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) 
-{
-    $idEliminar = intval($_GET['id']);
-    $conexion->begin_transaction();
-
-    try {
-        // Eliminar imágenes
-        $stmt = $conexion->prepare("DELETE FROM img_producto WHERE id_producto = ?");
-        $stmt->bind_param("i", $idEliminar);
-        $stmt->execute();
-
-        // Eliminar relaciones intermedias
-        $stmt = $conexion->prepare("DELETE FROM producto_categoria WHERE id_producto = ?");
-        $stmt->bind_param("i", $idEliminar);
-        $stmt->execute();
-
-        $stmt = $conexion->prepare("DELETE FROM producto_talla WHERE id_producto = ?");
-        $stmt->bind_param("i", $idEliminar);
-        $stmt->execute();
-
-        $stmt = $conexion->prepare("DELETE FROM producto_tematica WHERE id_producto = ?");
-        $stmt->bind_param("i", $idEliminar);
-        $stmt->execute();
-
-        // Finalmente eliminar el producto
-        $stmt = $conexion->prepare("DELETE FROM producto WHERE id = ?");
-        $stmt->bind_param("i", $idEliminar);
-        if (!$stmt->execute()) {
-            throw new Exception("No se pudo eliminar el producto: " . $stmt->error);
-        }
-
-        $conexion->commit();
-        header("Location: panelalquileres.php?alquilereliminado=ok");
+    // Verificando roles válidos
+    if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 2 && $_SESSION['rol'] != 4) {
+        header("Location: index.php"); 
         exit;
-    } catch (Exception $e) {
-        $conexion->rollback();
-        echo "<script>alert('Error al eliminar el producto: " . addslashes($e->getMessage()) . "');</script>";
     }
-}
 
+    // Eliminación de alquiler
+    if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
+        $idEliminar = intval($_GET['id']);
+        $conexion->begin_transaction();
+
+        try {
+            $stmt = $conexion->prepare("DELETE FROM alquiler WHERE id = ?");
+            $stmt->bind_param("i", $idEliminar);
+
+            if (!$stmt->execute()) {
+                throw new Exception("No se pudo eliminar el alquiler: " . $stmt->error);
+            }
+
+            $conexion->commit();
+            header("Location: panelalquileres.php?alquilereliminado=ok");
+            exit;
+        } catch (Exception $e) {
+            $conexion->rollback();
+            echo "<script>alert('Error al eliminar el alquiler: " . addslashes($e->getMessage()) . "');</script>";
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -103,12 +85,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3)
             <table>
                 <thead>
                     <tr>
-                        <th>DISFRAZ</th>
                         <th>USUARIO</th>
+                        <th>PRODUCTO</th>
                         <th>DESDE</th>
                         <th>HASTA</th>
-                        <th>PRECIO</th>
-                        <th>VER</th>
+                        <th>CANTIDAD</th>
+                        <th>TOTAL ($)</th>
+                        <th>METODO PAGO</th>
                         
                         <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                         <!-- Para gerente -->
@@ -121,64 +104,68 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3)
                 <?php
                     $por_pagina = 10;
                     $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-                    $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
+                    $inicio = ($pagina - 1) * $por_pagina;
 
-                    $total_sql = "SELECT COUNT(DISTINCT p.id) AS total FROM producto p";
-                    $total_stmt = $conexion->prepare($total_sql);
-                    $total_stmt->execute();
-                    $total_resultado = $total_stmt->get_result()->fetch_assoc();
-                    $total_registros = $total_resultado['total'];
-                    $total_paginas = ceil($total_registros / $por_pagina);
+                    // Total registros
+                    $total_sql = "SELECT COUNT(*) AS total FROM alquiler";
+                    $total_result = $conexion->query($total_sql);
+                    $total_fila = $total_result->fetch_assoc();
+                    $total_paginas = ceil($total_fila['total'] / $por_pagina);
 
+                    // Consulta paginada con JOINs
                     $sql = "
-                        SELECT alquiler.id,id_usuario,id_producto, desde, hasta,total FROM alquiler
-                        INNER JOIN usuario
-                        ON usuario.id = alquiler.id_usuario
-                        INNER JOIN producto
-                        ON producto.id = alquiler.id_producto
-                        GROUP BY alquiler.id
-                        ORDER BY alquiler.id
+                       SELECT 
+                            a.id,
+                            a.desde,
+                            a.hasta,
+                            a.cantidad,
+                            a.total,
+                            u.nom_usu AS usuario,
+                            p.nombre AS producto,
+                            m.nombre AS metodo_pago,
+                            a.fechamod,
+                            a.usumod
+                        FROM alquiler a
+                        INNER JOIN usuario u ON a.id_usuario = u.id
+                        INNER JOIN producto p ON a.id_producto = p.id
+                        INNER JOIN metodo_pago m ON a.id_metodopago = m.id
+                        ORDER BY a.desde DESC
                         LIMIT ?, ?;
-                        ";
+
+                    ";
 
                     $stmt = $conexion->prepare($sql);
-                    $stmt->bind_param("ii", $inicio, $por_pagina);
-
                     if (!$stmt) {
-                        die("Error en prepare: " . $conexion->error);
+                        die("Error al preparar la consulta: " . $conexion->error);
                     }
-
+                    $stmt->bind_param("ii", $inicio, $por_pagina);
                     $stmt->execute();
                     $result = $stmt->get_result();
 
-
                     if ($result && $result->num_rows > 0) {
-                        while ($producto = $result->fetch_assoc()) {
+                        while ($alquiler = $result->fetch_assoc()) {
                             ?>
                             <tr>
-                            
-                                <td><?= htmlspecialchars($producto['disfraz']) ?></td>
-                                <td><?= htmlspecialchars($producto['usuario']) ?></td>
-                                <td><?= htmlspecialchars($producto['desde']) ?></td>
-                                <td><?= htmlspecialchars($producto['hasta']) ?></td>
-                                <td><?= htmlspecialchars($producto['total']) ?></td>
-
-                                <td><a href="veralquiler.php?id=<?= $producto['id'] ?>"><button class="ver-btn" title="Ver"><i class="bi bi-eye"></i></button></a></td>
+                                <td><?= htmlspecialchars($alquiler['usuario']) ?></td>
+                                <td><?= htmlspecialchars($alquiler['producto']) ?></td>
+                                <td><?= htmlspecialchars($alquiler['desde']) ?></td>
+                                <td><?= htmlspecialchars($alquiler['hasta']) ?></td>
+                                <td><?= htmlspecialchars($alquiler['cantidad']) ?></td>
+                                <td><?= htmlspecialchars(number_format($alquiler['total'], 2)) ?></td>
+                                <td><?= htmlspecialchars($alquiler['metodo_pago']) ?></td>
                                 
-                                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
-                                <!-- Para gerente -->
+                                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] == 1): ?>
                                 <td>
-                                    <a href="panelproductos.php?id=<?= $producto['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
+                                    <a href="panelalquileres.php?id=<?= $alquiler['id'] ?>&tipo=3" id="btn-eliminar"><i class="bi bi-trash"></i></a>
                                 </td>
                                 <?php endif; ?>
-                                    
                             </tr>
                             <?php
                         }
                     } else {
                         ?>
                         <tr>
-                            <td colspan="15">No hay alquileres registrados</td>
+                            <td colspan="8">No hay alquileres registrados</td>
                         </tr>
                         <?php
                     }
