@@ -48,6 +48,45 @@ $consulta = $resultado->fetch_assoc();
             z-index: 99999 !important;
         }
     </style>
+
+    <style>
+        #modalExportar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        }
+
+        /* Caja blanca del modal */
+        .modal-exportar-card {
+        background: white;
+        border-radius: 8px;
+        max-width: 100vh;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
+        }
+
+        textarea[name="mensaje"] {
+        width: 100%;
+        min-height: 10vh;
+        max-height: 60vh; /* no más alto que esto */
+        resize: none; /* No permitir redimensionar manual */
+        padding: 10px;
+        font-size: 1rem;
+        line-height: 1.4;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+        overflow-y: hidden; /* Esconder scroll, lo ajustamos con JS */
+        }
+    </style>
 </head>
 <body>
     <h1>Información de la consulta</h1>
@@ -64,6 +103,7 @@ $consulta = $resultado->fetch_assoc();
 
             <a href="panelconsulta.php"><button type="button" class="boton">Volver al panel</button></a>
             <button type="button" class="boton-exportar" onclick="abrirModalExportar()">Responder</button>
+
         </div>
     </section>
 
@@ -73,6 +113,7 @@ $consulta = $resultado->fetch_assoc();
         <section class="modal-exportar-content">
             <h2>Responder Consulta</h2>
                 <form id="formExportar" action="responderconsulta.php" method="POST" novalidate>
+                    <input type="hidden" name="id" value="<?= $consulta['id'] ?>">
                     <input type="hidden" name="correo" value="<?= htmlspecialchars($consulta['correo']) ?>">
                     <textarea name="mensaje" placeholder="Escribe tu respuesta aquí..." required></textarea>
                     <nav class="modal-exportar-buttons" aria-label="Acciones del modal exportar">
@@ -99,6 +140,37 @@ $consulta = $resultado->fetch_assoc();
         modal.style.display = 'none';  // Ocultarlo
     }
 </script>
+
+<script>
+    // Función para auto-ajustar altura del textarea
+    function autoGrowTextarea(el) {
+        el.style.height = "5px"; // resetear para calcular scrollHeight correcto
+        el.style.height = (el.scrollHeight) + "px";
+    }
+
+    // Seleccionamos el textarea y le agregamos evento input
+    const textarea = document.querySelector('textarea[name="mensaje"]');
+    textarea.addEventListener('input', function() {
+        autoGrowTextarea(this);
+    });
+
+    // Ajustar altura al abrir el modal (por si tiene texto)
+    function abrirModalExportar() {
+        const modal = document.getElementById('modalExportar');
+        modal.style.display = 'flex';
+        // Ajustar altura del textarea
+        autoGrowTextarea(textarea);
+        // Poner foco para mejor UX
+        textarea.focus();
+    }
+
+    // Mantén la función cerrarModalExportar igual
+    function cerrarModalExportar() {
+        const modal = document.getElementById('modalExportar');
+        modal.style.display = 'none';
+    }
+</script>
+
 
 </body>
 </html>
