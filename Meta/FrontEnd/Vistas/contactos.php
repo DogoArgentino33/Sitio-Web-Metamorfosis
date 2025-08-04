@@ -30,18 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $apellido  = mysqli_real_escape_string($conexion, trim($_POST['apellido']));
     $correo    = mysqli_real_escape_string($conexion, trim($_POST['correo']));
     $consulta  = mysqli_real_escape_string($conexion, trim($_POST['consulta']));
-
-    //Validando
-    //Nombre
-    if ($nombre === '') 
-    {
-        $errores[] = 'El nombre es obligatorio.';
-    } 
-    elseif (!preg_match('/^[A-Za-z0-9]+$/', $nombre)) 
-    {
-        $errores[] = 'El nombre solo puede contener letras y números, sin espacios ni símbolos.';
-    }
-
+    
     //Acumulando errores nombre
     foreach ($errores as $error) 
     {
@@ -134,16 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
         const validaciones = 
         {
-            nombre: 
-            {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "El nombre solo puede contener letras y espacios simples. No numeros ni sibolos"
-            },
-            apellido: 
-            {
-                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
-                mensaje: "El apellido solo puede contener letras y espacios simples. No numeros ni sibolos"
-            },
             correo: 
             {
                 regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

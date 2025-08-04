@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         { 
             const totalSlides = document.querySelectorAll('.slide').length;
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.style.transform = translateX(-${currentSlide * 100}%);
         }
 
         // Agregamos movimiento //
@@ -369,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Errores en el formulario',
-                    html: `<?= implode('<br>', array_map('addslashes', $_SESSION['errores_alquiler'])) ?>`,
+                    html: <?= implode('<br>', array_map('addslashes', $_SESSION['errores_alquiler'])) ?>,
                     confirmButtonText: 'Volver a corregir'
                 });
             });
@@ -620,9 +620,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         document.addEventListener("DOMContentLoaded", () => {
             const getFormattedDate = (date) => {
             const year = date.getFullYear();
-            const month = `${date.getMonth() + 1}`.padStart(2, '0');
-            const day = `${date.getDate()}`.padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            const month = ${date.getMonth() + 1}.padStart(2, '0');
+            const day = ${date.getDate()}.padStart(2, '0');
+            return ${year}-${month}-${day};
         };
 
             const campos = {
@@ -666,7 +666,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                         const cantidad = parseInt(document.getElementById("cantidad").value);
                         const stock = parseInt(document.getElementById("stockDisponible").value);
                         if (isNaN(cantidad) || cantidad < 1) return [false, "Debe ser al menos 1 unidad."];
-                        if (cantidad > stock) return [false, `No hay suficiente stock. Máximo: ${stock}`];
+                        if (cantidad > stock) return [false, No hay suficiente stock. Máximo: ${stock}];
                         return [true, "Cantidad válida."];
                     }
                 },
@@ -711,7 +711,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                         }
 
                         try {
-                            const response = await fetch(`validar_dni.php?dni=${valor}`);
+                            const response = await fetch(validar_dni.php?dni=${valor});
                             const data = await response.json();
 
                             if (data.valido) {
