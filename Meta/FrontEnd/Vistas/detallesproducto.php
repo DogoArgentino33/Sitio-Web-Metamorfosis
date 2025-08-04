@@ -491,6 +491,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     
     <?php include('footer.php');?>
 
+
+
     <script>
         function openModal(costumeName) {
             if (usuarioLogueado) {
@@ -791,6 +793,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
             });
         });
     </script>
+
+    
 
 </body>
 </html>
