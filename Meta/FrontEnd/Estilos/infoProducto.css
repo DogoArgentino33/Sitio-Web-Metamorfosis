@@ -162,10 +162,10 @@ footer i {
     position: relative;
     overflow: hidden;
     width: 100%;
-    max-width: 800px; /* Más pequeño */
-    aspect-ratio: 16 / 9; /* Relación de aspecto moderna */
+    max-width: 800px; 
+    aspect-ratio: 5 / 4; /* Tamaño del contenedor */
     margin: 30px auto;
-    border-radius: 12px;
+    border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
@@ -293,7 +293,7 @@ footer i {
 
 /* Evita que el slider se centre solo */
 .product-layout .slider {
-    max-width: 600px;
+    max-width: 500px;
     width: 100%;
     margin: 0;
 }
@@ -303,10 +303,10 @@ footer i {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 21.8px;
     background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     max-width: 500px;
 }
