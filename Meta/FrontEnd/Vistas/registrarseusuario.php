@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ----------- VERIFICACIÓN DE DNI ------------------
     if (isset($_POST['verificar_dni'])) {
-    $dni = trim($_POST['dni']);
+        $dni = trim($_POST['dni']);
 
         // 1. Verificar si el DNI existe en persona
         $sql = "SELECT id FROM persona WHERE dni = '$dni'";

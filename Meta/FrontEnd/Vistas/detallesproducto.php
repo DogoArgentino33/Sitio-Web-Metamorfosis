@@ -74,11 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     $fechamod = date('Y-m-d H:i:s'); // Fecha completa
     $usumod = $id_usuario;
 
-    // Validación general
-    if (!$id_producto || !$desde || !$hasta || $cantidad <= 0 || !$metodo_pago || $total <= 0) {
-        $errores[] = "Completa todos los campos obligatorios.";
-    }
-
     // Validación de fechas
     if ($desde > $hasta) {
         $errores[] = "La fecha de inicio no puede ser posterior a la fecha de fin.";
@@ -119,8 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         $cardNumber = $_POST['cardNumber'] ?? '';
         $cardExpiry = $_POST['cardExpiry'] ?? '';
         $cardCVV = $_POST['cardCVV'] ?? '';
+        $cardDNI = preg_replace('/\D/', '', $_POST['dni'] ?? ''); // Solo números
 
-        if (empty($cardNumber) || empty($cardExpiry) || empty($cardCVV)) {
+        if (empty($cardNumber) || empty($cardExpiry) || empty($cardCVV) || empty($cardDNI)) {
             $errores[] = "Todos los campos de tarjeta son obligatorios.";
         }
 
@@ -130,6 +126,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
         if (!preg_match('/^\d{3}$/', $cardCVV)) {
             $errores[] = "CVV inválido (3 dígitos requeridos).";
+        }
+
+        if (!preg_match('/^\d{7,8}$/', $cardDNI)) {
+            $errores[] = "DNI inválido. Debe tener 7 u 8 dígitos.";
+        } else {
+            // Verificar existencia en persona y vínculo con usuario
+            $sql = "SELECT id FROM persona WHERE dni = ?";
+            $stmt = $conexion->prepare($sql);
+            $stmt->bind_param("s", $cardDNI);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0) {
+                $fila = $result->fetch_assoc();
+                $id_persona = $fila['id'];
+
+                $sql_usuario = "SELECT id FROM usuario WHERE id_persona = ?";
+                $stmt_usuario = $conexion->prepare($sql_usuario);
+                $stmt_usuario->bind_param("i", $id_persona);
+                $stmt_usuario->execute();
+                $result_usuario = $stmt_usuario->get_result();
+
+                if (!$result_usuario || $result_usuario->num_rows === 0) {
+                    $errores[] = "El DNI pertenece a una persona registrada, pero no tiene un usuario vinculado.";
+                }
+
+            } else {
+                $errores[] = "El DNI ingresado no está registrado en el sistema.";
+            }
         }
 
         // Validación de fecha de expiración
@@ -411,6 +436,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 <div class="mensaje-validacion" id="mensaje-cantidad"></div>
     
                 <h2>Métodos de Pago</h2>
+
                 <?php
                 $query = "SELECT id, nombre, requiere_tarjeta FROM metodo_pago WHERE activo = 1";
                 $result = $conexion->query($query);
@@ -420,39 +446,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <section>
                             <input 
-                            type="radio" 
-                            data-requiere-tarjeta="<?= $row['requiere_tarjeta'] ? 'true' : 'false' ?>" 
-                            id="<?= strtolower($row['nombre']) ?>" 
-                            name="metodo_pago" 
-                            value="<?= $row['nombre'] ?>" 
-                            onclick="togglePaymentFields()" 
-                            <?= ($row['nombre'] == 'Efectivo' ? 'checked' : '') ?>>
+                                type="radio" 
+                                data-requiere-tarjeta="<?= $row['requiere_tarjeta'] ? 'true' : 'false' ?>" 
+                                id="<?= strtolower($row['nombre']) ?>" 
+                                name="metodo_pago" 
+                                value="<?= $row['nombre'] ?>" 
+                                onclick="togglePaymentFields()" 
+                                <?= ($row['nombre'] == 'Efectivo' ? 'checked' : '') ?>>
                             <label for="<?= strtolower($row['nombre']) ?>"><?= htmlspecialchars($row['nombre']) ?></label>
                         </section>
-                        <section id="cardDetails" style="display: none;">
-                            <h3>Detalles de la Tarjeta</h3>
-                            <label for="cardNumber">Número de Tarjeta:</label><br>
-                            <input type="text" id="cardNumber" name="cardNumber" maxlength="16"><br>
-                            <div class="barra-validacion" id="barra-cardNumber"></div>
-                            <div class="mensaje-validacion" id="mensaje-cardNumber"></div>
-
-                            <label for="cardExpiry">Fecha de Expiración:</label><br>
-                            <input type="month" id="cardExpiry" name="cardExpiry"><br>
-                            <div class="barra-validacion" id="barra-cardExpiry"></div>
-                            <div class="mensaje-validacion" id="mensaje-cardExpiry"></div>
-
-                            <label for="cardCVV">CVV:</label><br>
-                            <input type="text" id="cardCVV" name="cardCVV" maxlength="3"><br>
-                            <div class="barra-validacion" id="barra-cardCVV"></div>
-                            <div class="mensaje-validacion" id="mensaje-cardCVV"></div>
-                        </section>
-                        <br>
                     <?php endwhile; ?>
+                </section>
+
+                <!-- SOLO UNA SECCIÓN DE DETALLES DE TARJETA -->
+                <section id="cardDetails" style="display: none;">
+                    <h3>Detalles de la Tarjeta</h3>
+
+                    <label for="cardNumber">Número de Tarjeta:</label><br>
+                    <input type="text" id="cardNumber" name="cardNumber" maxlength="16"><br>
+                    <div class="barra-validacion" id="barra-cardNumber"></div>
+                    <div class="mensaje-validacion" id="mensaje-cardNumber"></div>
+
+                    <label for="cardExpiry">Fecha de Expiración:</label><br>
+                    <input type="month" id="cardExpiry" name="cardExpiry"><br>
+                    <div class="barra-validacion" id="barra-cardExpiry"></div>
+                    <div class="mensaje-validacion" id="mensaje-cardExpiry"></div>
+
+                    <label for="cardCVV">CVV:</label><br>
+                    <input type="text" id="cardCVV" name="cardCVV" maxlength="3"><br>
+                    <div class="barra-validacion" id="barra-cardCVV"></div>
+                    <div class="mensaje-validacion" id="mensaje-cardCVV"></div>
+
+                    <label for="dni">DNI del titular</label>
+                    <input type="text" id="dni" name="dni" maxlength="8" autocomplete="off" inputmode="numeric">
+                    <div class="barra-validacion" id="barra-dni"></div>
+                    <div class="mensaje-validacion" id="mensaje-dni"></div>
                 </section>
 
                 <input type="hidden" id="inputTotal" name="total">
                 <p><strong>TOTAL: $<span id="displayTotal">0</span></strong></p>
-    
+
                 <button type="submit" name="alquilar" value="1">Enviar</button>
             </form>
         </section>
@@ -614,8 +647,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                     validate: () => {
                         const desde = new Date(document.getElementById("desde").value);
                         const hasta = new Date(document.getElementById("hasta").value);
+                        const hoy = getFormattedDate(new Date()); 
+
                         if (isNaN(hasta.getTime())) return [false, "Debes seleccionar una fecha."];
                         if (desde && hasta < desde) return [false, "La fecha 'Hasta' no puede ser anterior a 'Desde'."];
+                        if (hasta < hoy) return [false, "La fecha 'Hasta' debe ser posterior al día de hoy."];
                         
                         // Nueva condición:
                         const diferenciaEnMs = hasta - desde;
@@ -664,6 +700,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                         if (valor < hoy) return [false, "La tarjeta está vencida."];
                         return [true, "Fecha válida."];
                     }
+                },
+                dni: {
+                    validate: async () => {
+                        const input = document.getElementById("dni");
+                        const valor = input.value.trim();
+
+                        if (!/^\d{7,8}$/.test(valor)) {
+                            return [false, "DNI inválido. Debe tener 7 u 8 dígitos."];
+                        }
+
+                        try {
+                            const response = await fetch(`validar_dni.php?dni=${valor}`);
+                            const data = await response.json();
+
+                            if (data.valido) {
+                                return [true, data.mensaje];
+                            } else {
+                                return [false, data.mensaje];
+                            }
+
+                        } catch (error) {
+                            return [false, "Error de conexión al verificar DNI."];
+                        }
+                    }
                 }
             };
 
@@ -692,17 +752,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 const input = document.getElementById(id);
                 if (!input) continue;
 
-                input.addEventListener("input", () => {
-                    const [valido, mensaje] = campos[id].validate();
-                    aplicarEstilos(id, valido, mensaje);
-                });
-            }
+                input.addEventListener("input", async () => {
+                const resultado = campos[id].validate();
+                let valido, mensaje;
 
+                if (resultado instanceof Promise) {
+                    [valido, mensaje] = await resultado;
+                } else {
+                    [valido, mensaje] = resultado;
+                }
+
+                aplicarEstilos(id, valido, mensaje);
+             });
+            }
+            
             // Validar todo antes de enviar
-            document.getElementById("rentalForm").addEventListener("submit", (e) => {
+            document.getElementById("rentalForm").addEventListener("submit", async (e) => {
                 let todoValido = true;
                 for (let id in campos) {
-                    const [valido, mensaje] = campos[id].validate();
+                    const resultado = campos[id].validate();
+                    let valido, mensaje;
+
+                    if (resultado instanceof Promise) {
+                        [valido, mensaje] = await resultado;
+                    } else {
+                        [valido, mensaje] = resultado;
+                    }
+
                     aplicarEstilos(id, valido, mensaje);
                     if (!valido) todoValido = false;
                 }
