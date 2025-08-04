@@ -1,6 +1,15 @@
 <?php include('conexion.php'); 
 session_start();
 
+$nombre_session = '';
+$apellido_session = '';
+$correo_session = '';
+
+if (isset($_SESSION['usuario'])) {
+    $nombre_session = $_SESSION['usuario']['nombre'] ?? '';
+    $apellido_session = $_SESSION['usuario']['apellido'] ?? '';
+    $correo_session = $_SESSION['usuario']['correo'] ?? '';
+}
 
 function escapar($html) 
 {
@@ -80,6 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         }
     }
 
+    if (isset($_SESSION['usuario'])) {
+        if ($_SESSION['usuario']['nombre'] !== $nombre ||
+            $_SESSION['usuario']['apellido'] !== $apellido ||
+            $_SESSION['usuario']['correo'] !== $correo) {
+            $errores[] = "Los datos ingresados no coinciden con tu sesión activa.";
+        }
+    }
 
     //Verificando si error es igual a 0, TRUE -> preparando para insert
     if (count($errores) === 0) 
@@ -89,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $apellido     = mysqli_real_escape_string($conexion, $apellido);
         $correo       = mysqli_real_escape_string($conexion, $correo);
         $consulta     = mysqli_real_escape_string($conexion, $consulta);
-
 
         // Preparando la consulta
         $stmt = $conexion->prepare("INSERT INTO consulta (nombre, apellido, correo, consulta) VALUES (?, ?, ?, ?)");
@@ -119,17 +134,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
         const validaciones = 
         {
-            'nombre': 
+            nombre: 
             {
-                regex: /^[A-Za-z0-9]{3,20}$/,
-                mensaje: 'El nombre debe tener entre 3 y 20 caracteres. Solo letras y números, sin espacios ni símbolos.'
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El nombre solo puede contener letras y espacios simples. No numeros ni sibolos"
             },
-            'apellido': 
+            apellido: 
             {
-                regex: /^[A-Za-z0-9]{3,20}$/,
-                mensaje: 'El apellido debe tener entre 3 y 20 caracteres. Solo letras y números, sin espacios ni símbolos.'
+                regex: /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/,
+                mensaje: "El apellido solo puede contener letras y espacios simples. No numeros ni sibolos"
             },
-            'correo': 
+            correo: 
             {
                 regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 mensaje: 'Debe ser un correo electrónico válido.'
@@ -173,11 +188,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             }
         }
 
-
-
-
-
-
     })
  </script>
 
@@ -215,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () =>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../Estilos/index.css">
-    <link rel="stylesheet" href="../Estilos/contactos.css">
+    <link rel="stylesheet" href="../Estilos/contactanos.css">
     <!-- Script de SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -234,25 +244,27 @@ document.addEventListener('DOMContentLoaded', () =>
         <section class="wrapper">
             <form action="contactos.php" method="post" enctype="multipart/form-data" id="formconsulta">
                 <fieldset>
-                    <legend>Deja aquí tus consultas y responderemos lo antes posible</legend>
+                    <legend>Deja aquí tu consulta y responderemos lo antes posible</legend>
 
                     <h4>Datos personales</h4>
-
                     <section class="input-box">
                         <label for="nombre">Nombre: </label>
-                        <input id="nombre" name="nombre" type="text" class="solo-letras" required value="<?php echo isset($_POST['nombre']) ? escapar($_POST['nombre']) : ''; ?>">
+                       <input id="nombre" name="nombre" type="text" required readonly
+                        value="<?php echo isset($_POST['nombre']) ? escapar($_POST['nombre']) : escapar($nombre_session); ?>">
                         <span class="error" style="color:red;"><?php echo $error_nombre; ?></span>
                     </section>
 
                     <section class="input-box">
                         <label for="apellido">Apellido: </label>
-                        <input id="apellido" name="apellido" type="text" class="solo-letras" required value="<?php echo isset($_POST['apellido']) ? escapar($_POST['apellido']) : ''; ?>">
+                        <input id="apellido" name="apellido" type="text" required readonly
+                         value="<?php echo isset($_POST['apellido']) ? escapar($_POST['apellido']) : escapar($apellido_session); ?>">
                         <span class="error" style="color:red;"><?php echo $error_apellido; ?></span>
                     </section>
 
                     <section class="input-box">
                         <label for="correo">Correo Electrónico: </label>
-                        <input id="correo" name="correo" type="email" required value="<?php echo isset($_POST['correo']) ? escapar($_POST['correo']) : ''; ?>">
+                        <input id="correo" name="correo" type="email" required readonly
+                        value="<?php echo isset($_POST['correo']) ? escapar($_POST['correo']) : escapar($correo_session); ?>">
                         <span class="error" style="color:red;"><?php echo $error_correo; ?></span>
                     </section>
 

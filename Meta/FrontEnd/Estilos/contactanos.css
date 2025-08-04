@@ -1,0 +1,185 @@
+/* Contenedor principal del formulario */
+.wrapper {
+    background-color: #fff;
+    padding: 30px;
+    max-width: 900px;
+    width: 95%;
+    margin: 30px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Título de la página */
+.main-h2 {
+    text-align: center;
+    color: #d12e3b;
+    font-size: 28px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Fieldset y leyenda */
+form fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: #fafafa;
+    box-sizing: border-box;
+}
+
+form legend {
+    color: #d12e3b;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #d12e3b;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Caja individual de entrada */
+.input-box {
+    margin-bottom: 20px;
+}
+
+.input-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.input-box input[type="text"],
+.input-box input[type="email"],
+.input-box textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+/* Botón enviar */
+.btn {
+    background-color: #2980b9;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #2471a3;
+}
+
+/* Mensajes de error */
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+/* Barra de validación visual */
+.barra-validacion {
+    height: 4px;
+    border-radius: 3px;
+    margin-top: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.barra-validacion.valido {
+    background-color: #28a745;
+}
+
+.barra-validacion.invalido {
+    background-color: #dc3545;
+}
+
+.mensaje-validacion {
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.mensaje-validacion.valido {
+    color: #28a745;
+}
+
+.mensaje-validacion.invalido {
+    color: #dc3545;
+}
+
+/* Sección de información de contacto */
+.contact-info {
+    margin: 40px auto;
+    max-width: 900px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.contact-info li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.contact-info a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.contact-info i {
+    color: #d12e3b;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+/* Mapa responsivo */
+.map-container iframe {
+    width: 100%;
+    max-width: 100%;
+    height: 450px;
+    border: none;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Ruta de navegación */
+.nav-route {
+    padding: 15px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-route a {
+    text-decoration: none;
+    color: #d12e3b;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .wrapper,
+    .contact-info {
+        padding: 20px;
+        margin: 20px auto;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}

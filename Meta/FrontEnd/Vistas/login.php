@@ -7,7 +7,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     $passusu = strtolower($_POST['password']);
     $correo = $_POST['correo'];
 
-    $sql = "SELECT id, correo, passusu, nom_usu, rol FROM usuario WHERE correo='$correo'";
+    $sql = "SELECT u.id, u.correo, u.passusu, u.nom_usu, u.rol, p.nombre, p.apellido
+        FROM usuario u
+        INNER JOIN persona p ON u.id_persona = p.id
+        WHERE u.correo = '$correo'";
 
     $result = mysqli_query($conexion, $sql);
 
@@ -28,6 +31,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         $_SESSION['id'] = $id;
         $_SESSION['rol'] = $rol;
         $_SESSION['nom_usu'] = $nom_usu;
+
+        // Agregar esto:
+        $_SESSION['usuario'] = [
+            'nombre' => $reg['nombre'],
+            'apellido' => $reg['apellido'],
+            'correo' => $reg['correo']
+        ];
 
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
         echo "
