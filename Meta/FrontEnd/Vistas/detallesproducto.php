@@ -183,6 +183,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         const usuarioLogueado = <?= isset($_SESSION['id']) ? 'true' : 'false' ?>;
     </script>
 
+    <!-- Funcion del slider -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => 
+    {
+        let currentSlide    = 0;
+        const slides        = document.querySelector('.slides');
+        const intervalMs    = 5000; //Esto equivale a 5 segundos
+        let timerId         = null;
+        movimiento();  //Iniciamos el proceso
+
+        // Iniciamos los botones  //
+        document.getElementById('botonSliderPrev').addEventListener('click', () => 
+        {
+            CambioSlide(-1);
+        });
+
+        document.getElementById('botonSliderNext').addEventListener('click', () => 
+        {
+            CambioSlide(1);
+        });
+
+        // Agregamos el cambio de imagen //
+        function CambioSlide(direction = 1) 
+        { 
+            const totalSlides = document.querySelectorAll('.slide').length;
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        // Agregamos movimiento //
+        function movimiento() 
+        {
+            if (timerId) 
+            {
+                return;
+            }                        
+                timerId = setInterval(() => CambioSlide(1), intervalMs);
+        }
+
+        function pararmovimiento() 
+        {
+            clearInterval(timerId);
+            timerId = null;
+        }
+    });
+    </script>
+
+
+
     <style>
         .barra-validacion {
             height: 5px;
@@ -246,19 +295,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 <!-- Galería de imágenes -->
                 <section class="slider">
                     <?php if (!empty($imagenes)): ?>
-                        <div class="slides">
+                        <section class="slides">
                             <?php foreach ($imagenes as $index => $img): ?>
-                                <div class="slide <?= $index === 0 ? 'active' : '' ?>">
+                                <section class="slide <?= $index === 0 ? 'active' : '' ?>">
                                     <img src="uploads/producto/<?= htmlspecialchars($img) ?>" alt="Imagen <?= $index + 1 ?>">
-                                </div>
+                                </section>
                             <?php endforeach; ?>
-                        </div>
+                        </section>
 
                         <?php if (count($imagenes) > 1): ?>
-                            <div class="slider-controls">
+                            <section class="slider-controls">
                                 <button class="control-button" id="botonSliderPrev"><i class="bi bi-arrow-left-circle"></i></button>
                                 <button class="control-button" id="botonSliderNext"><i class="bi bi-arrow-right-circle"></i></button>
-                            </div>
+                            </section>
                         <?php endif; ?>
                     <?php else: ?>
                         <p>Este producto no tiene imágenes.</p>
@@ -668,7 +717,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
             });
         });
     </script>
-
 
 </body>
 </html>

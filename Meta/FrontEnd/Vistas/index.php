@@ -86,13 +86,11 @@ document.addEventListener('DOMContentLoaded', () =>
     document.getElementById('botonSliderPrev').addEventListener('click', () => 
     {
         CambioSlide(-1);
-        ReiniciarMov();
     });
 
     document.getElementById('botonSliderNext').addEventListener('click', () => 
     {
         CambioSlide(1);
-        ReiniciarMov();
     });
 
     // Agregamos el cambio de imagen //
