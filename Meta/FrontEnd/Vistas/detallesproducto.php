@@ -273,11 +273,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                     <p><strong>Categoría:</strong> <?= htmlspecialchars($datos['categorias']) ?></p>
 
                     <?php if ($tipo == 1): ?>
-                        <p><strong>Talles:</strong> <?= htmlspecialchars($datos['tallas']) ?></p>
+                        <p><strong>Talle:</strong> <?= htmlspecialchars($datos['tallas']) ?></p>
                     <?php endif; ?>
 
-                    <p><strong>Precio:</strong> $<?= htmlspecialchars($datos['precio']) ?></p>
-                    <p><strong>Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Disponible' : 'No disponible' ?></p>
+                    <p><strong>Precio por unidad:</strong> $<?= htmlspecialchars($datos['precio']) ?></p>
+                    <p><strong>Disponible:</strong> <?= $datos['unidades_disponibles'] > 0 ? 'Si' : 'No' ?></p>
                     <p><strong>Unidades Disponibles:</strong> <?= htmlspecialchars($datos['unidades_disponibles']) ?></p>
 
                     <button type="button" class="btn" id="btn-alquilar" onclick="openModal('<?= htmlspecialchars($datos['nombre']) ?>')">Alquilar</button>
@@ -320,23 +320,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 <input type="hidden" name="id_producto" value="<?= htmlspecialchars($datos['id']) ?>">
 
                 <label for="costume">Nombre:</label>
-                <input type="text" id="costume" name="costume" readonly disabled>
+                <input type="text" id="costume" name="costume" value="<?= htmlspecialchars($datos['nombre']) ?>" readonly disabled>
     
                 <label for="theme">Temática:</label>
-                <input type="text" id="theme" name="theme" readonly disabled>
+                <input type="text" id="theme" name="theme" value="<?= htmlspecialchars($datos['tematicas']) ?>" readonly disabled>
     
                 <label for="category">Categoría:</label>
-                <input type="text" id="category" name="category" readonly disabled>
+                <input type="text" id="category" name="category" value="<?= htmlspecialchars($datos['categorias']) ?>" readonly disabled>
 
-                <label for="stock">Cantidad Disponible:</label>
-                <input type="text" id="stock" name="stock" readonly disabled>
+                <?php if ($tipo == 1): ?>
+                        <label for="size">Talla:</label>
+                        <input type="text" id="size" name="size" value="<?= htmlspecialchars($datos['tallas']) ?>" readonly disabled>
+                <?php endif; ?>
+
+                <label for="price">Precio por unidad:</label>
+                <input type="text" id="price" name="price" value="$<?= htmlspecialchars($datos['precio']) ?>" readonly disabled>
+
+                <label for="stock">Disponible:</label>
+                <input type="text" id="stock" name="stock" value="<?= $datos['unidades_disponibles'] > 0 ? 'Si' : 'No' ?>" readonly disabled>
+
+                <label for="stockDisponible">Unidades disponibles:</label>
+                <input type="text" id="stockDisponible" name="stockDisponible" value="<?= htmlspecialchars($datos['unidades_disponibles']) ?>" readonly disabled>
     
                 <!-- Datos del aquiler: no son readonly -->
                 <h2>Datos del Alquiler</h2>
 
                 <!-- Desde y hasta -->
                 <label for="desde">Fecha Desde...</label>
-                <input type="date" id="desde" name="desde" required min="<?= $hoy ?>">
+                <input type="date" id="desde" name="desde">
                 <div class="barra-validacion" id="barra-desde"></div>
                 <div class="mensaje-validacion" id="mensaje-desde"></div>
 
@@ -525,13 +536,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const getFormattedDate = (date) => {
+            const year = date.getFullYear();
+            const month = `${date.getMonth() + 1}`.padStart(2, '0');
+            const day = `${date.getDate()}`.padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
             const campos = {
                 desde: {
                     validate: () => {
-                        const desde = new Date(document.getElementById("desde").value);
-                        const hasta = new Date(document.getElementById("hasta").value);
-                        if (isNaN(desde.getTime())) return [false, "Debes seleccionar una fecha."];
+                        const desdeInput = document.getElementById("desde").value;
+                        const hastaInput = document.getElementById("hasta").value;
+
+                        if (!desdeInput) return [false, "Debes seleccionar una fecha."];
+
+                        const hoy = getFormattedDate(new Date());
+                        const desde = desdeInput;
+                        const hasta = hastaInput || null;
+
                         if (hasta && desde > hasta) return [false, "La fecha 'Desde' no puede ser posterior a 'Hasta'."];
+                        if (desde < hoy) return [false, "La fecha 'Desde' no puede ser anterior al día de hoy."];
+
                         return [true, "Fecha válida."];
                     }
                 },
@@ -553,7 +579,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 cantidad: {
                     validate: () => {
                         const cantidad = parseInt(document.getElementById("cantidad").value);
-                        const stock = parseInt(document.getElementById("stock").value);
+                        const stock = parseInt(document.getElementById("stockDisponible").value);
                         if (isNaN(cantidad) || cantidad < 1) return [false, "Debe ser al menos 1 unidad."];
                         if (cantidad > stock) return [false, `No hay suficiente stock. Máximo: ${stock}`];
                         return [true, "Cantidad válida."];
