@@ -103,6 +103,29 @@ form legend {
     transition: background-color 0.3s ease;
 }
 
+.btn-verificar-dni {
+    background-color: #2980b9;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-registrar-usuario
+{
+    background-color: #28a745;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
 .btn:hover {
     background-color: #2471a3;
 }

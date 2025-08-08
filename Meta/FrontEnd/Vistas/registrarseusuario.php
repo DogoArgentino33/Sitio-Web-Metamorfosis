@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () =>
                         value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
                     <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
                     <br><br>
-                    <input type="submit" name="verificar_dni" value="Verificar DNI" class="btn">
+                    <input type="submit" name="verificar_dni" value="Verificar DNI" class="btn-verificar-dni">
                 </section>
             </fieldset>
         </form>
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () =>
                     <span class="error" style="color:red;"><?php echo $error_img; ?></span>
                 </section>
                 
-                <input type="submit" name="registrar_usuario" value="Registrar Usuario" class="btn">
+                <input type="submit" name="registrar_usuario" value="Registrar Usuario" class="btn-registrar-usuario">
             </fieldset>
         </form>
     </section>
