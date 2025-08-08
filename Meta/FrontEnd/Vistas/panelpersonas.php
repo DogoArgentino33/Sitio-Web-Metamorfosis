@@ -10,14 +10,29 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 4){
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);
     
-    // Primero eliminar de la tabla `usuario`
-    $stmt1 = $conexion->prepare("DELETE FROM usuario WHERE id_persona = ?");
-    $stmt1->bind_param("i", $idEliminar);
-    $stmt1->execute();
+$conexion->begin_transaction();
 
-    // Luego eliminar de la tabla `persona`
-    $stmt2 = $conexion->prepare("DELETE FROM persona WHERE id = ?");
-    $stmt2->bind_param("i", $idEliminar);
+    try {
+        // 1. Eliminar lógicamente al usuario relacionado
+        $stmt1 = $conexion->prepare("UPDATE usuario SET eliminado = 1 WHERE id_persona = ?");
+        $stmt1->bind_param("i", $idEliminar);
+        $stmt1->execute();
+
+        // 2. Eliminar lógicamente a la persona
+        $stmt2 = $conexion->prepare("UPDATE persona SET eliminado = 1 WHERE id = ?");
+        $stmt2->bind_param("i", $idEliminar);
+        $stmt2->execute();
+
+        $conexion->commit();
+
+        header("Location: panelpersonas.php?personaeliminada=ok");
+        exit;
+
+    } catch (Exception $e) {
+        $conexion->rollback();
+        echo "<script>alert('Error en la transacción: " . $e->getMessage() . "');</script>";
+    }
+
 
     if ($stmt2->execute()) {
         // Redirigir para evitar reenvíos y actualizar la tabla
@@ -88,13 +103,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
                     $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
 
-                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM persona");
+                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM persona WHERE eliminado = 0");
                     $total_stmt->execute();
                     $total_resultado = $total_stmt->get_result()->fetch_assoc();
                     $total_registros = $total_resultado['total'];
                     $total_paginas = ceil($total_registros / $por_pagina);
 
-                    $stmt = $conexion->prepare("SELECT img, id, nombre, apellido, dni, genero FROM persona ORDER BY id LIMIT ?, ?");
+                    $stmt = $conexion->prepare("SELECT img, id, nombre, apellido, dni, genero FROM persona WHERE eliminado = 0 ORDER BY id LIMIT ?, ?");
                     $stmt->bind_param("ii", $inicio, $por_pagina);
                     $stmt->execute(); 
                     $result = $stmt->get_result();
