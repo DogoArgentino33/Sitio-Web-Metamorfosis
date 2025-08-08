@@ -93,9 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conexion->query("DELETE FROM producto_categoria WHERE id_producto=$id_producto");
         $conexion->query("DELETE FROM producto_talla WHERE id_producto=$id_producto");
         $conexion->query("DELETE FROM producto_tematica WHERE id_producto=$id_producto");
-        $conexion->query("INSERT INTO producto_categoria VALUES($id_producto,$id_categoria)");
-        $conexion->query("INSERT INTO producto_talla VALUES($id_producto,$id_talla)");
-        $conexion->query("INSERT INTO producto_tematica VALUES($id_producto,$id_tematica)");
+        $conexion->query("INSERT INTO producto_categoria (id_producto, id_categoria) VALUES ($id_producto, $id_categoria)");
+        $conexion->query("INSERT INTO producto_talla (id_producto, id_talla) VALUES ($id_producto, $id_talla)");
+        $conexion->query("INSERT INTO producto_tematica (id_producto, id_tematica) VALUES ($id_producto, $id_tematica)");
+
 
         // 3. Subir nuevas imágenes
         if ($subirImgs) {
