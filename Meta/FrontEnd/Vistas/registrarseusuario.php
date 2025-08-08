@@ -440,6 +440,10 @@ document.addEventListener('DOMContentLoaded', () =>
                     <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
                     <br><br>
                     <input type="submit" name="verificar_dni" value="Verificar DNI" class="btn-verificar-dni">
+                    
+                <section class="register-link">
+                    <p>¿Ya tenés cuenta? <a href="../Vistas/login.php">Loguearte</a></p>
+                </section>   
                 </section>
             </fieldset>
         </form>
