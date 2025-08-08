@@ -2,35 +2,49 @@
 include('auth.php');
 include('conexion.php');
 
-//Verificando si la cuenta no es rol gerente
-if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 4){
-    header("Location: index.php"); 
+// Verificar rol
+if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 4) {
+    header("Location: index.php");
     exit;
 }
 
-// Operación de eliminar usuario (lógica simple sin tocar imagen)
+// Restaurar usuario (desde JS con fetch POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+    $idRestaurar = intval($_POST['id']);
+
+    $stmt = $conexion->prepare("UPDATE usuario SET eliminado = 0 WHERE id = ?");
+    $stmt->bind_param("i", $idRestaurar);
+
+    if ($stmt->execute()) {
+        echo "ok";
+    } else {
+        echo "error";
+    }
+
+    exit;
+}
+
+// Eliminar definitivamente usuario (tipo 3)
 if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
     $idEliminar = intval($_GET['id']);
 
-    // Solo marcamos como eliminado
-    $stmtEliminar = $conexion->prepare("UPDATE usuario SET eliminado = 1 WHERE id = ?");
+    // Eliminación definitiva
+    $stmtEliminar = $conexion->prepare("DELETE FROM usuario WHERE id = ?");
     $stmtEliminar->bind_param("i", $idEliminar);
 
     if ($stmtEliminar->execute()) {
         $_SESSION['mensajes_eliminacion'][] = [
-            'tipo' => 'success', 
-            'mensaje' => 'Usuario dado de baja correctamente'
+            'tipo' => 'success',
+            'mensaje' => 'Usuario eliminado definitivamente.'
         ];
     } else {
         $_SESSION['mensajes_eliminacion'][] = [
-            'tipo' => 'error', 
-            'mensaje' => 'Error al dar de baja el usuario.'
+            'tipo' => 'error',
+            'mensaje' => 'Error al eliminar el usuario.'
         ];
     }
 
-    $stmtEliminar->close();
-    
-    header("Location: panelusuarios.php?usuarioeliminado=ok");
+    header("Location: usuarios_eliminados.php");
     exit;
 }
 ?>
@@ -67,6 +81,38 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
         }
     </style>
 
+        <style>
+        .eliminar-definitivo-btn {
+            background-color: #d12e3b;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .eliminar-definitivo-btn:hover {
+            background-color: #a1222d;
+        }
+
+        .restaurar-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .restaurar-btn:hover {
+            background-color: #0064cf;
+        }
+    </style>
+
 </head>
 
 <!-- Cuerpo de la página -->
@@ -79,16 +125,12 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
             <a href="gerente.php">Gerente /</a>
             <a>Panel de Usuarios</a>
         </section>
-        <h1><a href="../Vistas/gerente.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Usuarios</h1>
+        <h1><a href="../Vistas/panelusuarios.php" style="padding-right: 3%;" title="volver"><i class="bi bi-arrow-left-circle"></i></a>Panel Administrador de Usuarios Eliminados</h1>
         
         <section class="container-table" id="product">
             <section class="nav-table">
                 <input type="text" id="search-panel" placeholder="Buscar Usuarios..." onkeyup="filtrarTabla('user')">
-                    <div class="btn-add-container">
-                        <a href="../Vistas/usuarios_eliminados.php" id="btn-productos-eliminados" title="Productos Eliminados">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </div>
+
             </section>
 
 
@@ -103,12 +145,11 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <th>TELÉFONO</th>
                         <th>ROL</th>
                         <th>ESTADO</th>
-                        <th>VER</th>
 
                         <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                         <!-- Para gerente -->
-                         <th>MODIFICAR</th>
-                         <th>DAR DE BAJA</th>
+                         <th>RESTAURAR</th>
+                         <th>ELIMINAR</th>
                         <?php endif; ?>
                        
                     </tr>
@@ -119,13 +160,13 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
                     $inicio = ($pagina > 1) ? ($pagina * $por_pagina) - $por_pagina : 0;
 
-                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM usuario WHERE eliminado = 0");
+                    $total_stmt = $conexion->prepare("SELECT COUNT(*) as total FROM usuario WHERE eliminado = 1");
                     $total_stmt->execute();
                     $total_resultado = $total_stmt->get_result()->fetch_assoc();
                     $total_registros = $total_resultado['total'];
                     $total_paginas = ceil($total_registros / $por_pagina);
 
-                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario WHERE eliminado = 0 ORDER BY id LIMIT ?, ?");
+                    $stmt = $conexion->prepare("SELECT id, nom_usu, img_perfil, correo, telefono, id_persona, rol, estadousu FROM usuario WHERE eliminado = 1 ORDER BY id LIMIT ?, ?");
                     $stmt->bind_param("ii", $inicio, $por_pagina);
                     $stmt->execute(); 
                     $result = $stmt->get_result();
@@ -161,24 +202,22 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                         <td>
                             <?= $usuario['estadousu'] == 2 ? 'Activo' : 'Inactivo'; ?>
                         </td>
-
-                        <td><a href="verusuario.php?id=<?= $usuario['id'] ?>"><button class="ver-btn" title="Ver" onclick="openModalAgregar()"><i class="bi bi-eye"></i></button></a></td>
                         
-                        
-                        <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
+                                                <?php if (isset($_SESSION['rol']) and $_SESSION['rol'] == 1): ?>
                         <!-- Para gerente -->
-                            <td><a href="editarusuario.php?id=<?= $usuario['id'] ?>"><button class="editar-btn" title="Editar" onclick="openModalAgregar()"><i class="bi bi-pencil-square"></i></button></a></a></td>
+                            <td>    
+                                <button class="restaurar-btn" data-id="<?= $usuario['id'] ?>" title="Restaurar">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </td>
                          
                         <td>
-                            <a href="panelusuarios.php?id=<?= $usuario['id'] ?>&tipo=3" id="btn-eliminar" title ="Dar de Baja">
-                                <i class="bi bi-slash-circle"></i>
-                            </a>
- 
+                            <button class="eliminar-definitivo-btn" data-id="<?= $usuario['id'] ?>" title="Eliminar definitivamente">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </td>
-
-
-                        <?php endif; ?>
                         
+                        <?php endif; ?>
                         </tr>
                     <?php
                     }
@@ -188,7 +227,7 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
                     
                     <tr>
                     
-                    <td colspan="7">No hay usuarios registrados</td>
+                    <td colspan="7">No hay usuarios eliminados</td>
                     </tr>
                     <?php
                     }
@@ -257,89 +296,84 @@ if (isset($_GET['id']) && isset($_GET['tipo']) && $_GET['tipo'] == 3) {
 
 
 <script>
-document.addEventListener('DOMContentLoaded', () => 
-{
-   //1.Llamamos y definimos la variable
-  document.querySelectorAll('#btn-eliminar').forEach(link => 
-  {
-    //2.Le asignamos el evento
-    link.addEventListener('click', evt => 
-    {
-      evt.preventDefault();
-      const url = link.href;
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.eliminar-definitivo-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const idUsuario = this.getAttribute('data-id');
 
-      //3.Agregamos sweetalert
-      Swal.fire
-      ({
-        title: 'Advertencia',
-        text: 'Está seguro de dar de baja al usuario?',
-        icon: 'warning',
-        showDenyButton: true,
-        confirmButtonText: 'Si',
-        denyButtonText: 'No',
-      })
-      .then(res => {
-        if (res.isConfirmed) 
-        {
-            window.location.href = url;
-        }
-      });
+            Swal.fire({
+                title: 'Advertencia',
+                text: '¿Está seguro de eliminar el usuario? Se borrará para siempre (Eso es mucho tiempo)',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirigir con GET para eliminar definitivamente
+                    window.location.href = `usuarios_eliminados.php?id=${idUsuario}&tipo=3`;
+                }
+            });
+        });
     });
-  });
 });
 
-function openModalAgregar() 
-{
-    window.location.href = 'agregarusuario.php';
-}
+
 </script>
 
-<!-- Funcion SweetAlert: Agregar, modificar, Eliminar-->
+
 <script>
-document.addEventListener('DOMContentLoaded', () => 
-{
-  //1. Traemos lo que definimos
-  const p = new URLSearchParams(location.search);
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.restaurar-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const idUsuario = this.getAttribute('data-id');
 
-  //2. Como lo definimos como "ok", procede a mostrar el mensaje
-  if (p.get('usuarioagregado') === 'ok') //Para usuario agregado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Usuario agregado con éxito',
-      showConfirmButton: false,
-      timer: 1500
+            Swal.fire({
+                title: '¿Estás seguro de que quieres restaurar este usuario?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, restaurar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('usuarios_eliminados.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'id=' + encodeURIComponent(idUsuario)
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data.trim() === 'ok') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Usuario restaurado correctamente.',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al restaurar el usuario',
+                                text: data
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de conexión al restaurar el usuario.'
+                        });
+                    });
+                }
+            });
+        });
     });
-  //3. Al refrescar la página, no volverá a salir el mensaje
-    history.replaceState({}, '', location.pathname);
-  }
-  if (p.get('usuariomodificado') === 'ok') //Para usuario modificado
-  {
-    Swal.fire({
-      position: 'top',
-      icon: 'success',
-      title: 'Usuario modificado con éxito',
-      showConfirmButton: false,
-      timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  } 
-  if (p.get('usuarioeliminado') == 'ok') //Para usuario eliminado
-  {
-    Swal.fire({
-        position: 'top',
-        icon:  'success',
-        title: 'Usuario eliminado con éxito',
-        showConfirmButton: false,
-        timer: 1500
-    });
-    history.replaceState({},'', location.pathname);
-  }
-  
-
 });
-
 </script>
 
 
