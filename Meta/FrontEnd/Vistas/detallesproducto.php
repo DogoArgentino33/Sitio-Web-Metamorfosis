@@ -165,18 +165,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
     }
 
     // SI HAY ERRORES, MOSTRARLOS
-    if (!empty($errores)) {
+    if (!empty($errores)) 
+    {
         $_SESSION['errores_alquiler'] = $errores;
         header("Location: detallesproducto.php?id=$id_producto&tipo=$tipo&error=1");
         exit;
     }
 
-    // Insertar en tabla alquiler
+    // 1 - Insertar en tabla alquiler
     $stmt = $conexion->prepare("INSERT INTO alquiler (id_usuario, id_producto, desde, hasta, cantidad, total, id_metodopago, fechamod, usumod)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("iissidisi", $id_usuario, $id_producto, $desde, $hasta, $cantidad, $total, $id_metodopago, $fechamod, $usumod);
     $stmt->execute();
-    $stmt->close();
+    
+    // 2 - Actualizando Stock
+     if ($stmt->execute()) 
+    {
+        // insertamos el valor actualizado
+        $stmtUpdate = $conexion->prepare("UPDATE producto SET unidades_disponibles = unidades_disponibles - ? WHERE id = ?");
+        $stmtUpdate->bind_param("ii", $cantidad, $id_producto);
+
+        //Verificando si se realizó con exito
+        if ($stmtUpdate->execute())
+        {
+            print("Actualizacion Realizada");
+        }
+        else
+        {
+            print("Hubo un error");
+        }
+        $stmtUpdate->close();
+    }
+    
 
     // Redirige para evitar reenvío de formulario y mostrar SweetAlert
     header("Location: detallesproducto.php?id=$id_producto&tipo=$tipo&exito=1");
@@ -365,7 +385,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
     <?php if (isset($_SESSION['errores_alquiler'])): ?>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function () 
+            {
                 Swal.fire({
                     icon: 'error',
                     title: 'Errores en el formulario',
@@ -429,7 +450,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 <div class="mensaje-validacion" id="mensaje-hasta"></div>
 
                 <label for="cantidad">Cantidad de unidades a Alquilar...</label>
-                <input type="number" id="cantidad" name="cantidad" min="1" required>
+                <input type="number" id="cantidad" name="cantidad" min="1" max="<?= htmlspecialchars($datos['unidades_disponibles']) ?>" required>
                 <div class="barra-validacion" id="barra-cantidad"></div>
                 <div class="mensaje-validacion" id="mensaje-cantidad"></div>
     
