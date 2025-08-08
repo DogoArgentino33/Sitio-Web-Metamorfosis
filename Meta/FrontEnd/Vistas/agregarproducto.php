@@ -102,6 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         {
             $id_producto = $stmt->insert_id;
 
+            // Auditoría: registrar acción de creación
+            $stmtAudit = $conexion->prepare("INSERT INTO auditoria_producto (id_producto, accion, usuario) VALUES (?, 'CREAR', ?)");
+            $stmtAudit->bind_param("is", $id_producto, $_SESSION['nom_usu']);
+            $stmtAudit->execute();
+
             // 2. Insertar en categoria
             $stmtCat = $conexion->prepare("INSERT INTO producto_categoria (id_producto, id_categoria) VALUES (?, ?)");
             $stmtCat->bind_param("ii", $id_producto, $id_categoria);
@@ -285,6 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </p>
         <!-- Contenedor para la vista previa -->
         <div id="preview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+        <br>
         <div id="mensaje-error" style="color: red;"></div>
 
 

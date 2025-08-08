@@ -84,6 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtUp->bind_param("siidssi", $nombre, $tipo, $unidades, $precio, $fechamod, $usumod, $id_producto);
         $stmtUp->execute();
 
+        // Registrar auditoría
+        $stmtAudit = $conexion->prepare("INSERT INTO auditoria_producto (id_producto, accion, usuario) VALUES (?, 'MODIFICAR', ?)");
+        $stmtAudit->bind_param("is", $id_producto, $_SESSION['nom_usu']);
+        $stmtAudit->execute();
+
         // 2. Relaciones
         $conexion->query("DELETE FROM producto_categoria WHERE id_producto=$id_producto");
         $conexion->query("DELETE FROM producto_talla WHERE id_producto=$id_producto");
@@ -98,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!is_dir($dir)) mkdir($dir,0755,true);
 
             // Borrar anteriores
-            $qold = $conexion->query("SELECT img FROM img_producto WHERE id_producto=$id_producto");
+            $qold = $conexion->query("SELECT img FROM img_producto WHERE id_producto=$id_producto AND eliminado = 0");
             while ($r = $qold->fetch_assoc()) {
                 $f = $dir . $r['img'];
                 if (file_exists($f)) unlink($f);

@@ -32,7 +32,7 @@ $tipos = [1 => "Disfraz", 2 => "Accesorio"];
 
 // Obtener todas las imágenes del producto
 $imagenes = [];
-$query_imagenes = $conexion->query("SELECT img FROM img_producto WHERE id_producto = $id");
+$query_imagenes = $conexion->query("SELECT img FROM img_producto WHERE id_producto = $id AND eliminado = 0");
 while ($row = $query_imagenes->fetch_assoc()) {
     $imagenes[] = $row['img'];
 }

@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         { 
             const totalSlides = document.querySelectorAll('.slide').length;
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-            slides.style.transform = translateX(-${currentSlide * 100}%);
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
 
         // Agregamos movimiento //
@@ -442,17 +442,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
                 <section class="metodo_pago">
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <section>
-                            <input 
-                                type="radio" 
-                                data-requiere-tarjeta="<?= $row['requiere_tarjeta'] ? 'true' : 'false' ?>" 
-                                id="<?= strtolower($row['nombre']) ?>" 
-                                name="metodo_pago" 
-                                value="<?= $row['nombre'] ?>" 
-                                onclick="togglePaymentFields()" 
-                                <?= ($row['nombre'] == 'Efectivo' ? 'checked' : '') ?>>
-                            <label for="<?= strtolower($row['nombre']) ?>"><?= htmlspecialchars($row['nombre']) ?></label>
-                        </section>
+                        <input 
+                            type="radio" 
+                            data-requiere-tarjeta="<?= $row['requiere_tarjeta'] ? 'true' : 'false' ?>" 
+                            id="<?= strtolower($row['nombre']) ?>" 
+                            name="metodo_pago" 
+                            value="<?= $row['nombre'] ?>" 
+                            onclick="togglePaymentFields()" 
+                            <?= ($row['nombre'] == 'Efectivo' ? 'checked' : '') ?>>
+                        
+                        <label for="<?= strtolower($row['nombre']) ?>"><?= htmlspecialchars($row['nombre']) ?></label>
                     <?php endwhile; ?>
                 </section>
 
@@ -507,28 +506,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 document.getElementById('category').value = category;
                 document.getElementById('stock').value = stock;
             }
+                return;
+        }
 
-            function closeModal() {
+         function closeModal() {
                 document.getElementById('rentalModal').style.display = 'none';
             }
-        
+
             // Cierra el modal si se hace click fuera del modal
-            window.onclick = function(event) 
-            {
+            window.onclick = function(event) {
                 const modal = document.getElementById('rentalModal');
                 if (event.target === modal) 
                     {
                     closeModal();
                     }
             }
-        
+
             // Manejar el envío del formulario
-            document.getElementById('rentalForm').onsubmit = function(event) 
-            {
+            document.getElementById('rentalForm').onsubmit = function(event) {
                 return true; // Permite que el formulario se envíe
             }
-                return;
-        }
     </script>
         
     <script>
@@ -601,6 +598,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
         document.addEventListener("DOMContentLoaded", () => {
             togglePaymentFields(); // Llama al cargar
         });
+
+        function metodoSeleccionadoRequiereTarjeta() {
+            const selected = document.querySelector('input[name="metodo_pago"]:checked');
+            return selected?.getAttribute('data-requiere-tarjeta') === 'true';
+        }
     </script>
 
     <?php if ($exito): ?>
@@ -618,12 +620,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const getFormattedDate = (date) => {
-            const year = date.getFullYear();
-            const month = ${date.getMonth() + 1}.padStart(2, '0');
-            const day = ${date.getDate()}.padStart(2, '0');
-            return ${year}-${month}-${day};
-        };
+           const getFormattedDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
 
             const campos = {
                 desde: {
@@ -666,24 +668,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                         const cantidad = parseInt(document.getElementById("cantidad").value);
                         const stock = parseInt(document.getElementById("stockDisponible").value);
                         if (isNaN(cantidad) || cantidad < 1) return [false, "Debe ser al menos 1 unidad."];
-                        if (cantidad > stock) return [false, No hay suficiente stock. Máximo: ${stock}];
+                        if (cantidad > stock) return [false, `No hay suficiente stock. Máximo: ${stock}`];
                         return [true, "Cantidad válida."];
                     }
                 },
                 cardNumber: {
                     validate: () => {
+                        const requerido = metodoSeleccionadoRequiereTarjeta();
                         const input = document.getElementById("cardNumber");
-                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
-                        const valor = input.value.trim();
-                        if (!requerido) return [true, ""];
-                        if (!/^\d{16}$/.test(valor)) return [false, "Debe contener 16 dígitos numéricos."];
+                        const valor = input?.value.trim();
+
+                        if (!requerido) return [true, ""]; // Si no se requiere, se acepta vacío
+
+                        if (!/^\d{16}$/.test(valor)) {
+                            return [false, "Debe contener 16 dígitos numéricos."];
+                        }
                         return [true, "Número válido."];
                     }
                 },
                 cardCVV: {
                     validate: () => {
                         const input = document.getElementById("cardCVV");
-                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
+                        const requerido = metodoSeleccionadoRequiereTarjeta();
                         const valor = input.value.trim();
                         if (!requerido) return [true, ""];
                         if (!/^\d{3}$/.test(valor)) return [false, "Debe contener 3 dígitos numéricos."];
@@ -693,7 +699,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 cardExpiry: {
                     validate: () => {
                         const input = document.getElementById("cardExpiry");
-                        const requerido = input.closest("#cardDetails")?.style.display !== "none";
+                        const requerido = metodoSeleccionadoRequiereTarjeta();
                         const valor = input.value;
                         if (!requerido) return [true, ""];
                         const hoy = new Date().toISOString().slice(0, 7);
@@ -703,15 +709,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alquilar'])) {
                 },
                 dni: {
                     validate: async () => {
+                        const requerido = metodoSeleccionadoRequiereTarjeta();
                         const input = document.getElementById("dni");
                         const valor = input.value.trim();
+
+                        if (!requerido) return [true, ""];
 
                         if (!/^\d{7,8}$/.test(valor)) {
                             return [false, "DNI inválido. Debe tener 7 u 8 dígitos."];
                         }
 
                         try {
-                            const response = await fetch(validar_dni.php?dni=${valor});
+                            const response = await fetch(`validar_dni.php?dni=${valor}`);
                             const data = await response.json();
 
                             if (data.valido) {

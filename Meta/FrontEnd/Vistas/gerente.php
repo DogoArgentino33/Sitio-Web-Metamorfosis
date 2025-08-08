@@ -33,12 +33,12 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] != 1 && $_SESSION['rol'] != 4)
         <section class="table-container">
 
             <!-- Área de acceso a los paneles -->
-            <a href="../Vistas/panelpersonas.php" class="nav-tablas-administrador" title="Personas"><i class="bi bi-person"></i>Personas</a>
-            <a href="../Vistas/panelusuarios.php" class="nav-tablas-administrador" title="Usuarios"><i class="bi bi-person"></i>Usuarios</a>
-            <a href="../Vistas/panelproductos.php" class="nav-tablas-administrador" title="Productos"><i class="bi bi-balloon"></i>Productos</a>
-            <a href="../Vistas/asignarusuario.php" class="nav-tablas-administrador" title="Asignar Persona a Usuario"><i class="bi bi-person-plus-fill"></i>Asignar</a>
-            <a href="../Vistas/panelalquileres.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-calendar"></i>Alquileres</a>
-            <a href="../Vistas/estadisticas.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-bar-chart"></i>Estadisticas</a>
+            <a href="../Vistas/panelpersonas.php" class="nav-tablas-administrador" title="Personas"><i class="bi bi-person-vcard"></i>Personas</a>
+            <a href="../Vistas/panelusuarios.php" class="nav-tablas-administrador" title="Usuarios"><i class="bi bi-person-circle"></i>Usuarios</a>
+            <a href="../Vistas/panelproductos.php" class="nav-tablas-administrador" title="Productos"><i class="bi bi-gift"></i>Productos</a>
+            <a href="../Vistas/asignarusuario.php" class="nav-tablas-administrador" title="Asignar Persona a Usuario"><i class="bi bi-people"></i>Asignar</a>
+            <a href="../Vistas/panelalquileres.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-calendar2-week"></i>Alquileres</a>
+            <a href="../Vistas/estadisticas.php" class="nav-tablas-administrador" title="Alquileres"><i class="bi bi-clipboard-data"></i>Estadisticas</a>
             
         </section>
     </main>

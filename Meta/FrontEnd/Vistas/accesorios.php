@@ -59,7 +59,7 @@ $sql = "SELECT
                         LEFT JOIN talla t ON t.id = pt.id_talla
                         LEFT JOIN producto_tematica ptem ON ptem.id_producto = p.id
                         LEFT JOIN tematica tm ON tm.id = ptem.id_tematica
-                        WHERE p.tipo = 2
+                        WHERE p.tipo = 2  AND p.eliminado = 0
                         GROUP BY p.id
                         ORDER BY p.id;
         ";
@@ -67,7 +67,7 @@ $stmt = $conexion->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$totalSql = "SELECT COUNT(DISTINCT p.id) AS total FROM producto p WHERE p.tipo = 2";
+$totalSql = "SELECT COUNT(DISTINCT p.id) AS total FROM producto p WHERE p.tipo = 2 AND p.eliminado = 0";
 $totalResult = $conexion->query($totalSql);
 $totalRow = $totalResult->fetch_assoc();
 $totalAccesorios = $totalRow['total'];
