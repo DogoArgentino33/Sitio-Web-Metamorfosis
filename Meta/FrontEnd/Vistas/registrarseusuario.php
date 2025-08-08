@@ -25,24 +25,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dni = trim($_POST['dni']);
 
         // 1. Verificar si el DNI existe en persona
-        $sql = "SELECT id FROM persona WHERE dni = '$dni'";
+        $sql = "SELECT * FROM persona WHERE dni = '$dni'";
         $result = mysqli_query($conexion, $sql);
 
         if ($result && mysqli_num_rows($result) > 0) {
             $fila = mysqli_fetch_assoc($result);
             $id_persona = $fila['id'];
             $_SESSION['id_persona'] = $id_persona;
+            $_SESSION['datos_persona'] = $fila;
 
-            // 2. Verificar si ese id_persona está en la tabla usuario
+            // Verificar si ya tiene usuario
             $sql_usuario = "SELECT id FROM usuario WHERE id_persona = $id_persona";
             $result_usuario = mysqli_query($conexion, $sql_usuario);
 
             if ($result_usuario && mysqli_num_rows($result_usuario) > 0) {
-                // Ya está vinculado con un usuario → NO PERMITIR
                 $mensaje_dni_duplicado = "Ya existe un usuario registrado con ese DNI. Intente nuevamente.";
                 $mostrar_datos_usuario = false;
             } else {
-                // Está registrado como persona, pero aún no tiene usuario → PERMITIR
                 $mostrar_datos_usuario = true;
             }
         } else {
@@ -180,7 +179,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("sssssi", $nombre_usu, $ruta_imagen, $correo, $telefono, $passusu_hash, $id_persona);
 
             if ($stmt->execute()) {
-                $_SESSION['id_persona'] = $conexion->insert_id;
+                // Limpieza de sesión
+                unset($_SESSION['id_persona']);
+                unset($_SESSION['datos_persona']);
+
+                // Redirección tras éxito
                 header("Location: login.php?registrouser=ok");
                 exit;
             } else {
@@ -429,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () =>
         <!-- Formulario SOLO para verificar DNI -->
         <form action="registrarseusuario.php" method="post">
             <fieldset>
-                <legend>Datos de verificación</legend>
+                <legend>Verificación</legend>
                 <section class="input-box">
                     <label for="dni">DNI:</label>
                     <input id="dni" name="dni" type="number" min="3000000" required
@@ -437,15 +440,54 @@ document.addEventListener('DOMContentLoaded', () =>
                     <span class="error" style="color:red;"><?php echo $mensaje_dni_duplicado; ?></span>
                     <br><br>
                     <input type="submit" name="verificar_dni" value="Verificar DNI" class="btn">
-                    <p><a href="../Vistas/registrarsepersona.php">¿No tenés tus datos personales registrados?</a></p>
                 </section>
             </fieldset>
         </form>
 
         <form action="registrarseusuario.php" method="post" enctype="multipart/form-data" id="formregistro">
-            
+
+            <?php if ($mostrar_datos_usuario && isset($_SESSION['datos_persona'])):
+                    $p = $_SESSION['datos_persona'];
+                ?>
+                    <div class="registro-container">
+                        <fieldset>
+                            <legend>Datos personales</legend>
+                            <div class="columna-formulario">
+                                <p><strong>Nombre:</strong> <?php echo escapar($p['nombre'] . ' ' . $p['apellido']); ?></p>
+                                <p><strong>DNI:</strong> <?php echo escapar($p['dni']); ?></p>
+                                <p><strong>Fecha de nacimiento:</strong> <?php echo escapar($p['fec_nac']); ?></p>
+                                <p><strong>Género:</strong> <?php echo escapar($p['genero']); ?></p>
+                            </div>
+
+                            <section class="input-box">
+                                <?php if (!empty($p['img'])): ?>
+                                <p><strong>Imagen:</strong><br>
+                                    <img src="<?php echo escapar($p['img']); ?>" alt="Imagen de perfil" style="max-width:200px;">
+                                </p>
+                                <?php endif; ?>
+                            </section>
+
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Datos de domicilio</legend>
+                            <div class="columna-formulario">
+                                <p><strong>Provincia:</strong> <?php echo escapar($p['provincia']); ?></p>
+                                <p><strong>Departamento:</strong> <?php echo escapar($p['departamento']); ?></p>
+                                <p><strong>Municipio:</strong> <?php echo escapar($p['municipio']); ?></p>
+                                <p><strong>Localidad:</strong> <?php echo escapar($p['localidad']); ?></p>
+                                <p><strong>Barrio:</strong> <?php echo escapar($p['barrio']); ?></p>
+                                <p><strong>Calle:</strong> <?php echo escapar($p['calle']); ?></p>
+                                <p><strong>Altura:</strong> <?php echo escapar($p['altura']); ?></p>
+                            </div>
+                            
+                        </fieldset>
+                        
+                    </div>
+            <?php endif; ?>
+
             <fieldset id="fieldset-usuario" style="display: <?php echo $mostrar_datos_usuario ? 'block' : 'none'; ?>;">
-                <legend>Datos de usuario</legend>
+                <legend>Registro de usuario</legend>
 
                 <section class="input-box">
                     <label for="nombre-usu">Nombre de usuario:</label>
@@ -484,7 +526,6 @@ document.addEventListener('DOMContentLoaded', () =>
                 </section>
                 
                 <input type="submit" name="registrar_usuario" value="Registrar Usuario" class="btn">
-                <p><a href="../Vistas/registrarsepersona.php">Volver a Registrar persona</a></p>
             </fieldset>
         </form>
     </section>
